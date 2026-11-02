@@ -12,6 +12,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.projectile.FishingHook;
+import net.minecraft.world.item.FishingRodItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootParams;
@@ -27,11 +28,11 @@ public final class CatchResolver {
     private CatchResolver() {
     }
 
-    public static void success(ServerPlayer player, FishingHook hook, InteractionHand hand, float bonusLuck) {
-        ServerLevel level = player.serverLevel();
-        ItemStack rod = player.getItemInHand(hand);
-        float luck = EnchantmentHelper.getFishingLuckBonus(rod) + player.getLuck() + bonusLuck;
+    public static final int LINE_BREAK_ROD_DAMAGE = 5;
 
+    public static List<ItemStack> roll(ServerPlayer player, FishingHook hook, ItemStack rod, float bonusLuck) {
+        ServerLevel level = player.serverLevel();
+        float luck = EnchantmentHelper.getFishingLuckBonus(rod) + player.getLuck() + bonusLuck;
         LootParams params = new LootParams.Builder(level)
                 .withParameter(LootContextParams.ORIGIN, hook.position())
                 .withParameter(LootContextParams.TOOL, rod)
@@ -40,7 +41,12 @@ public final class CatchResolver {
                 .withLuck(luck)
                 .create(LootContextParamSets.FISHING);
         LootTable table = level.getServer().getLootData().getLootTable(BuiltInLootTables.FISHING);
-        List<ItemStack> loot = table.getRandomItems(params);
+        return table.getRandomItems(params);
+    }
+
+    public static void success(ServerPlayer player, FishingHook hook, InteractionHand hand, List<ItemStack> loot) {
+        ServerLevel level = player.serverLevel();
+        ItemStack rod = player.getItemInHand(hand);
 
         ItemFishedEvent event = new ItemFishedEvent(loot, hook.onGround() ? 2 : 1, hook);
         MinecraftForge.EVENT_BUS.post(event);
@@ -73,9 +79,15 @@ public final class CatchResolver {
         hook.discard();
     }
 
-    public static void failure(ServerPlayer player, FishingHook hook) {
+    public static void failure(ServerPlayer player, FishingHook hook, InteractionHand hand, boolean lineBroke) {
         player.serverLevel().playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.FISHING_BOBBER_RETRIEVE, SoundSource.NEUTRAL, 1.0F, 0.3F);
+        if (lineBroke) {
+            ItemStack rod = player.getItemInHand(hand);
+            if (rod.getItem() instanceof FishingRodItem) {
+                rod.hurtAndBreak(LINE_BREAK_ROD_DAMAGE, player, p -> p.broadcastBreakEvent(hand));
+            }
+        }
         hook.discard();
     }
 }

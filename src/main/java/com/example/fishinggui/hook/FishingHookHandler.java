@@ -1,16 +1,19 @@
 package com.example.fishinggui.hook;
 
 import com.example.fishinggui.FishingGuiMod;
+import com.example.fishinggui.data.FishProfileLoader;
 import com.example.fishinggui.fight.BaitEffect;
 import com.example.fishinggui.fight.BaitType;
 import com.example.fishinggui.fight.FightManager;
 import com.example.fishinggui.fight.FishProfile;
 import com.example.fishinggui.item.ModItems;
+import java.util.List;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.FishingRodItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -41,7 +44,9 @@ public final class FishingHookHandler {
         BaitType bait = event.getHand() == InteractionHand.MAIN_HAND
                 ? ModItems.typeOf(player.getOffhandItem())
                 : BaitType.NONE;
-        FightManager.start(player, hook, event.getHand(), BaitEffect.apply(bait, FishProfile.DEFAULT), bait);
+        List<ItemStack> loot = CatchResolver.roll(player, hook, event.getItemStack(), BaitEffect.luckBonus(bait));
+        FishProfile profile = BaitEffect.apply(bait, FishProfileLoader.profileFor(loot));
+        FightManager.start(player, hook, event.getHand(), profile, bait, loot);
     }
 
     private static void consume(PlayerInteractEvent.RightClickItem event) {

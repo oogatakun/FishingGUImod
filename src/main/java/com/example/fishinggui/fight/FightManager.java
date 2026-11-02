@@ -8,6 +8,7 @@ import com.example.fishinggui.net.FightStatePacket;
 import com.example.fishinggui.net.ModNetwork;
 import com.example.fishinggui.net.ReelInputPacket;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
@@ -27,7 +28,8 @@ import net.minecraftforge.network.PacketDistributor;
 /** Owns one {@link FightSession} per fighting player and advances them on the server thread. */
 @Mod.EventBusSubscriber(modid = FishingGuiMod.MOD_ID)
 public final class FightManager {
-    private record ActiveFight(FightSession session, FishingHook hook, InteractionHand hand, BaitType bait) {
+    private record ActiveFight(FightSession session, FishingHook hook, InteractionHand hand, BaitType bait,
+            List<ItemStack> loot) {
     }
 
     private static final Map<UUID, ActiveFight> FIGHTS = new HashMap<>();
@@ -39,8 +41,9 @@ public final class FightManager {
         return FIGHTS.containsKey(player.getUUID());
     }
 
-    public static void start(ServerPlayer player, FishingHook hook, InteractionHand hand, FishProfile profile, BaitType bait) {
-        FIGHTS.put(player.getUUID(), new ActiveFight(new FightSession(profile, new Random()), hook, hand, bait));
+    public static void start(ServerPlayer player, FishingHook hook, InteractionHand hand, FishProfile profile, BaitType bait,
+            List<ItemStack> loot) {
+        FIGHTS.put(player.getUUID(), new ActiveFight(new FightSession(profile, new Random()), hook, hand, bait, loot));
         ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new FightStartPacket(profile.stamina()));
     }
 
@@ -52,7 +55,7 @@ public final class FightManager {
         switch (action) {
             case ReelInputPacket.REEL -> fight.session().setReeling(true);
             case ReelInputPacket.RELEASE -> fight.session().setReeling(false);
-            case ReelInputPacket.ABORT -> end(player, fight, FightSession.Phase.FAILED);
+            case ReelInputPacket.ABORT -> end(player, fight, FightSession.Phase.FAILED, false);
             default -> {
             }
         }
@@ -68,7 +71,7 @@ public final class FightManager {
             return;
         }
         if (!stillValid(player, fight)) {
-            end(player, fight, FightSession.Phase.FAILED);
+            end(player, fight, FightSession.Phase.FAILED, false);
             return;
         }
         // Pin the bite state so vanilla does not start a new lure/bite cycle during a fight.
@@ -76,7 +79,7 @@ public final class FightManager {
         FightSession session = fight.session();
         session.tick();
         if (session.phase() != FightSession.Phase.ACTIVE) {
-            end(player, fight, session.phase());
+            end(player, fight, session.phase(), session.phase() == FightSession.Phase.FAILED);
             return;
         }
         sendState(player, session, FightSession.Phase.ACTIVE);
@@ -99,13 +102,13 @@ public final class FightManager {
                 && player.getItemInHand(fight.hand()).getItem() instanceof FishingRodItem;
     }
 
-    private static void end(ServerPlayer player, ActiveFight fight, FightSession.Phase phase) {
+    private static void end(ServerPlayer player, ActiveFight fight, FightSession.Phase phase, boolean lineBroke) {
         FIGHTS.remove(player.getUUID());
         sendState(player, fight.session(), phase);
         if (phase == FightSession.Phase.SUCCESS) {
-            CatchResolver.success(player, fight.hook(), fight.hand(), BaitEffect.luckBonus(fight.bait()));
+            CatchResolver.success(player, fight.hook(), fight.hand(), fight.loot());
         } else {
-            CatchResolver.failure(player, fight.hook());
+            CatchResolver.failure(player, fight.hook(), fight.hand(), lineBroke);
         }
         consumeBait(player, fight.bait());
     }
