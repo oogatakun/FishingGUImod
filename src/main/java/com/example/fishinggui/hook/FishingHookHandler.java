@@ -1,0 +1,44 @@
+package com.example.fishinggui.hook;
+
+import com.example.fishinggui.FishingGuiMod;
+import com.example.fishinggui.fight.FightManager;
+import com.example.fishinggui.fight.FishProfile;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.projectile.FishingHook;
+import net.minecraft.world.item.FishingRodItem;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+
+/** Turns the right-click that would instantly reel in a biting fish into the start of a tension fight. */
+@Mod.EventBusSubscriber(modid = FishingGuiMod.MOD_ID)
+public final class FishingHookHandler {
+    private FishingHookHandler() {
+    }
+
+    @SubscribeEvent
+    public static void onRightClick(PlayerInteractEvent.RightClickItem event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
+        if (!(event.getItemStack().getItem() instanceof FishingRodItem)) {
+            return;
+        }
+        if (FightManager.isFighting(player)) {
+            consume(event);
+            return;
+        }
+        FishingHook hook = player.fishing;
+        if (hook == null || hook.nibble <= 0) {
+            return;
+        }
+        consume(event);
+        FightManager.start(player, hook, event.getHand(), FishProfile.DEFAULT);
+    }
+
+    private static void consume(PlayerInteractEvent.RightClickItem event) {
+        event.setCanceled(true);
+        event.setCancellationResult(InteractionResult.SUCCESS);
+    }
+}
