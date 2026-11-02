@@ -1,0 +1,7 @@
+{
+  "item": "minecraft:enchanted_book",
+  "stamina": 140,
+  "dash_interval": 60,
+  "dash_power": 1.3,
+  "tension_gain": 1.1
+}

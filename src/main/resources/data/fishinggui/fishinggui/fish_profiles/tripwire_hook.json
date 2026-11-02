@@ -1,0 +1,7 @@
+{
+  "item": "minecraft:tripwire_hook",
+  "stamina": 50,
+  "dash_interval": 110,
+  "dash_power": 0.6,
+  "tension_gain": 1.0
+}

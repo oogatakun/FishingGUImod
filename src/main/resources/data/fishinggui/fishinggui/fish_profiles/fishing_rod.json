@@ -1,0 +1,7 @@
+{
+  "item": "minecraft:fishing_rod",
+  "stamina": 110,
+  "dash_interval": 65,
+  "dash_power": 1.1,
+  "tension_gain": 1.0
+}

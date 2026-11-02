@@ -1,0 +1,7 @@
+{
+  "item": "minecraft:pufferfish",
+  "stamina": 80,
+  "dash_interval": 45,
+  "dash_power": 1.4,
+  "tension_gain": 1.0
+}
