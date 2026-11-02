@@ -1,9 +1,13 @@
 package com.example.fishinggui.hook;
 
 import com.example.fishinggui.FishingGuiMod;
+import com.example.fishinggui.fight.BaitEffect;
+import com.example.fishinggui.fight.BaitType;
 import com.example.fishinggui.fight.FightManager;
 import com.example.fishinggui.fight.FishProfile;
+import com.example.fishinggui.item.ModItems;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.FishingRodItem;
@@ -34,7 +38,10 @@ public final class FishingHookHandler {
             return;
         }
         consume(event);
-        FightManager.start(player, hook, event.getHand(), FishProfile.DEFAULT);
+        BaitType bait = event.getHand() == InteractionHand.MAIN_HAND
+                ? ModItems.typeOf(player.getOffhandItem())
+                : BaitType.NONE;
+        FightManager.start(player, hook, event.getHand(), BaitEffect.apply(bait, FishProfile.DEFAULT), bait);
     }
 
     private static void consume(PlayerInteractEvent.RightClickItem event) {

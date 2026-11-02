@@ -27,10 +27,10 @@ public final class CatchResolver {
     private CatchResolver() {
     }
 
-    public static void success(ServerPlayer player, FishingHook hook, InteractionHand hand) {
+    public static void success(ServerPlayer player, FishingHook hook, InteractionHand hand, float bonusLuck) {
         ServerLevel level = player.serverLevel();
         ItemStack rod = player.getItemInHand(hand);
-        float luck = EnchantmentHelper.getFishingLuckBonus(rod) + player.getLuck();
+        float luck = EnchantmentHelper.getFishingLuckBonus(rod) + player.getLuck() + bonusLuck;
 
         LootParams params = new LootParams.Builder(level)
                 .withParameter(LootContextParams.ORIGIN, hook.position())

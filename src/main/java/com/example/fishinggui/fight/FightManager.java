@@ -2,6 +2,7 @@ package com.example.fishinggui.fight;
 
 import com.example.fishinggui.FishingGuiMod;
 import com.example.fishinggui.hook.CatchResolver;
+import com.example.fishinggui.item.ModItems;
 import com.example.fishinggui.net.FightStartPacket;
 import com.example.fishinggui.net.FightStatePacket;
 import com.example.fishinggui.net.ModNetwork;
@@ -15,6 +16,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.FishingRodItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.server.ServerStoppedEvent;
@@ -25,7 +27,7 @@ import net.minecraftforge.network.PacketDistributor;
 /** Owns one {@link FightSession} per fighting player and advances them on the server thread. */
 @Mod.EventBusSubscriber(modid = FishingGuiMod.MOD_ID)
 public final class FightManager {
-    private record ActiveFight(FightSession session, FishingHook hook, InteractionHand hand) {
+    private record ActiveFight(FightSession session, FishingHook hook, InteractionHand hand, BaitType bait) {
     }
 
     private static final Map<UUID, ActiveFight> FIGHTS = new HashMap<>();
@@ -37,8 +39,8 @@ public final class FightManager {
         return FIGHTS.containsKey(player.getUUID());
     }
 
-    public static void start(ServerPlayer player, FishingHook hook, InteractionHand hand, FishProfile profile) {
-        FIGHTS.put(player.getUUID(), new ActiveFight(new FightSession(profile, new Random()), hook, hand));
+    public static void start(ServerPlayer player, FishingHook hook, InteractionHand hand, FishProfile profile, BaitType bait) {
+        FIGHTS.put(player.getUUID(), new ActiveFight(new FightSession(profile, new Random()), hook, hand, bait));
         ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new FightStartPacket(profile.stamina()));
     }
 
@@ -101,9 +103,20 @@ public final class FightManager {
         FIGHTS.remove(player.getUUID());
         sendState(player, fight.session(), phase);
         if (phase == FightSession.Phase.SUCCESS) {
-            CatchResolver.success(player, fight.hook(), fight.hand());
+            CatchResolver.success(player, fight.hook(), fight.hand(), BaitEffect.luckBonus(fight.bait()));
         } else {
             CatchResolver.failure(player, fight.hook());
+        }
+        consumeBait(player, fight.bait());
+    }
+
+    private static void consumeBait(ServerPlayer player, BaitType bait) {
+        if (bait == BaitType.NONE || player.getAbilities().instabuild) {
+            return;
+        }
+        ItemStack offhand = player.getOffhandItem();
+        if (ModItems.typeOf(offhand) == bait) {
+            offhand.shrink(1);
         }
     }
 
