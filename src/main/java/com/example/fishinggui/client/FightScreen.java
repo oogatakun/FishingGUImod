@@ -75,9 +75,16 @@ public class FightScreen extends Screen {
     public void removed() {
         if (!finished) {
             finished = true;
-            ModNetwork.CHANNEL.sendToServer(new ReelInputPacket(ReelInputPacket.ABORT));
+            if (Minecraft.getInstance().getConnection() != null) {
+                ModNetwork.CHANNEL.sendToServer(new ReelInputPacket(ReelInputPacket.ABORT));
+            }
         }
         ClientFightHooks.clear(this);
+    }
+
+    /** Suppresses the ABORT on close (used when a newer fight replaces this screen). */
+    void markFinished() {
+        this.finished = true;
     }
 
     @Override

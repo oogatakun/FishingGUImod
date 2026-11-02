@@ -11,6 +11,9 @@ public final class ClientFightHooks {
     }
 
     public static void onStart(float maxStamina) {
+        if (screen != null) {
+            screen.markFinished();
+        }
         screen = new FightScreen(maxStamina);
         Minecraft.getInstance().setScreen(screen);
     }
