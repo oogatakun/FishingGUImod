@@ -54,4 +54,34 @@ class FishProfileParserTest {
                 () -> FishProfileParser.parse(json("{\"item\":\"a:b\",\"dash_interval\":40.5}")));
         assertThrows(IllegalArgumentException.class, () -> FishProfileParser.parse(json("{\"item\":5}")));
     }
+
+    @Test
+    void parsesFishInfoFields() {
+        FishProfileParser.Entry e = FishProfileParser.parse(json(
+                "{\"item\":\"a:b\",\"rarity\":\"epic\",\"weight_min\":2,\"weight_max\":5,\"xp\":80}"));
+        assertEquals(new com.example.fishinggui.fight.FishInfo(
+                com.example.fishinggui.fight.Rarity.EPIC, 2f, 5f, 80), e.info());
+    }
+
+    @Test
+    void fishInfoDefaultsWhenOmitted() {
+        assertEquals(com.example.fishinggui.fight.FishInfo.DEFAULT,
+                FishProfileParser.parse(json("{\"item\":\"a:b\"}")).info());
+    }
+
+    @Test
+    void rejectsInvalidFishInfo() {
+        assertThrows(IllegalArgumentException.class,
+                () -> FishProfileParser.parse(json("{\"item\":\"a:b\",\"rarity\":\"mythic\"}")));
+        assertThrows(IllegalArgumentException.class,
+                () -> FishProfileParser.parse(json("{\"item\":\"a:b\",\"weight_min\":0}")));
+        assertThrows(IllegalArgumentException.class,
+                () -> FishProfileParser.parse(json("{\"item\":\"a:b\",\"weight_min\":2,\"weight_max\":1}")));
+        assertThrows(IllegalArgumentException.class,
+                () -> FishProfileParser.parse(json("{\"item\":\"a:b\",\"xp\":-1}")));
+        assertThrows(IllegalArgumentException.class,
+                () -> FishProfileParser.parse(json("{\"item\":\"a:b\",\"xp\":1.5}")));
+        assertThrows(IllegalArgumentException.class,
+                () -> FishProfileParser.parse(json("{\"item\":\"a:b\",\"rarity\":3}")));
+    }
 }

@@ -1,0 +1,25 @@
+package com.example.fishinggui.fight;
+
+import java.util.Random;
+
+/** Per-fish catch data: rarity, weight range (kg) and fishing XP. Pure Java. */
+public record FishInfo(Rarity rarity, float weightMin, float weightMax, int xp) {
+    public static final FishInfo DEFAULT = new FishInfo(Rarity.COMMON, 0.1f, 1.0f, 10);
+
+    static final float LIGHTEST_TENSION_FACTOR = 0.8f;
+    static final float HEAVIEST_TENSION_FACTOR = 1.3f;
+
+    /** Uniform weight in the range, rounded to one decimal. */
+    public float rollWeight(Random random) {
+        float w = weightMin + random.nextFloat() * (weightMax - weightMin);
+        return Math.max(weightMin, Math.min(weightMax, Math.round(w * 10f) / 10f));
+    }
+
+    /** Heavier fish raise tension faster; stamina and dashes are untouched. */
+    public FishProfile scaleForWeight(FishProfile base, float weight) {
+        float t = weightMax > weightMin ? (weight - weightMin) / (weightMax - weightMin) : 0.5f;
+        t = Math.max(0f, Math.min(1f, t));
+        float factor = LIGHTEST_TENSION_FACTOR + (HEAVIEST_TENSION_FACTOR - LIGHTEST_TENSION_FACTOR) * t;
+        return new FishProfile(base.stamina(), base.dashInterval(), base.dashPower(), base.tensionGain() * factor);
+    }
+}
