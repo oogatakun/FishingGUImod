@@ -42,7 +42,9 @@
 - ダッシュの 0.5 秒前に予兆を出す(ゲージが震える、音)。
 - tension 70 以上は危険ゾーン。ゲージが赤くなり、警告音が鳴る。
 
-`FishProfile` のパラメータ: `stamina`, `dashInterval`, `dashPower`, `tensionGain`(倍率)。データパックの JSON で調整できる。ゴミは弱く、宝物とレア魚は強い。
+`FishProfile` のパラメータ: `stamina`, `dashInterval`, `dashPower`, `tensionGain`(倍率)。データパックの JSON で調整できる(Phase 2)。ゴミは弱く、宝物とレア魚は強い。
+
+Phase 1 の既定値(`FishProfile.DEFAULT`): `stamina 100`、`dashInterval 70`(tick、平均。実際は 0.6〜1.4 倍でばらつく)、`dashPower 1.0`、`tensionGain 1.0`。
 
 ## 4. GUI
 
@@ -66,7 +68,7 @@
 | `hook` | `FishingHookHandler` | Forge イベントで右クリックを横取りし、ヒット中ならファイト開始。Access Transformer で `FishingHook` の `nibble` 等を参照 |
 | `hook` | `CatchResolver` | 成功時にバニラの釣りルートテーブルから報酬を生成し、ウキの位置からプレイヤーへ飛ばす |
 | `item` | `BaitItem` ほか | エサ 3 種。装着と消費 |
-| `net` | パケット 3 種 | S→C `FightStart`(魚情報)、S→C `FightState`(tension / stamina / 予兆。毎tick)、C→S `ReelInput`(長押し状態。変化時のみ) |
+| `net` | パケット 3 種 | S→C `FightStart`(魚情報)、S→C `FightState`(tension / stamina / 予兆 / ダッシュ中 / phase。毎tick)、C→S `ReelInput`(1バイトの action: `RELEASE` / `REEL` / `ABORT`。変化時に送り、GUI が開いている間は 10tick ごとにキープアライブとして再送する)。パケットは 3 種のまま。`FightState` の phase が `ACTIVE` 以外(`SUCCESS` / `FAILED`)なら、クライアントは GUI を閉じる |
 | `client` | `FightScreen` | ゲージ描画、音、入力検知 |
 | `data` | `FishProfileLoader` | データパック JSON から難易度を読み込む |
 
@@ -78,14 +80,14 @@
 
 ## 7. エラー処理・チート対策
 
-- 入力はサーバーが検証する。1tick に受け付ける入力は 1 つで、極端な連打変化は無視する。
-- 通信が一定 tick 途絶えたら、離している扱いにする。
+- 入力はサーバーが検証する。1tick に受け付ける入力は最大 2 つ(`MAX_INPUTS_PER_TICK`)で、それを超える連打変化は無視する。
+- 入力が 40tick(`INPUT_TIMEOUT_TICKS`)途絶えたら、離している扱いにする。クライアントのキープアライブ(10tick ごと)があるので、通常の長押し中は途絶えない。
 - 竿の持ち替え・ウキ消滅・プレイヤー死亡は失敗扱いで終了する。
 
 ## 8. テスト方針
 
 - `FightSession` は JUnit で単体テストする。確認項目は、巻き続けたら糸切れ、離し続けたら体力回復、ダッシュ時の挙動、成功条件。
-- Forge 連携は GameTest(`runGameTestServer`)で、ヒット→成功/失敗の流れと報酬を確認する。
+- Forge 連携の GameTest(`runGameTestServer`)は Phase 1 の対象外とし、Phase 2 で再検討する。Phase 1 は単体テストと、計画書の手動チェックリスト(実機・専用サーバー)で確認する。
 - GUI の見た目は実機で手動確認する。
 
 ## 9. 段階(スコープ分割)
@@ -95,3 +97,9 @@
 3. **Phase 3**: オリジナル魚アイテムの追加。
 
 各 Phase ごとに計画→実装を行う。
+
+## 10. 既知の制限(Phase 1)
+
+- アタリ中の最初の右クリックで、クライアントがバニラのウキ回収音と腕振りを再生してしまう。サーバー専用の `nibble` 値がクライアントから見えず、アタリ中かどうかを判別できないため。
+- ファイトはバニラのアタリ猶予時間より長引くことがあり、その間ウキのアニメーションが不自然に見える場合がある。
+- `CatchResolver` は、`ItemFishedEvent` がキャンセルされた場合に竿の耐久度を消費しない。また、回収音のピッチは固定値(成功 1.0、失敗 0.6)。

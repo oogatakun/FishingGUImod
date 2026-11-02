@@ -357,9 +357,9 @@ class FightSessionTest {
     @Test
     void holdingReelWithoutRestBreaksTheLine() {
         FightSession s = session(CALM);
-        s.setReeling(true);
         int ticks = 0;
         while (s.phase() == FightSession.Phase.ACTIVE && ticks < 200) {
+            s.setReeling(true);
             s.tick();
             ticks++;
         }
@@ -495,8 +495,10 @@ class FightSessionTest {
     @Test
     void endedSessionIgnoresFurtherTicks() {
         FightSession s = session(CALM);
-        s.setReeling(true);
-        tick(s, 100);
+        for (int i = 0; i < 100; i++) {
+            s.setReeling(true);
+            s.tick();
+        }
         assertEquals(FightSession.Phase.FAILED, s.phase());
         float tension = s.tension();
         float stamina = s.stamina();
