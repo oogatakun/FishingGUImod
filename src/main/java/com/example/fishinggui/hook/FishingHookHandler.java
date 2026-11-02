@@ -5,9 +5,11 @@ import com.example.fishinggui.data.FishProfileLoader;
 import com.example.fishinggui.fight.BaitEffect;
 import com.example.fishinggui.fight.BaitType;
 import com.example.fishinggui.fight.FightManager;
+import com.example.fishinggui.fight.FishInfo;
 import com.example.fishinggui.fight.FishProfile;
 import com.example.fishinggui.item.ModItems;
 import java.util.List;
+import java.util.Random;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -45,8 +47,11 @@ public final class FishingHookHandler {
                 ? ModItems.typeOf(player.getOffhandItem())
                 : BaitType.NONE;
         List<ItemStack> loot = CatchResolver.roll(player, hook, event.getItemStack(), BaitEffect.luckBonus(bait));
-        FishProfile profile = BaitEffect.apply(bait, FishProfileLoader.profileFor(loot));
-        FightManager.start(player, hook, event.getHand(), profile, bait, loot);
+        FishInfo info = FishProfileLoader.infoFor(loot);
+        float weight = info.rollWeight(new Random());
+        FishProfile profile = BaitEffect.apply(bait,
+                info.scaleForWeight(FishProfileLoader.profileFor(loot), weight));
+        FightManager.start(player, hook, event.getHand(), profile, bait, loot, info, weight);
     }
 
     private static void consume(PlayerInteractEvent.RightClickItem event) {

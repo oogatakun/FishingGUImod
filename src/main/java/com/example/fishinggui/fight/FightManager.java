@@ -29,7 +29,7 @@ import net.minecraftforge.network.PacketDistributor;
 @Mod.EventBusSubscriber(modid = FishingGuiMod.MOD_ID)
 public final class FightManager {
     private record ActiveFight(FightSession session, FishingHook hook, InteractionHand hand, BaitType bait,
-            List<ItemStack> loot) {
+            List<ItemStack> loot, FishInfo info, float weight) {
     }
 
     private static final Map<UUID, ActiveFight> FIGHTS = new HashMap<>();
@@ -42,8 +42,9 @@ public final class FightManager {
     }
 
     public static void start(ServerPlayer player, FishingHook hook, InteractionHand hand, FishProfile profile, BaitType bait,
-            List<ItemStack> loot) {
-        FIGHTS.put(player.getUUID(), new ActiveFight(new FightSession(profile, new Random()), hook, hand, bait, loot));
+            List<ItemStack> loot, FishInfo info, float weight) {
+        FIGHTS.put(player.getUUID(), new ActiveFight(new FightSession(profile, new Random()), hook, hand, bait, loot,
+                info, weight));
         ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new FightStartPacket(profile.stamina()));
     }
 
@@ -106,7 +107,8 @@ public final class FightManager {
         FIGHTS.remove(player.getUUID());
         sendState(player, fight.session(), phase);
         if (phase == FightSession.Phase.SUCCESS) {
-            CatchResolver.success(player, fight.hook(), fight.hand(), fight.loot());
+            CatchResolver.success(player, fight.hook(), fight.hand(), fight.loot(), fight.info(),
+                    fight.weight());
         } else {
             CatchResolver.failure(player, fight.hook(), fight.hand(), lineBroke);
         }

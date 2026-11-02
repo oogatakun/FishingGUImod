@@ -27,5 +27,11 @@ public final class ModNetwork {
         CHANNEL.messageBuilder(ReelInputPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(ReelInputPacket::encode).decoder(ReelInputPacket::decode)
                 .consumerMainThread(ReelInputPacket::handle).add();
+        CHANNEL.messageBuilder(CatchResultPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(CatchResultPacket::encode).decoder(CatchResultPacket::decode)
+                .consumerMainThread(CatchResultPacket::handle).add();
+        CHANNEL.messageBuilder(CatchChoicePacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(CatchChoicePacket::encode).decoder(CatchChoicePacket::decode)
+                .consumerMainThread(CatchChoicePacket::handle).add();
     }
 }
