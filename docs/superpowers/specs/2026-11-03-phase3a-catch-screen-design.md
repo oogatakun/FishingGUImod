@@ -38,7 +38,8 @@
 - 純 Java の `FishInfo(Rarity rarity, float weightMin, float weightMax, int xp)` と `Rarity` enum を `fight` パッケージに置く。`FishInfo.DEFAULT` を持つ。
 - `FishProfileParser.Entry` は `(item, profile, info)` にする。
 - `FishProfileLoader` は `profileFor` に加えて `infoFor(List<ItemStack>)` を持つ(最初のスタックで検索。なければ `DEFAULT`)。
-- 重量はファイト開始ではなく**成功時**に `FishInfo.rollWeight(Random)`(範囲内の一様乱数、小数1桁に丸め)で決める。
+- 重量は**ファイト開始時**に `FishInfo.rollWeight(Random)`(範囲内の一様乱数、小数1桁に丸め)で決め、`ActiveFight` に保持する。成功時はその値を GUI に出す。
+- **重さに応じてテンションが上がりやすくなる**: `t = (weight - weight_min) / (weight_max - weight_min)`(範囲が0なら 0.5)とし、`tensionGain` に `lerp(0.8, 1.3, t)` を掛ける(`FishInfo.scaleForWeight(FishProfile, float weight)`)。最も軽い個体は 0.8 倍、最も重い個体は 1.3 倍。体力とダッシュには影響しない。エサの効果(2-A)は、この補正の後に重ねる。
 - 同梱データに値を入れる(重量・経験値・レア度は実装時に決める。弱い魚ほど軽く低レア、宝物は高レア・高経験値)。
 
 ## 4. 通信
@@ -51,7 +52,7 @@
 ## 5. テスト
 
 - `FishProfileParser`: 新項目の正常、省略値、不正値(rarity、weight の大小、xp が負)。
-- `FishInfo.rollWeight`: 範囲内、1桁丸め、min == max。
+- `FishInfo.rollWeight`: 範囲内、1桁丸め、min == max。`scaleForWeight`: 最軽量で 0.8 倍、最重量で 1.3 倍、min == max で 1.05 倍、他の項目は不変。
 - 実機: 釣果 GUI の表示、キープでアイテム入手、リリースでアイテムなし、ESC でキープ、ログアウト時のドロップ。
 
 ## 6. 変更するファイル
