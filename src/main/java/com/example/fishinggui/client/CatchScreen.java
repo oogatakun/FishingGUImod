@@ -85,16 +85,20 @@ public class CatchScreen extends Screen {
         g.renderOutline(bx, by, bw, 16, rarityColor);
         g.drawCenteredString(this.font, badge, cx, by + 4, rarityColor);
 
-        // item (8x)
+        // item: up to 8x, shrunk to fit between the badge and the stats box
+        int boxY = this.height - 90;
+        int top = by + 16 + 6;
+        int avail = boxY - 6 - top;
+        float scale = Math.max(1f, Math.min(8f, avail / 16));
+        int size = (int) (16 * scale);
         g.pose().pushPose();
-        g.pose().translate(cx - 64, this.height / 2 - 56, 0);
-        g.pose().scale(8f, 8f, 1f);
+        g.pose().translate(cx - size / 2f, top + (avail - size) / 2f, 0);
+        g.pose().scale(scale, scale, 1f);
         g.renderItem(stack, 0, 0);
         g.pose().popPose();
 
         // stats box
         int boxW = 190;
-        int boxY = this.height - 90;
         int boxX = cx - boxW / 2;
         g.fill(boxX, boxY, boxX + boxW, boxY + 36, 0x99000000);
         g.renderOutline(boxX, boxY, boxW, 36, 0xFFFFFFFF);
