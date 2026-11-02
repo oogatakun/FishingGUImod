@@ -45,6 +45,7 @@ public final class CatchResolver {
         ItemFishedEvent event = new ItemFishedEvent(loot, hook.onGround() ? 2 : 1, hook);
         MinecraftForge.EVENT_BUS.post(event);
         if (event.isCanceled()) {
+            rod.hurtAndBreak(event.getRodDamage(), player, p -> p.broadcastBreakEvent(hand));
             hook.discard();
             return;
         }
@@ -66,14 +67,15 @@ public final class CatchResolver {
         }
 
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
-                SoundEvents.FISHING_BOBBER_RETRIEVE, SoundSource.NEUTRAL, 1.0F, 1.0F);
+                SoundEvents.FISHING_BOBBER_RETRIEVE, SoundSource.NEUTRAL, 1.0F,
+                0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
         rod.hurtAndBreak(event.getRodDamage(), player, p -> p.broadcastBreakEvent(hand));
         hook.discard();
     }
 
     public static void failure(ServerPlayer player, FishingHook hook) {
         player.serverLevel().playSound(null, player.getX(), player.getY(), player.getZ(),
-                SoundEvents.FISHING_BOBBER_RETRIEVE, SoundSource.NEUTRAL, 1.0F, 0.6F);
+                SoundEvents.FISHING_BOBBER_RETRIEVE, SoundSource.NEUTRAL, 1.0F, 0.3F);
         hook.discard();
     }
 }

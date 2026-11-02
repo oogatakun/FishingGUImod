@@ -62,7 +62,7 @@ public class FightScreen extends Screen {
         this.telegraph = telegraph;
         this.dashing = dashing;
         if (telegraph && !wasTelegraph) {
-            playUi(SoundEvents.FISHING_BOBBER_SPLASH, 1.0f);
+            playUi(SoundEvents.UI_BUTTON_CLICK.value(), 1.0f);
         }
         wasTelegraph = telegraph;
         if (phase != FightSession.Phase.ACTIVE) {

@@ -69,6 +69,8 @@ public final class FightManager {
             end(player, fight, FightSession.Phase.FAILED);
             return;
         }
+        // Pin the bite state so vanilla does not start a new lure/bite cycle during a fight.
+        fight.hook().nibble = Math.max(fight.hook().nibble, 2);
         FightSession session = fight.session();
         session.tick();
         if (session.phase() != FightSession.Phase.ACTIVE) {
