@@ -8,10 +8,11 @@ public final class FightSession {
 
     public static final float MAX_TENSION = 100f;
     public static final float DANGER_TENSION = 70f;
+    public static final float SLACK_TENSION = 25f;
 
     static final float REEL_TENSION = 1.5f;
     static final float REEL_STAMINA = 1.0f;
-    static final float RELEASE_TENSION = 2.0f;
+    static final float RELEASE_TENSION = 3.0f;
     static final float RELEASE_STAMINA_RECOVER = 0.3f;
     static final float DASH_TENSION = 2.5f;
     static final int TELEGRAPH_TICKS = 10;
@@ -19,6 +20,7 @@ public final class FightSession {
     static final int DASH_MAX_TICKS = 40;
     static final int INPUT_TIMEOUT_TICKS = 40;
     static final int MAX_INPUTS_PER_TICK = 2;
+    static final int SLACK_ESCAPE_TICKS = 80;
 
     private final FishProfile profile;
     private final Random random;
@@ -30,6 +32,8 @@ public final class FightSession {
     private int dashTicksLeft;
     private int silentTicks;
     private int inputsThisTick;
+    private int slackTicks;
+    private boolean lineBroke;
     private Phase phase = Phase.ACTIVE;
 
     public FightSession(FishProfile profile, Random random) {
@@ -62,14 +66,10 @@ public final class FightSession {
 
         if (reeling) {
             tension += REEL_TENSION * profile.tensionGain();
-            if (!dashing) {
-                stamina -= REEL_STAMINA;
-            }
+            stamina -= REEL_STAMINA;
         } else {
             tension -= RELEASE_TENSION;
-            if (!dashing) {
-                stamina = Math.min(profile.stamina(), stamina + RELEASE_STAMINA_RECOVER);
-            }
+            stamina = Math.min(profile.stamina(), stamina + RELEASE_STAMINA_RECOVER);
         }
         if (dashing) {
             tension += DASH_TENSION * profile.dashPower();
@@ -79,9 +79,16 @@ public final class FightSession {
         if (tension >= MAX_TENSION) {
             tension = MAX_TENSION;
             phase = Phase.FAILED;
+            lineBroke = true;
         } else if (stamina <= 0f) {
             stamina = 0f;
             phase = Phase.SUCCESS;
+        } else if (tension < SLACK_TENSION) {
+            if (++slackTicks >= SLACK_ESCAPE_TICKS) {
+                phase = Phase.FAILED;
+            }
+        } else {
+            slackTicks = 0;
         }
     }
 
@@ -109,4 +116,6 @@ public final class FightSession {
     public boolean dashing() { return dashTicksLeft > 0; }
     public boolean telegraphing() { return dashTicksLeft == 0 && ticksUntilDash <= TELEGRAPH_TICKS; }
     public Phase phase() { return phase; }
+    /** True only if the fight ended because the line snapped (not a slack escape). */
+    public boolean lineBroke() { return lineBroke; }
 }

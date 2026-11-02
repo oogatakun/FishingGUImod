@@ -79,7 +79,7 @@ public final class FightManager {
         FightSession session = fight.session();
         session.tick();
         if (session.phase() != FightSession.Phase.ACTIVE) {
-            end(player, fight, session.phase(), session.phase() == FightSession.Phase.FAILED);
+            end(player, fight, session.phase(), session.lineBroke());
             return;
         }
         sendState(player, session, FightSession.Phase.ACTIVE);

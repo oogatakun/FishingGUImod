@@ -8,7 +8,7 @@ public final class GaugeState {
 
     static final float START_BELOW = 0.2f;
     static final float ALMOST_FROM = 0.8f;
-    static final float SLACK_BELOW = 25f;
+    static final float SLACK_BELOW = com.example.fishinggui.fight.FightSession.SLACK_TENSION;
 
     private GaugeState() {
     }
