@@ -1,6 +1,7 @@
 package com.example.fishinggui.client;
 
 import com.example.fishinggui.fight.FightSession;
+import com.example.fishinggui.fight.Rarity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
 
@@ -27,7 +28,9 @@ public final class ClientFightHooks {
     }
 
     public static void onCatchResult(ItemStack stack, byte rarity, float weight, int xp) {
-        // Task 4
+        Rarity[] all = Rarity.values();
+        Rarity r = all[Math.max(0, Math.min(all.length - 1, rarity))];
+        Minecraft.getInstance().setScreen(new CatchScreen(stack, r, weight, xp));
     }
 
     static void clear(FightScreen closed) {
