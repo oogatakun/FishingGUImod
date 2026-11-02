@@ -1,5 +1,12 @@
 {
   "item.fishinggui.worm": "Worm",
   "item.fishinggui.glow_bug": "Glow Bug",
-  "item.fishinggui.sturdy_paste": "Sturdy Paste"
+  "item.fishinggui.sturdy_paste": "Sturdy Paste",
+  "gui.fishinggui.progress.start": "Casting",
+  "gui.fishinggui.progress.battle": "Fighting!",
+  "gui.fishinggui.progress.almost": "Landing soon",
+  "gui.fishinggui.line.slack": "Line is slack",
+  "gui.fishinggui.line.safe": "Safe tension",
+  "gui.fishinggui.line.danger": "Line may snap!",
+  "gui.fishinggui.hint": "Hold right-click to reel"
 }

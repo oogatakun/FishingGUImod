@@ -1,0 +1,12 @@
+{
+  "item.fishinggui.worm": "ミミズ",
+  "item.fishinggui.glow_bug": "光る虫",
+  "item.fishinggui.sturdy_paste": "丈夫な練りエサ",
+  "gui.fishinggui.progress.start": "釣り始め",
+  "gui.fishinggui.progress.battle": "魚とバトル中!",
+  "gui.fishinggui.progress.almost": "間もなく釣り上げます",
+  "gui.fishinggui.line.slack": "糸の張りが弱い",
+  "gui.fishinggui.line.safe": "安全な張り具合",
+  "gui.fishinggui.line.danger": "糸が切れるかも!",
+  "gui.fishinggui.hint": "右クリック長押しで巻く"
+}
