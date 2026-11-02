@@ -9,5 +9,13 @@
   "gui.fishinggui.line.slack": "Line is slack",
   "gui.fishinggui.line.safe": "Safe tension",
   "gui.fishinggui.line.danger": "Line may snap!",
-  "gui.fishinggui.hint": "Hold right-click to reel"
+  "gui.fishinggui.hint": "Hold right-click to reel",
+  "gui.fishinggui.rarity.common": "Common",
+  "gui.fishinggui.rarity.uncommon": "Uncommon",
+  "gui.fishinggui.rarity.rare": "Rare",
+  "gui.fishinggui.rarity.epic": "Epic",
+  "gui.fishinggui.catch.keep": "Keep",
+  "gui.fishinggui.catch.release": "Release",
+  "gui.fishinggui.catch.weight": "Weight",
+  "gui.fishinggui.catch.xp": "XP"
 }

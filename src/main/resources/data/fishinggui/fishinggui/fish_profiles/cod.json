@@ -3,5 +3,9 @@
   "stamina": 70,
   "dash_interval": 90,
   "dash_power": 0.8,
-  "tension_gain": 1.0
+  "tension_gain": 1.0,
+  "rarity": "common",
+  "weight_min": 0.3,
+  "weight_max": 2.0,
+  "xp": 15
 }

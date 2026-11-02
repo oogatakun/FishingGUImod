@@ -1,6 +1,7 @@
 package com.example.fishinggui.data;
 
 import com.example.fishinggui.FishingGuiMod;
+import com.example.fishinggui.fight.FishInfo;
 import com.example.fishinggui.fight.FishProfile;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -27,6 +28,7 @@ public final class FishProfileLoader extends SimpleJsonResourceReloadListener {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Gson GSON = new GsonBuilder().create();
     private static volatile Map<ResourceLocation, FishProfile> profiles = Map.of();
+    private static volatile Map<ResourceLocation, FishInfo> infos = Map.of();
 
     private FishProfileLoader() {
         super(GSON, "fishinggui/fish_profiles");
@@ -40,6 +42,7 @@ public final class FishProfileLoader extends SimpleJsonResourceReloadListener {
     @Override
     protected void apply(Map<ResourceLocation, JsonElement> files, ResourceManager manager, ProfilerFiller profiler) {
         Map<ResourceLocation, FishProfile> loaded = new HashMap<>();
+        Map<ResourceLocation, FishInfo> loadedInfo = new HashMap<>();
         for (Map.Entry<ResourceLocation, JsonElement> file : new TreeMap<>(files).entrySet()) {
             try {
                 FishProfileParser.Entry entry = FishProfileParser.parse(file.getValue().getAsJsonObject());
@@ -48,11 +51,13 @@ public final class FishProfileLoader extends SimpleJsonResourceReloadListener {
                     throw new IllegalArgumentException("invalid item id '" + entry.item() + "'");
                 }
                 loaded.put(item, entry.profile());
+                loadedInfo.put(item, entry.info());
             } catch (RuntimeException e) {
                 LOGGER.warn("Skipping fish profile {}: {}", file.getKey(), e.getMessage());
             }
         }
         profiles = Map.copyOf(loaded);
+        infos = Map.copyOf(loadedInfo);
         LOGGER.info("Loaded {} fish profiles", loaded.size());
     }
 
@@ -62,5 +67,13 @@ public final class FishProfileLoader extends SimpleJsonResourceReloadListener {
         }
         ResourceLocation id = ForgeRegistries.ITEMS.getKey(loot.get(0).getItem());
         return profiles.getOrDefault(id, FishProfile.DEFAULT);
+    }
+
+    public static FishInfo infoFor(List<ItemStack> loot) {
+        if (loot.isEmpty()) {
+            return FishInfo.DEFAULT;
+        }
+        ResourceLocation id = ForgeRegistries.ITEMS.getKey(loot.get(0).getItem());
+        return infos.getOrDefault(id, FishInfo.DEFAULT);
     }
 }

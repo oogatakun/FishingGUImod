@@ -9,5 +9,13 @@
   "gui.fishinggui.line.slack": "糸の張りが弱い",
   "gui.fishinggui.line.safe": "安全な張り具合",
   "gui.fishinggui.line.danger": "糸が切れるかも!",
-  "gui.fishinggui.hint": "右クリック長押しで巻く"
+  "gui.fishinggui.hint": "右クリック長押しで巻く",
+  "gui.fishinggui.rarity.common": "コモン",
+  "gui.fishinggui.rarity.uncommon": "アンコモン",
+  "gui.fishinggui.rarity.rare": "レア",
+  "gui.fishinggui.rarity.epic": "エピック",
+  "gui.fishinggui.catch.keep": "キープする",
+  "gui.fishinggui.catch.release": "リリースする",
+  "gui.fishinggui.catch.weight": "重量",
+  "gui.fishinggui.catch.xp": "経験値"
 }
