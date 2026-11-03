@@ -1,0 +1,14 @@
+{
+  "item": "fishinggui:kuro_maguro",
+  "stamina": 200,
+  "dash_interval": 53,
+  "dash_power": 1.4,
+  "tension_gain": 1.275,
+  "rarity": "epic",
+  "weight_min": 100,
+  "weight_max": 400,
+  "xp": 100,
+  "level": 16,
+  "catch_weight": 100,
+  "bait_level": 16
+}

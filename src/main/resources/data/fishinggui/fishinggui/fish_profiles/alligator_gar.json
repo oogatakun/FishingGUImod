@@ -1,0 +1,14 @@
+{
+  "item": "fishinggui:alligator_gar",
+  "stamina": 208,
+  "dash_interval": 51,
+  "dash_power": 1.44,
+  "tension_gain": 1.3,
+  "rarity": "epic",
+  "weight_min": 20,
+  "weight_max": 120,
+  "xp": 106,
+  "level": 17,
+  "catch_weight": 100,
+  "bait_level": 17
+}

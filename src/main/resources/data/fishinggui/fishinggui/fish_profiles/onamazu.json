@@ -1,0 +1,14 @@
+{
+  "item": "fishinggui:onamazu",
+  "stamina": 184,
+  "dash_interval": 56,
+  "dash_power": 1.32,
+  "tension_gain": 1.225,
+  "rarity": "rare",
+  "weight_min": 10,
+  "weight_max": 80,
+  "xp": 88,
+  "level": 14,
+  "catch_weight": 100,
+  "bait_level": 14
+}

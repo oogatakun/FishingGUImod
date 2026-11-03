@@ -1,0 +1,14 @@
+{
+  "item": "fishinggui:wakasagi",
+  "stamina": 88,
+  "dash_interval": 74,
+  "dash_power": 0.84,
+  "tension_gain": 0.925,
+  "rarity": "common",
+  "weight_min": 0.02,
+  "weight_max": 0.1,
+  "xp": 16,
+  "level": 2,
+  "catch_weight": 100,
+  "bait_level": 2
+}

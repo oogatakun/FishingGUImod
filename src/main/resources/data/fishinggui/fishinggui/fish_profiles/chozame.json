@@ -1,0 +1,14 @@
+{
+  "item": "fishinggui:chozame",
+  "stamina": 168,
+  "dash_interval": 59,
+  "dash_power": 1.24,
+  "tension_gain": 1.175,
+  "rarity": "rare",
+  "weight_min": 10,
+  "weight_max": 100,
+  "xp": 76,
+  "level": 12,
+  "catch_weight": 100,
+  "bait_level": 12
+}

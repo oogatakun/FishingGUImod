@@ -1,0 +1,14 @@
+{
+  "item": "fishinggui:saba",
+  "stamina": 112,
+  "dash_interval": 69,
+  "dash_power": 0.96,
+  "tension_gain": 1.0,
+  "rarity": "common",
+  "weight_min": 0.3,
+  "weight_max": 1.5,
+  "xp": 34,
+  "level": 5,
+  "catch_weight": 100,
+  "bait_level": 5
+}

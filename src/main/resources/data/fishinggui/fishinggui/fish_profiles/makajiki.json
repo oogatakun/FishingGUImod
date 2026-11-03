@@ -1,0 +1,14 @@
+{
+  "item": "fishinggui:makajiki",
+  "stamina": 200,
+  "dash_interval": 53,
+  "dash_power": 1.4,
+  "tension_gain": 1.275,
+  "rarity": "epic",
+  "weight_min": 40,
+  "weight_max": 150,
+  "xp": 100,
+  "level": 16,
+  "catch_weight": 100,
+  "bait_level": 16
+}

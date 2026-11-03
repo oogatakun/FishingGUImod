@@ -1,0 +1,14 @@
+{
+  "item": "fishinggui:arowana",
+  "stamina": 176,
+  "dash_interval": 57,
+  "dash_power": 1.28,
+  "tension_gain": 1.2,
+  "rarity": "rare",
+  "weight_min": 3,
+  "weight_max": 20,
+  "xp": 82,
+  "level": 13,
+  "catch_weight": 100,
+  "bait_level": 13
+}

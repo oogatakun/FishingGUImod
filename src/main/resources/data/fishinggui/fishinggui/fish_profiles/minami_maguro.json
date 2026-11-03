@@ -1,0 +1,14 @@
+{
+  "item": "fishinggui:minami_maguro",
+  "stamina": 216,
+  "dash_interval": 50,
+  "dash_power": 1.48,
+  "tension_gain": 1.325,
+  "rarity": "epic",
+  "weight_min": 50,
+  "weight_max": 150,
+  "xp": 112,
+  "level": 18,
+  "catch_weight": 100,
+  "bait_level": 18
+}

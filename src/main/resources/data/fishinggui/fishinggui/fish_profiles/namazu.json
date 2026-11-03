@@ -1,0 +1,14 @@
+{
+  "item": "fishinggui:namazu",
+  "stamina": 136,
+  "dash_interval": 65,
+  "dash_power": 1.08,
+  "tension_gain": 1.075,
+  "rarity": "uncommon",
+  "weight_min": 1,
+  "weight_max": 8,
+  "xp": 52,
+  "level": 8,
+  "catch_weight": 100,
+  "bait_level": 8
+}

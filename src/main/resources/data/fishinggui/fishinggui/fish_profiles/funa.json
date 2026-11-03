@@ -1,0 +1,14 @@
+{
+  "item": "fishinggui:funa",
+  "stamina": 80,
+  "dash_interval": 75,
+  "dash_power": 0.8,
+  "tension_gain": 0.9,
+  "rarity": "common",
+  "weight_min": 0.1,
+  "weight_max": 0.8,
+  "xp": 10,
+  "level": 1,
+  "catch_weight": 100,
+  "bait_level": 1
+}

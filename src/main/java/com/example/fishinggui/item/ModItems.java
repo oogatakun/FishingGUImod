@@ -1,6 +1,8 @@
 package com.example.fishinggui.item;
 
 import com.example.fishinggui.FishingGuiMod;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -20,6 +22,16 @@ public final class ModItems {
 
     public static final RegistryObject<Item> WORM = ITEMS.register("worm", () -> new Item(new Item.Properties()));
 
+    public static final Map<String, RegistryObject<Item>> FISH = registerFish();
+
+    private static Map<String, RegistryObject<Item>> registerFish() {
+        Map<String, RegistryObject<Item>> map = new LinkedHashMap<>();
+        for (String id : FishIds.ALL) {
+            map.put(id, ITEMS.register(id, () -> new Item(new Item.Properties())));
+        }
+        return map;
+    }
+
     private ModItems() {
     }
 
@@ -28,6 +40,7 @@ public final class ModItems {
             .icon(() -> new ItemStack(Items.FISHING_ROD))
             .displayItems((params, output) -> {
                 output.accept(WORM.get());
+                FISH.values().forEach(r -> output.accept(r.get()));
             })
             .build());
 

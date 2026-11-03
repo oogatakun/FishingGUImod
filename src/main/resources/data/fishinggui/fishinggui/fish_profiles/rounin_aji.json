@@ -1,0 +1,14 @@
+{
+  "item": "fishinggui:rounin_aji",
+  "stamina": 192,
+  "dash_interval": 54,
+  "dash_power": 1.36,
+  "tension_gain": 1.25,
+  "rarity": "rare",
+  "weight_min": 10,
+  "weight_max": 80,
+  "xp": 94,
+  "level": 15,
+  "catch_weight": 100,
+  "bait_level": 15
+}

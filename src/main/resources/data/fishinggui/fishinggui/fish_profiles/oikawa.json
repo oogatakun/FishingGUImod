@@ -1,0 +1,14 @@
+{
+  "item": "fishinggui:oikawa",
+  "stamina": 104,
+  "dash_interval": 71,
+  "dash_power": 0.92,
+  "tension_gain": 0.975,
+  "rarity": "common",
+  "weight_min": 0.05,
+  "weight_max": 0.2,
+  "xp": 28,
+  "level": 4,
+  "catch_weight": 100,
+  "bait_level": 4
+}

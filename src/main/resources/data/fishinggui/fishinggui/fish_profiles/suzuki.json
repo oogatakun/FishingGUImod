@@ -1,0 +1,14 @@
+{
+  "item": "fishinggui:suzuki",
+  "stamina": 144,
+  "dash_interval": 63,
+  "dash_power": 1.12,
+  "tension_gain": 1.1,
+  "rarity": "uncommon",
+  "weight_min": 1,
+  "weight_max": 10,
+  "xp": 58,
+  "level": 9,
+  "catch_weight": 100,
+  "bait_level": 9
+}

@@ -1,0 +1,14 @@
+{
+  "item": "fishinggui:ryugu_no_tsukai",
+  "stamina": 224,
+  "dash_interval": 48,
+  "dash_power": 1.52,
+  "tension_gain": 1.35,
+  "rarity": "epic",
+  "weight_min": 50,
+  "weight_max": 250,
+  "xp": 118,
+  "level": 19,
+  "catch_weight": 100,
+  "bait_level": 19
+}

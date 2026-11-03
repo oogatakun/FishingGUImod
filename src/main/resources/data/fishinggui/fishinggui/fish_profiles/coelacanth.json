@@ -1,0 +1,14 @@
+{
+  "item": "fishinggui:coelacanth",
+  "stamina": 232,
+  "dash_interval": 47,
+  "dash_power": 1.56,
+  "tension_gain": 1.375,
+  "rarity": "epic",
+  "weight_min": 20,
+  "weight_max": 90,
+  "xp": 124,
+  "level": 20,
+  "catch_weight": 100,
+  "bait_level": 20
+}
