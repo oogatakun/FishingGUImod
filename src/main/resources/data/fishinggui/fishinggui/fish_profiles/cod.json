@@ -7,5 +7,8 @@
   "rarity": "common",
   "weight_min": 0.3,
   "weight_max": 2.0,
-  "xp": 15
+  "xp": 15,
+  "level": 1,
+  "catch_weight": 100,
+  "bait_level": 1
 }

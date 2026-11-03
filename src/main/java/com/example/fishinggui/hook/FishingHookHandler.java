@@ -2,15 +2,15 @@ package com.example.fishinggui.hook;
 
 import com.example.fishinggui.FishingGuiMod;
 import com.example.fishinggui.data.FishProfileLoader;
-import com.example.fishinggui.fight.BaitEffect;
-import com.example.fishinggui.fight.BaitType;
 import com.example.fishinggui.fight.FightManager;
 import com.example.fishinggui.fight.FishInfo;
 import com.example.fishinggui.fight.FishProfile;
-import com.example.fishinggui.item.ModItems;
+import com.example.fishinggui.level.FishingData;
 import java.util.List;
 import java.util.Random;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.projectile.FishingHook;
@@ -43,14 +43,21 @@ public final class FishingHookHandler {
             return;
         }
         consume(event);
-        BaitType bait = event.getHand() == InteractionHand.MAIN_HAND
-                ? ModItems.typeOf(player.getOffhandItem())
-                : BaitType.NONE;
-        List<ItemStack> loot = CatchResolver.roll(player, hook, event.getItemStack(), BaitEffect.luckBonus(bait));
+        int fishingLevel = FishingData.get(player).level();
+        ItemStack offhand = event.getHand() == InteractionHand.MAIN_HAND ? player.getOffhandItem() : ItemStack.EMPTY;
+        int baitLevel = FishProfileLoader.baitLevelOf(offhand);
+        Item bait = null;
+        if (baitLevel > 0) {
+            if (baitLevel <= fishingLevel) {
+                bait = offhand.getItem();
+            } else {
+                player.displayClientMessage(Component.translatable("gui.fishinggui.bait.locked", baitLevel), true);
+            }
+        }
+        List<ItemStack> loot = CatchResolver.roll(player, event.getItemStack(), bait == null ? 0 : baitLevel, bait);
         FishInfo info = FishProfileLoader.infoFor(loot);
         float weight = info.rollWeight(new Random());
-        FishProfile profile = BaitEffect.apply(bait,
-                info.scaleForWeight(FishProfileLoader.profileFor(loot), weight));
+        FishProfile profile = info.scaleForWeight(FishProfileLoader.profileFor(loot), weight);
         FightManager.start(player, hook, event.getHand(), profile, bait, loot, info, weight);
     }
 

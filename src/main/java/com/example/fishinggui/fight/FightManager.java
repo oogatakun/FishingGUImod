@@ -2,7 +2,6 @@ package com.example.fishinggui.fight;
 
 import com.example.fishinggui.FishingGuiMod;
 import com.example.fishinggui.hook.CatchResolver;
-import com.example.fishinggui.item.ModItems;
 import com.example.fishinggui.level.FishingService;
 import com.example.fishinggui.net.FightStartPacket;
 import com.example.fishinggui.net.FightStatePacket;
@@ -18,6 +17,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.FishingRodItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -29,7 +29,7 @@ import net.minecraftforge.network.PacketDistributor;
 /** Owns one {@link FightSession} per fighting player and advances them on the server thread. */
 @Mod.EventBusSubscriber(modid = FishingGuiMod.MOD_ID)
 public final class FightManager {
-    private record ActiveFight(FightSession session, FishingHook hook, InteractionHand hand, BaitType bait,
+    private record ActiveFight(FightSession session, FishingHook hook, InteractionHand hand, Item bait,
             List<ItemStack> loot, FishInfo info, float weight) {
     }
 
@@ -42,7 +42,7 @@ public final class FightManager {
         return FIGHTS.containsKey(player.getUUID());
     }
 
-    public static void start(ServerPlayer player, FishingHook hook, InteractionHand hand, FishProfile profile, BaitType bait,
+    public static void start(ServerPlayer player, FishingHook hook, InteractionHand hand, FishProfile profile, Item bait,
             List<ItemStack> loot, FishInfo info, float weight) {
         FIGHTS.put(player.getUUID(), new ActiveFight(new FightSession(profile, new Random()), hook, hand, bait, loot,
                 info, weight));
@@ -117,12 +117,12 @@ public final class FightManager {
         consumeBait(player, fight.bait());
     }
 
-    private static void consumeBait(ServerPlayer player, BaitType bait) {
-        if (bait == BaitType.NONE || player.getAbilities().instabuild) {
+    private static void consumeBait(ServerPlayer player, Item bait) {
+        if (bait == null || player.getAbilities().instabuild) {
             return;
         }
         ItemStack offhand = player.getOffhandItem();
-        if (ModItems.typeOf(offhand) == bait) {
+        if (offhand.is(bait)) {
             offhand.shrink(1);
         }
     }

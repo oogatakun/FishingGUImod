@@ -1,7 +1,12 @@
 package com.example.fishinggui.hook;
 
+import com.example.fishinggui.data.FishProfileLoader;
+import com.example.fishinggui.fight.CatchSelector;
 import com.example.fishinggui.fight.FishInfo;
 import java.util.List;
+import java.util.Random;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -15,12 +20,12 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.FishingRodItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.storage.loot.BuiltInLootTables;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.ItemFishedEvent;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -32,18 +37,35 @@ public final class CatchResolver {
 
     public static final int LINE_BREAK_ROD_DAMAGE = 5;
 
-    public static List<ItemStack> roll(ServerPlayer player, FishingHook hook, ItemStack rod, float bonusLuck) {
-        ServerLevel level = player.serverLevel();
-        float luck = EnchantmentHelper.getFishingLuckBonus(rod) + player.getLuck() + bonusLuck;
-        LootParams params = new LootParams.Builder(level)
-                .withParameter(LootContextParams.ORIGIN, hook.position())
-                .withParameter(LootContextParams.TOOL, rod)
-                .withParameter(LootContextParams.THIS_ENTITY, hook)
-                .withParameter(LootContextParams.KILLER_ENTITY, player)
-                .withLuck(luck)
-                .create(LootContextParamSets.FISHING);
-        LootTable table = level.getServer().getLootData().getLootTable(BuiltInLootTables.FISHING);
-        return table.getRandomItems(params);
+    public static List<ItemStack> roll(ServerPlayer player, ItemStack rod, int baitLevel, Item bait) {
+        float luck = EnchantmentHelper.getFishingLuckBonus(rod) + player.getLuck();
+        boolean hasBait = bait != null && baitLevel > 0;
+        String baitId = hasBait ? String.valueOf(ForgeRegistries.ITEMS.getKey(bait)) : null;
+        CatchSelector.Entry entry = CatchSelector.select(FishProfileLoader.pool(), hasBait ? baitLevel : 1, hasBait,
+                luck, baitId, new Random());
+        if (entry == null) {
+            return List.of();
+        }
+        Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(entry.id()));
+        if (item == null || item == Items.AIR) {
+            return List.of();
+        }
+        return List.of(finish(new ItemStack(item), player.getRandom()));
+    }
+
+    /** Restores what the vanilla fishing loot table added to a few items (enchants, wear, water bottles). */
+    private static ItemStack finish(ItemStack stack, RandomSource random) {
+        if (stack.is(Items.ENCHANTED_BOOK)) {
+            return EnchantmentHelper.enchantItem(random, new ItemStack(Items.BOOK), 30, true);
+        }
+        if (stack.is(Items.BOW) || stack.is(Items.FISHING_ROD)) {
+            stack.setDamageValue((int) (random.nextFloat() * 0.25f * stack.getMaxDamage()));
+            return EnchantmentHelper.enchantItem(random, stack, 30, true);
+        }
+        if (stack.is(Items.POTION)) {
+            return PotionUtils.setPotion(stack, Potions.WATER);
+        }
+        return stack;
     }
 
     public static void success(ServerPlayer player, FishingHook hook, InteractionHand hand, List<ItemStack> loot,

@@ -1,8 +1,7 @@
 {
   "itemGroup.fishinggui": "Fishing",
   "item.fishinggui.worm": "Worm",
-  "item.fishinggui.glow_bug": "Glow Bug",
-  "item.fishinggui.sturdy_paste": "Sturdy Paste",
+  "gui.fishinggui.bait.locked": "This bait needs Fishing Lv.%s",
   "gui.fishinggui.progress.start": "Casting",
   "gui.fishinggui.progress.battle": "Fighting!",
   "gui.fishinggui.progress.almost": "Landing soon",

@@ -7,5 +7,7 @@
   "rarity": "epic",
   "weight_min": 0.5,
   "weight_max": 1.0,
-  "xp": 80
+  "xp": 80,
+  "level": 11,
+  "catch_weight": 10
 }

@@ -1,8 +1,7 @@
 {
   "itemGroup.fishinggui": "釣り",
   "item.fishinggui.worm": "ミミズ",
-  "item.fishinggui.glow_bug": "光る虫",
-  "item.fishinggui.sturdy_paste": "丈夫な練りエサ",
+  "gui.fishinggui.bait.locked": "このエサは釣りLv.%s以上で使えます",
   "gui.fishinggui.progress.start": "釣り始め",
   "gui.fishinggui.progress.battle": "魚とバトル中!",
   "gui.fishinggui.progress.almost": "間もなく釣り上げます",
