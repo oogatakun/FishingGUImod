@@ -2,7 +2,7 @@
 
 - 関連: `docs/superpowers/backlog.md` の項目 7、8
 - 日付: 2026-11-04
-- 対象外: スキルの効果(別フェーズ)、リセットアイテム(Phase 4-C)。リセットで返すポイントを計算できるよう、スキルのレベルは保存する。
+- 対象外: 「食いつき短縮」以外のスキル(別フェーズ)、リセットアイテム(Phase 4-C)。リセットで返すポイントを計算できるよう、スキルのレベルは保存する。
 
 ## 1. ポイント変換
 
@@ -37,7 +37,8 @@
   - `cost` の長さ = `max_level`。`cost[i]` が、レベル i から i+1 に上げるコスト。すべて 1 以上の整数。
   - 不正なファイルは警告ログを出して読み飛ばす(`SkillParser` を純 Java にして単体テスト)。
 - 名前と説明は言語ファイル(`skill.fishinggui.<id>`、`skill.fishinggui.<id>.desc`)。
-- 今回は効果のないダミーを 3 つ同梱する: `dummy_a`、`dummy_b`、`dummy_c`(名前は「スキルA」など)。
+- 今回は 1 つだけ同梱する: `bite_speed`(食いつき短縮、最大レベル 5、コスト `[1,2,3,4,5]`)。ダミーは作らない。
+- **効果**: 魚が食いつくまでの待ち時間を、レベル L につき 10% 短縮する(Lv5 で 50% 短縮、およそ 2 倍速)。実装は、ウキが待機中のとき、毎 tick、確率 `0.1 × L` で待機カウンタ(`FishingHook.timeUntilLured`、Access Transformer で公開)を余分に 1 減らす。竿の入れ食いエンチャントとは重なって効く。効果は釣り人のスキルレベルから純 Java の `SkillEffects.biteSpeedBonus(level)`(= 0.1 × L)で求め、単体テストする。
 
 ## 4. スキル画面(J キー)
 
@@ -61,5 +62,5 @@
 
 ## 7. 変更するファイル(予定)
 
-- 新規: `skill/PointRules`、`skill/SkillState`、`skill/SkillDef`、`data/SkillParser`、`data/SkillLoader`、`skill/SkillService`、`net/SkillBuyPacket`、`net/SkillSyncPacket`、`client/ClientSkills`、`client/SkillScreen`、キー登録、ダミー JSON 3 つ。
+- 新規: `skill/PointRules`、`skill/SkillState`、`skill/SkillDef`、`data/SkillParser`、`data/SkillLoader`、`skill/SkillService`、`net/SkillBuyPacket`、`net/SkillSyncPacket`、`client/ClientSkills`、`client/SkillScreen`、キー登録、`bite_speed.json`、`skill/SkillEffects`、食いつき短縮の tick 処理、Access Transformer の追加。
 - 変更: `client/CatchScreen`(第3ボタン)、`net/CatchChoicePacket`(3 値)、`hook/PendingCatchManager`(変換)、`level/FishingData`(保存)、`command/FishingCommand`、`net/ModNetwork`、言語ファイル。
