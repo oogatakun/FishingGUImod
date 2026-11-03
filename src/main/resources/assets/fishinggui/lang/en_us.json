@@ -17,5 +17,12 @@
   "gui.fishinggui.catch.keep": "Keep",
   "gui.fishinggui.catch.release": "Release",
   "gui.fishinggui.catch.weight": "Weight",
-  "gui.fishinggui.catch.xp": "XP"
+  "gui.fishinggui.catch.xp": "XP",
+  "gui.fishinggui.level": "Fishing Lv.%s",
+  "gui.fishinggui.xp.gained": "Fishing XP +%s (Lv.%s %s/%s)",
+  "gui.fishinggui.xp.gained.max": "Fishing XP +%s (Lv.%s MAX)",
+  "gui.fishinggui.levelup.title": "LEVEL UP!",
+  "gui.fishinggui.levelup.level": "Fishing Lv.%s",
+  "commands.fishinggui.updated": "Updated fishing progress of %s player(s)",
+  "commands.fishinggui.query": "%s: Fishing Lv.%s (%s/%s XP)"
 }

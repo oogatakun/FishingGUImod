@@ -2,6 +2,7 @@ package com.example.fishinggui.hook;
 
 import com.example.fishinggui.FishingGuiMod;
 import com.example.fishinggui.fight.FishInfo;
+import com.example.fishinggui.level.FishingService;
 import com.example.fishinggui.net.CatchResultPacket;
 import com.example.fishinggui.net.ModNetwork;
 import java.util.HashMap;
@@ -20,7 +21,7 @@ import net.minecraftforge.network.PacketDistributor;
 /** Holds a successful catch until the player picks Keep or Release on the catch screen. */
 @Mod.EventBusSubscriber(modid = FishingGuiMod.MOD_ID)
 public final class PendingCatchManager {
-    private record Pending(Vec3 origin, List<ItemStack> loot) {
+    private record Pending(Vec3 origin, List<ItemStack> loot, int xp) {
     }
 
     private static final Map<UUID, Pending> PENDING = new HashMap<>();
@@ -29,7 +30,7 @@ public final class PendingCatchManager {
     }
 
     public static void open(ServerPlayer player, Vec3 origin, List<ItemStack> loot, FishInfo info, float weight) {
-        Pending old = PENDING.put(player.getUUID(), new Pending(origin, loot));
+        Pending old = PENDING.put(player.getUUID(), new Pending(origin, loot, info.xp()));
         if (old != null) {
             CatchResolver.deliver(player, old.origin(), old.loot(), true);
         }
@@ -42,6 +43,8 @@ public final class PendingCatchManager {
         Pending pending = PENDING.remove(player.getUUID());
         if (pending != null && keep) {
             CatchResolver.deliver(player, pending.origin(), pending.loot(), true);
+        } else if (pending != null) {
+            FishingService.award(player, pending.xp());
         }
     }
 

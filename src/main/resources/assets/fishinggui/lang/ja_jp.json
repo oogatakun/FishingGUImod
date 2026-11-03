@@ -17,5 +17,12 @@
   "gui.fishinggui.catch.keep": "キープする",
   "gui.fishinggui.catch.release": "リリースする",
   "gui.fishinggui.catch.weight": "重量",
-  "gui.fishinggui.catch.xp": "経験値"
+  "gui.fishinggui.catch.xp": "経験値",
+  "gui.fishinggui.level": "釣りLv.%s",
+  "gui.fishinggui.xp.gained": "釣り経験値 +%s（Lv.%s %s/%s）",
+  "gui.fishinggui.xp.gained.max": "釣り経験値 +%s（Lv.%s 最大）",
+  "gui.fishinggui.levelup.title": "レベルアップ！",
+  "gui.fishinggui.levelup.level": "釣りLv.%s",
+  "commands.fishinggui.updated": "%s人の釣り進行度を更新しました",
+  "commands.fishinggui.query": "%s: 釣りLv.%s（経験値 %s/%s）"
 }

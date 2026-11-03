@@ -33,5 +33,8 @@ public final class ModNetwork {
         CHANNEL.messageBuilder(CatchChoicePacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(CatchChoicePacket::encode).decoder(CatchChoicePacket::decode)
                 .consumerMainThread(CatchChoicePacket::handle).add();
+        CHANNEL.messageBuilder(FishingProgressPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(FishingProgressPacket::encode).decoder(FishingProgressPacket::decode)
+                .consumerMainThread(FishingProgressPacket::handle).add();
     }
 }

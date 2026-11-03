@@ -3,6 +3,7 @@ package com.example.fishinggui.fight;
 import com.example.fishinggui.FishingGuiMod;
 import com.example.fishinggui.hook.CatchResolver;
 import com.example.fishinggui.item.ModItems;
+import com.example.fishinggui.level.FishingService;
 import com.example.fishinggui.net.FightStartPacket;
 import com.example.fishinggui.net.FightStatePacket;
 import com.example.fishinggui.net.ModNetwork;
@@ -46,6 +47,7 @@ public final class FightManager {
         FIGHTS.put(player.getUUID(), new ActiveFight(new FightSession(profile, new Random()), hook, hand, bait, loot,
                 info, weight));
         ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new FightStartPacket(profile.stamina()));
+        FishingService.sync(player);
     }
 
     public static void handleInput(ServerPlayer player, byte action) {
