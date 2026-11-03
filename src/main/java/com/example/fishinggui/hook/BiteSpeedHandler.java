@@ -10,7 +10,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-/** Quick Bite skill: while the bobber waits, shave an extra tick off the wait with probability 0.1 per level. */
+/** Quick Bite skill: while the bobber waits, shave an extra tick off the wait so the wait shrinks by 15% per level. */
 @Mod.EventBusSubscriber(modid = FishingGuiMod.MOD_ID)
 public final class BiteSpeedHandler {
     private BiteSpeedHandler() {
@@ -25,14 +25,19 @@ public final class BiteSpeedHandler {
         if (hook == null || FightManager.isFighting(player) || hook.nibble != 0) {
             return;
         }
-        double bonus = SkillEffects.biteSpeedBonus(SkillData.get(player).levelOf(SkillEffects.BITE_SPEED));
-        if (bonus <= 0 || player.getRandom().nextDouble() >= bonus) {
+        double extra = SkillEffects.biteSpeedExtraTicks(SkillData.get(player).levelOf(SkillEffects.BITE_SPEED));
+        if (extra <= 0) {
             return;
         }
-        if (hook.timeUntilLured > 0) {
-            hook.timeUntilLured--;
-        } else if (hook.timeUntilHooked > 0) {
-            hook.timeUntilHooked--;
+        int steps = (int) extra + (player.getRandom().nextDouble() < extra - (int) extra ? 1 : 0);
+        for (int i = 0; i < steps; i++) {
+            if (hook.timeUntilLured > 1) {
+                hook.timeUntilLured--;
+            } else if (hook.timeUntilLured <= 0 && hook.timeUntilHooked > 1) {
+                hook.timeUntilHooked--;
+            } else {
+                break;
+            }
         }
     }
 }

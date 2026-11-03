@@ -10,9 +10,9 @@ import net.minecraft.network.chat.Component;
 
 /** Lists the skills with their level and a Learn button; the server decides every purchase. */
 public class SkillScreen extends Screen {
-    private static final int ROW_H = 36;
-    private static final int ROW_W = 280;
-    private static final int BTN_W = 90;
+    private static final int ROW_H = 46;
+    private static final int ROW_W = 340;
+    private static final int BTN_W = 80;
 
     public SkillScreen() {
         super(Component.translatable("gui.fishinggui.skills.title"));
@@ -39,14 +39,14 @@ public class SkillScreen extends Screen {
             int btnX = left + ROW_W - BTN_W;
             if (e.level() >= e.maxLevel()) {
                 Button max = Button.builder(Component.translatable("gui.fishinggui.skills.max"), b -> { })
-                        .bounds(btnX, y + 8, BTN_W, 20).build();
+                        .bounds(btnX, y + 12, BTN_W, 20).build();
                 max.active = false;
                 addRenderableWidget(max);
             } else {
                 int cost = e.cost().get(e.level());
                 Button buy = Button.builder(Component.translatable("gui.fishinggui.skills.buy", cost),
                         b -> ModNetwork.CHANNEL.sendToServer(new SkillBuyPacket(e.id())))
-                        .bounds(btnX, y + 8, BTN_W, 20).build();
+                        .bounds(btnX, y + 12, BTN_W, 20).build();
                 buy.active = ClientSkills.points() >= cost;
                 addRenderableWidget(buy);
             }
@@ -64,10 +64,17 @@ public class SkillScreen extends Screen {
                 cx, 32, 0xFFFF55);
         int y = top();
         for (SkillSyncPacket.Entry e : ClientSkills.skills()) {
-            g.drawString(this.font, Component.translatable("skill.fishinggui." + e.id()), left, y + 4, 0xFFFFFF);
-            g.drawString(this.font, "Lv." + e.level() + "/" + e.maxLevel(), left + 120, y + 4, 0x55FF55);
-            g.drawString(this.font, Component.translatable("skill.fishinggui." + e.id() + ".desc"), left, y + 18,
-                    0xAAAAAA);
+            Component name = Component.translatable("skill.fishinggui." + e.id());
+            g.drawString(this.font, name, left, y + 2, 0xFFFFFF);
+            g.drawString(this.font, "Lv." + e.level() + "/" + e.maxLevel(), left + this.font.width(name) + 8, y + 2,
+                    0x55FF55);
+            int textW = ROW_W - BTN_W - 10;
+            int ly = y + 14;
+            for (var line : this.font.split(Component.translatable("skill.fishinggui." + e.id() + ".desc"), textW)) {
+                g.drawString(this.font, line, left, ly, 0xAAAAAA);
+                ly += 10;
+            }
+            g.fill(left, y + ROW_H - 4, left + ROW_W, y + ROW_H - 3, 0x44FFFFFF);
             y += ROW_H;
         }
         super.render(g, mouseX, mouseY, partialTick);
