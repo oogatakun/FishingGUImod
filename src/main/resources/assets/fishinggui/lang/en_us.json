@@ -85,5 +85,11 @@
   "commands.fishinggui.query": "%s: Fishing Lv.%s (%s/%s XP) Points %s",
   "skill.fishinggui.bite_speed": "Quick Bite",
   "skill.fishinggui.bite_speed.desc": "Shortens the wait for a bite (10%% per level)",
-  "gui.fishinggui.points.gained": "Points +%s (total %s)"
+  "gui.fishinggui.points.gained": "Points +%s (total %s)",
+  "key.fishinggui.skills": "Open Skills",
+  "key.categories.fishinggui": "Fishing GUI",
+  "gui.fishinggui.skills.title": "Skills",
+  "gui.fishinggui.skills.points": "Points: %s",
+  "gui.fishinggui.skills.buy": "Learn (%s)",
+  "gui.fishinggui.skills.max": "MAX"
 }
