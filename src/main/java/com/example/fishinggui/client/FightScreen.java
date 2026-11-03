@@ -142,6 +142,8 @@ public class FightScreen extends Screen {
             g.drawCenteredString(this.font, Component.literal("!"), cx, bottom + 4, 0xFFFF55);
         }
         g.drawCenteredString(this.font, Component.translatable("gui.fishinggui.hint"), cx, bottom + 16, 0xAAAAAA);
+        g.drawString(this.font, Component.translatable("gui.fishinggui.level", ClientProgress.level()), 6, 6,
+                0xFFFFFF, true);
     }
 
     private static void drawTrack(GuiGraphics g, int x, int top, int bottom) {

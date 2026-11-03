@@ -86,7 +86,7 @@ public class CatchScreen extends Screen {
         g.drawCenteredString(this.font, badge, cx, by + 4, rarityColor);
 
         // item: up to 8x, shrunk to fit between the badge and the stats box
-        int boxY = this.height - 90;
+        int boxY = this.height - 110;
         int top = by + 16 + 6;
         int avail = boxY - 6 - top;
         float scale = Math.max(1f, Math.min(8f, avail / 16));
@@ -99,14 +99,29 @@ public class CatchScreen extends Screen {
 
         // stats box
         int boxW = 190;
+        int boxH = 56;
         int boxX = cx - boxW / 2;
-        g.fill(boxX, boxY, boxX + boxW, boxY + 36, 0x99000000);
-        g.renderOutline(boxX, boxY, boxW, 36, 0xFFFFFFFF);
+        g.fill(boxX, boxY, boxX + boxW, boxY + boxH, 0x99000000);
+        g.renderOutline(boxX, boxY, boxW, boxH, 0xFFFFFFFF);
         drawStat(g, cx - boxW / 4, boxY + 6, Component.translatable("gui.fishinggui.catch.weight"),
                 String.format(Locale.ROOT, "%.1f kg", weight));
         drawStat(g, cx + boxW / 4, boxY + 6, Component.translatable("gui.fishinggui.catch.xp"), "+" + xp);
+        drawLevelBar(g, boxX + 8, boxY + 38, boxW - 16);
 
         super.render(g, mouseX, mouseY, partialTick);
+    }
+
+    private void drawLevelBar(GuiGraphics g, int x, int y, int w) {
+        int need = ClientProgress.xpToNext();
+        float frac = need <= 0 ? 1f : Math.min(1f, ClientProgress.xp() / (float) need);
+        String text = need <= 0
+                ? Component.translatable("gui.fishinggui.level", ClientProgress.level()).getString() + " MAX"
+                : Component.translatable("gui.fishinggui.level", ClientProgress.level()).getString()
+                        + "  " + ClientProgress.xp() + "/" + need;
+        g.drawString(this.font, text, x, y - 10, 0xFFFFFF, false);
+        g.fill(x, y, x + w, y + 6, 0xFF222222);
+        g.fill(x, y, x + (int) (w * frac), y + 6, 0xFF55FF55);
+        g.renderOutline(x - 1, y - 1, w + 2, 8, 0xFFFFFFFF);
     }
 
     private void drawStat(GuiGraphics g, int x, int y, Component label, String value) {
