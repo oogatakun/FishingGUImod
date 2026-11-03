@@ -58,6 +58,8 @@
   "item.fishinggui.coelacanth": "Coelacanth",
   "item.fishinggui.manbo": "Ocean Sunfish",
   "gui.fishinggui.bait.locked": "This bait needs Fishing Lv.%s",
+  "tooltip.fishinggui.fish_level": "Fish Level: Lv.%s",
+  "tooltip.fishinggui.bait_level": "As bait: needs Fishing Lv.%s",
   "gui.fishinggui.progress.start": "Casting",
   "gui.fishinggui.progress.battle": "Fighting!",
   "gui.fishinggui.progress.almost": "Landing soon",

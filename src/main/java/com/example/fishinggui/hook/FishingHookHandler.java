@@ -51,6 +51,8 @@ public final class FishingHookHandler {
             if (baitLevel <= fishingLevel) {
                 bait = offhand.getItem();
             } else {
+                // Chat as well as the action bar: the fight screen can cover the action bar.
+                player.displayClientMessage(Component.translatable("gui.fishinggui.bait.locked", baitLevel), false);
                 player.displayClientMessage(Component.translatable("gui.fishinggui.bait.locked", baitLevel), true);
             }
         }

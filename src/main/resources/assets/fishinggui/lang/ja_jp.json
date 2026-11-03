@@ -58,6 +58,8 @@
   "item.fishinggui.coelacanth": "シーラカンス",
   "item.fishinggui.manbo": "マンボウ",
   "gui.fishinggui.bait.locked": "このエサは釣りLv.%s以上で使えます",
+  "tooltip.fishinggui.fish_level": "魚レベル: Lv.%s",
+  "tooltip.fishinggui.bait_level": "エサとして使うには釣りLv.%s以上",
   "gui.fishinggui.progress.start": "釣り始め",
   "gui.fishinggui.progress.battle": "魚とバトル中!",
   "gui.fishinggui.progress.almost": "間もなく釣り上げます",
