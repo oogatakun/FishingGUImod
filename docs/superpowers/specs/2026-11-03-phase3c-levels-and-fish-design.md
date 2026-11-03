@@ -51,7 +51,10 @@
   - `rarity`: Lv1〜5 = common、6〜10 = uncommon、11〜15 = rare、16〜20 = epic。
   - `xp = 10 + 6 × (L - 1)`、`weight_min` / `weight_max` は `fish-list.md`。
   - `level = L`、`bait_level = L`、`catch_weight` = 10。
-- アイテムモデル: `item/generated` の親で、テクスチャは `fishinggui:item/<id>`。仮画像として、16×16 の同じ PNG を `textures/item/<id>.png` に全 56 種分置く。あなたの画像を同じファイル名で置くだけで差し替わる。
+- 画像: ユーザーが用意済み。`F:\mc-model-kit-v3.0\mc-model-kit-v3.0\claude-code\mc-model-kit\fish\<id>\out\java-vanilla-resourcepack\assets\<id>\textures\item\<id>.png`(32×32、透過あり)の 56 枚。フォルダ名(= ID)は `fish-list.md` の 56 種とちょうど一致する(ハゼ = `haze`、ベルーガ = `beluga`、ジンベエザメ = `jinbeizame` など)。
+  - 各 PNG を `src/main/resources/assets/fishinggui/textures/item/<id>.png` にコピーする(名前空間は `fishinggui`)。
+  - アイテムモデルは `assets/fishinggui/models/item/<id>.json` を新規に作る: `{"parent":"minecraft:item/generated","textures":{"layer0":"fishinggui:item/<id>"}}`。元フォルダ内の `models/` と `items/` は名前空間が違い(`items/` は 1.21.4 以降の形式)、使わない。
+  - 画像を差し替えるときは、同じファイル名で上書きするだけでよい。
 - 言語ファイル: 魚の名前(日本語と英語)。アクションバーのメッセージ。
 - クリエイティブタブに、ミミズと全オリジナル魚を並べる。
 - 魚は食べられない(焼いて食べる機能はバックログ)。
