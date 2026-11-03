@@ -6,6 +6,9 @@ import com.example.fishinggui.fight.FightManager;
 import com.example.fishinggui.fight.FishInfo;
 import com.example.fishinggui.fight.FishProfile;
 import com.example.fishinggui.level.FishingData;
+import com.example.fishinggui.skill.SkillData;
+import com.example.fishinggui.skill.SkillEffects;
+import com.example.fishinggui.skill.SkillState;
 import java.util.List;
 import java.util.Random;
 import net.minecraft.network.chat.Component;
@@ -59,7 +62,11 @@ public final class FishingHookHandler {
         List<ItemStack> loot = CatchResolver.roll(player, event.getItemStack(), bait == null ? 0 : baitLevel, bait);
         FishInfo info = FishProfileLoader.infoFor(loot);
         float weight = info.rollWeight(new Random());
-        FishProfile profile = info.scaleForWeight(FishProfileLoader.profileFor(loot), weight);
+        SkillState skills = SkillData.get(player);
+        FishProfile profile = SkillEffects.applyToProfile(
+                info.scaleForWeight(FishProfileLoader.profileFor(loot), weight), fishingLevel,
+                skills.levelOf(SkillEffects.DASH_EASE), skills.levelOf(SkillEffects.DASH_DELAY),
+                skills.levelOf(SkillEffects.REEL_SPEED));
         FightManager.start(player, hook, event.getHand(), profile, bait, loot, info, weight);
     }
 
