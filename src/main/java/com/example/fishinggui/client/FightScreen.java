@@ -142,8 +142,15 @@ public class FightScreen extends Screen {
             g.drawCenteredString(this.font, Component.literal("!"), cx, bottom + 4, 0xFFFF55);
         }
         g.drawCenteredString(this.font, Component.translatable("gui.fishinggui.hint"), cx, bottom + 16, 0xAAAAAA);
-        g.drawString(this.font, Component.translatable("gui.fishinggui.level", ClientProgress.level()), 6, 6,
-                0xFFFFFF, true);
+        Component lv = Component.translatable("gui.fishinggui.level", ClientProgress.level());
+        int lvW = (int) (this.font.width(lv) * 2f);
+        g.fill(4, 4, 4 + lvW + 10, 4 + 26, 0xAA000000);
+        g.renderOutline(4, 4, lvW + 10, 26, 0xFFFFFF55);
+        g.pose().pushPose();
+        g.pose().translate(9, 10, 0);
+        g.pose().scale(2f, 2f, 1f);
+        g.drawString(this.font, lv, 0, 0, 0xFFFF55, true);
+        g.pose().popPose();
     }
 
     private static void drawTrack(GuiGraphics g, int x, int top, int bottom) {

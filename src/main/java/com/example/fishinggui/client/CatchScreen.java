@@ -3,7 +3,9 @@ package com.example.fishinggui.client;
 import com.example.fishinggui.fight.Rarity;
 import com.example.fishinggui.net.CatchChoicePacket;
 import com.example.fishinggui.net.ModNetwork;
+import com.example.fishinggui.item.FishLevels;
 import java.util.Locale;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -84,6 +86,14 @@ public class CatchScreen extends Screen {
         g.fill(bx, by, bx + bw, by + 16, 0x99000000);
         g.renderOutline(bx, by, bw, 16, rarityColor);
         g.drawCenteredString(this.font, badge, cx, by + 4, rarityColor);
+        Integer fishLevel = FishLevels.BY_ID.get(String.valueOf(ForgeRegistries.ITEMS.getKey(stack.getItem())));
+        if (fishLevel != null) {
+            Component lv = Component.translatable("tooltip.fishinggui.fish_level", fishLevel);
+            int lw = this.font.width(lv) + 24;
+            g.fill(cx + bw / 2 + 6, by, cx + bw / 2 + 6 + lw, by + 16, 0x99000000);
+            g.renderOutline(cx + bw / 2 + 6, by, lw, 16, 0xFF55FFFF);
+            g.drawCenteredString(this.font, lv, cx + bw / 2 + 6 + lw / 2, by + 4, 0xFF55FFFF);
+        }
 
         // item: up to 8x, shrunk to fit between the badge and the stats box
         int boxY = this.height - 110;
