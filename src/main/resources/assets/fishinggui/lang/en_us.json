@@ -73,6 +73,7 @@
   "gui.fishinggui.rarity.epic": "Epic",
   "gui.fishinggui.catch.keep": "Keep",
   "gui.fishinggui.catch.release": "Release",
+  "gui.fishinggui.catch.convert": "Convert (+%s pt)",
   "gui.fishinggui.catch.weight": "Weight",
   "gui.fishinggui.catch.xp": "XP",
   "gui.fishinggui.level": "Fishing Lv.%s",

@@ -73,6 +73,7 @@
   "gui.fishinggui.rarity.epic": "エピック",
   "gui.fishinggui.catch.keep": "キープする",
   "gui.fishinggui.catch.release": "リリースする",
+  "gui.fishinggui.catch.convert": "ポイントに変換 (+%s)",
   "gui.fishinggui.catch.weight": "重量",
   "gui.fishinggui.catch.xp": "経験値",
   "gui.fishinggui.level": "釣りLv.%s",

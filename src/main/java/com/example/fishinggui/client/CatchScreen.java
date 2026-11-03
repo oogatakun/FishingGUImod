@@ -3,6 +3,7 @@ package com.example.fishinggui.client;
 import com.example.fishinggui.fight.Rarity;
 import com.example.fishinggui.net.CatchChoicePacket;
 import com.example.fishinggui.net.ModNetwork;
+import com.example.fishinggui.skill.PointRules;
 import com.example.fishinggui.item.FishLevels;
 import java.util.Locale;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -42,18 +43,21 @@ public class CatchScreen extends Screen {
     protected void init() {
         int cx = this.width / 2;
         int y = this.height - 44;
-        addRenderableWidget(Button.builder(Component.translatable("gui.fishinggui.catch.keep"), b -> choose(true))
-                .bounds(cx - BTN_W - 6, y, BTN_W, BTN_H).build());
-        addRenderableWidget(Button.builder(Component.translatable("gui.fishinggui.catch.release"), b -> choose(false))
-                .bounds(cx + 6, y, BTN_W, BTN_H).build());
+        addRenderableWidget(Button.builder(Component.translatable("gui.fishinggui.catch.keep"), b -> choose(CatchChoicePacket.KEEP))
+                .bounds(cx - 155, y, BTN_W, BTN_H).build());
+        addRenderableWidget(Button.builder(Component.translatable("gui.fishinggui.catch.release"), b -> choose(CatchChoicePacket.RELEASE))
+                .bounds(cx - 50, y, BTN_W, BTN_H).build());
+        addRenderableWidget(Button.builder(
+                Component.translatable("gui.fishinggui.catch.convert", PointRules.pointsFor(rarity)),
+                b -> choose(CatchChoicePacket.CONVERT)).bounds(cx + 55, y, BTN_W, BTN_H).build());
     }
 
-    private void choose(boolean keep) {
+    private void choose(byte choice) {
         if (chosen) {
             return;
         }
         chosen = true;
-        ModNetwork.CHANNEL.sendToServer(new CatchChoicePacket(keep));
+        ModNetwork.CHANNEL.sendToServer(new CatchChoicePacket(choice));
         onClose();
     }
 
@@ -62,7 +66,7 @@ public class CatchScreen extends Screen {
         if (!chosen) {
             chosen = true;
             if (Minecraft.getInstance().getConnection() != null) {
-                ModNetwork.CHANNEL.sendToServer(new CatchChoicePacket(true));
+                ModNetwork.CHANNEL.sendToServer(new CatchChoicePacket(CatchChoicePacket.KEEP));
             }
         }
     }
