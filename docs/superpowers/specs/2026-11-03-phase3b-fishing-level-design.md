@@ -10,7 +10,7 @@
 - 経験値が入るのは**リリースしたときだけ**。値は魚の `xp`(難易度 JSON、3-A で追加済み)。キープでは入らない。ESC やログアウトによるキープ扱いでも入らない。
 - レベルは 1 から始まり、上限は **Lv.20**。上限に達したら経験値は 0 に固定し、それ以上増えない。
 - Lv.n → n+1 の必要経験値は既定で `50 × n`。
-- データパック `data/<ns>/fishinggui/fishing_levels.json` で必要経験値を上書きできる。形式: `{"xp_to_next": [50, 100, ...]}`(要素 i が Lv.(i+1) → Lv.(i+2) の必要量)。要素数は 19 でなければならず、各要素は 1 以上の整数。不正なファイルは警告を出して無視し、既定値を使う。
+- データパック `data/<ns>/fishinggui/fishing_levels/*.json`(`fish_profiles` と同じディレクトリ方式)で必要経験値を上書きできる。同梱は `data/fishinggui/fishinggui/fishing_levels/default.json`。形式: `{"xp_to_next": [50, 100, ...]}`(要素 i が Lv.(i+1) → Lv.(i+2) の必要量)。要素数は 19 でなければならず、各要素は 1 以上の整数。不正なファイルは警告を出して無視する。有効なファイルが複数あればファイル id の昇順で最後のものが勝つ。有効なファイルが 1 つもなければ既定値(`50 × n`)を使う。
 - 純 Java の `FishingLevel`(`fight` パッケージ、または新設 `level` パッケージ)に計算を置く:
   - `record FishingProgress(int level, int xp)`
   - `FishingProgress addXp(FishingProgress, int amount, LevelCurve)`: 繰り上がり(複数レベル分も)、上限で固定。戻り値でレベルが上がったかが分かる。
@@ -19,12 +19,12 @@
 
 ## 2. 保存
 
-- プレイヤーの永続データ(`getPersistentData()` の `fishinggui` 以下に `level` / `xp`)に保存する。ログアウトしても残る。死亡時のクローンで引き継ぐ(`PlayerEvent.Clone` で `getPersistentData` の該当タグをコピー)。
+- プレイヤーの永続データ(`getPersistentData()` → `Player.PERSISTED_NBT_TAG` → `fishinggui` 以下に `level` / `xp`)に保存する。ログアウトしても残り、`PERSISTED_NBT_TAG` 以下は Forge が死亡時のクローンで自動的に引き継ぐ。リスポーン後はクライアントへ再同期する。
 - 未保存のプレイヤーは Lv.1 / xp 0。
 
 ## 3. 表示と通知
 
-- **釣果画面**: レア度バッジなどの下に「Lv.N」と経験値バーを出す。リリース時はサーバーが返したレベル・経験値を反映し、バーが増える(キープは現在値のまま)。
+- **釣果画面**: 重量・経験値の枠の中に、現在の「Lv.N 経験値/必要量」と経験値バーを出す(値はクライアントが保持している最新値。リリース後は画面が閉じるので、増えた量はチャット通知で見せる)。
 - **ファイト画面**: 隅に「釣りLv.N」を小さく出す。
 - **経験値チャット通知**: 経験値が入ったとき(リリース時、コマンドの `xp add` 時)に「釣り経験値 +12(Lv.3 80/150)」のように、増えた量と現在値を表示する。上限レベルでは「(最大レベル)」と表示する。
 - **レベルアップ演出**(チャットではなく画面): 画面中央に「LEVEL UP!」と新しいレベルを大きく拡大表示し、光の放射、キラキラ、ファンファーレの音を重ねる。約 3 秒で消える。ゲームは止めない。複数レベル同時に上がったら最終レベルを出す。`/fishinggui level` コマンドで上がった場合も出す。
@@ -48,8 +48,8 @@
 ## 6. 通信
 
 - S→C `FishingProgressPacket(int level, int xp, int xpToNext, int gained, boolean leveledUp)`: ログイン時、ファイト開始時、リリース時、コマンド変更時に送る。クライアントは値を保持し(`ClientFightHooks`)、`gained > 0` ならチャット通知を出し、`leveledUp` なら演出を始める。
-- `CatchResultPacket` に現在の `level` / `xp` / `xpToNext` を追加する(リリース前の値)。リリース後の値は上記パケットで更新する。
-- `PendingCatchManager.choose(player, keep=false)` が経験値を加算して保存し、パケットを送る。
+- `CatchResultPacket` は変更しない。
+- `PendingCatchManager.choose(player, keep=false)` が経験値を加算して保存し、パケットを送る。ログイン、リスポーン、ファイト開始時は `gained = 0` で同期する。
 
 ## 7. テスト
 
@@ -60,4 +60,4 @@
 ## 8. 変更するファイル(予定)
 
 - 新規: `level/FishingProgress.java`、`level/LevelCurve.java`、`level/FishingData.java`(保存の読み書き)、`data/LevelCurveLoader.java`、`command/FishingCommand.java`、`net/FishingProgressPacket.java`、`client/LevelUpOverlay.java`、`hook/BiteSoundHandler.java`、各テスト、同梱の `fishing_levels.json`
-- 変更: `PendingCatchManager`、`CatchResultPacket`、`CatchScreen`、`FightScreen`、`ClientFightHooks`、`ModNetwork`、lang ファイル
+- 変更: `PendingCatchManager`、`FightManager`(ファイト開始時の同期)、`CatchScreen`、`FightScreen`、`ClientFightHooks`、`ModNetwork`、lang ファイル
