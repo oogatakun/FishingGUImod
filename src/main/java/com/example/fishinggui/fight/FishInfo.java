@@ -3,8 +3,14 @@ package com.example.fishinggui.fight;
 import java.util.Random;
 
 /** Per-fish catch data: rarity, weight range (kg) and fishing XP. Pure Java. */
-public record FishInfo(Rarity rarity, float weightMin, float weightMax, int xp) {
+public record FishInfo(Rarity rarity, float weightMin, float weightMax, int xp, int catchLevel, int catchWeight,
+        int baitLevel) {
     public static final FishInfo DEFAULT = new FishInfo(Rarity.COMMON, 0.1f, 1.0f, 10);
+
+    /** Fish data without catch-pool or bait data (not catchable, not a bait). */
+    public FishInfo(Rarity rarity, float weightMin, float weightMax, int xp) {
+        this(rarity, weightMin, weightMax, xp, 0, 10, 0);
+    }
 
     static final float LIGHTEST_TENSION_FACTOR = 0.8f;
     static final float HEAVIEST_TENSION_FACTOR = 1.3f;

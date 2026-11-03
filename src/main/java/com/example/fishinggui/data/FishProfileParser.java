@@ -3,6 +3,7 @@ package com.example.fishinggui.data;
 import com.example.fishinggui.fight.FishInfo;
 import com.example.fishinggui.fight.FishProfile;
 import com.example.fishinggui.fight.Rarity;
+import com.example.fishinggui.level.LevelCurve;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -51,8 +52,23 @@ public final class FishProfileParser {
         if (xp < 0f || xp != Math.floor(xp)) {
             throw new IllegalArgumentException("xp must be an integer >= 0");
         }
+        int catchLevel = integer(json, "level", 0, 1, LevelCurve.MAX_LEVEL);
+        int catchWeight = integer(json, "catch_weight", 10, 1, Integer.MAX_VALUE);
+        int baitLevel = integer(json, "bait_level", 0, 1, LevelCurve.MAX_LEVEL);
         return new Entry(item, new FishProfile(stamina, (int) dashInterval, dashPower, tensionGain),
-                new FishInfo(rarity, weightMin, weightMax, (int) xp));
+                new FishInfo(rarity, weightMin, weightMax, (int) xp, catchLevel, catchWeight, baitLevel));
+    }
+
+    /** Optional integer in [min, max]; {@code fallback} when absent (the fallback itself is not range-checked). */
+    private static int integer(JsonObject json, String key, int fallback, int min, int max) {
+        if (!json.has(key)) {
+            return fallback;
+        }
+        float v = number(json, key, fallback);
+        if (v != Math.floor(v) || v < min || v > max) {
+            throw new IllegalArgumentException("'" + key + "' must be an integer in " + min + ".." + max);
+        }
+        return (int) v;
     }
 
     private static String string(JsonObject json, String key) {
