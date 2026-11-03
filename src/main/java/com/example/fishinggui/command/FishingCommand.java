@@ -6,6 +6,9 @@ import com.example.fishinggui.level.FishingData;
 import com.example.fishinggui.level.FishingProgress;
 import com.example.fishinggui.level.FishingService;
 import com.example.fishinggui.level.LevelCurve;
+import com.example.fishinggui.skill.SkillData;
+import com.example.fishinggui.skill.SkillService;
+import com.example.fishinggui.skill.SkillState;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -44,6 +47,9 @@ public final class FishingCommand {
                                 (p, v) -> p.withXp(v, LevelCurveLoader.curve())))
                         .then(change("add", true, IntegerArgumentType.integer(0),
                                 (p, v) -> p.addXp(v, LevelCurveLoader.curve()))))
+                .then(Commands.literal("points")
+                        .then(pointsChange("set", IntegerArgumentType.integer(0), (s, v) -> s.withPoints(v)))
+                        .then(pointsChange("add", IntegerArgumentType.integer(), (s, v) -> s.addPoints(v))))
                 .then(Commands.literal("query").then(Commands.argument("target", EntityArgument.player())
                         .executes(FishingCommand::query))));
     }
@@ -65,12 +71,28 @@ public final class FishingCommand {
                 })));
     }
 
+    private static LiteralArgumentBuilder<CommandSourceStack> pointsChange(String name, ArgumentType<Integer> type,
+            BiFunction<SkillState, Integer, SkillState> op) {
+        return Commands.literal(name).then(Commands.argument("targets", EntityArgument.players())
+                .then(Commands.argument("value", type).executes(ctx -> {
+                    Collection<ServerPlayer> targets = EntityArgument.getPlayers(ctx, "targets");
+                    int value = IntegerArgumentType.getInteger(ctx, "value");
+                    for (ServerPlayer p : targets) {
+                        SkillService.setPoints(p, op.apply(SkillData.get(p), value).points());
+                    }
+                    ctx.getSource().sendSuccess(
+                            () -> Component.translatable("commands.fishinggui.updated", targets.size()), true);
+                    return targets.size();
+                })));
+    }
+
     private static int query(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         ServerPlayer p = EntityArgument.getPlayer(ctx, "target");
         FishingProgress progress = FishingData.get(p);
+        int points = SkillData.get(p).points();
         int need = LevelCurveLoader.curve().xpToNext(progress.level());
         ctx.getSource().sendSuccess(() -> Component.translatable("commands.fishinggui.query",
-                p.getDisplayName(), progress.level(), progress.xp(), need), false);
+                p.getDisplayName(), progress.level(), progress.xp(), need, points), false);
         return progress.level();
     }
 }

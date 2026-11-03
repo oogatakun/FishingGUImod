@@ -36,5 +36,11 @@ public final class ModNetwork {
         CHANNEL.messageBuilder(FishingProgressPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(FishingProgressPacket::encode).decoder(FishingProgressPacket::decode)
                 .consumerMainThread(FishingProgressPacket::handle).add();
+        CHANNEL.messageBuilder(SkillSyncPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(SkillSyncPacket::encode).decoder(SkillSyncPacket::decode)
+                .consumerMainThread(SkillSyncPacket::handle).add();
+        CHANNEL.messageBuilder(SkillBuyPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(SkillBuyPacket::encode).decoder(SkillBuyPacket::decode)
+                .consumerMainThread(SkillBuyPacket::handle).add();
     }
 }

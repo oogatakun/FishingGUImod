@@ -81,5 +81,8 @@
   "gui.fishinggui.levelup.title": "レベルアップ！",
   "gui.fishinggui.levelup.level": "釣りLv.%s",
   "commands.fishinggui.updated": "%s人の釣り進行度を更新しました",
-  "commands.fishinggui.query": "%s: 釣りLv.%s（経験値 %s/%s）"
+  "commands.fishinggui.query": "%s: 釣りLv.%s（経験値 %s/%s）ポイント %s",
+  "skill.fishinggui.bite_speed": "食いつき短縮",
+  "skill.fishinggui.bite_speed.desc": "魚が食いつくまでの時間を短縮する（1レベルにつき10%）",
+  "gui.fishinggui.points.gained": "ポイント +%s（合計 %s）"
 }
