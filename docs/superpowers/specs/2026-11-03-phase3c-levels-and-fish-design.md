@@ -36,7 +36,7 @@
 | `catch_weight` | 整数 | 10 | >= 1 |
 | `bait_level` | 整数 | なし(省略すると餌にならない) | 1〜20 |
 
-- `FishInfo` に `Integer`/`OptionalInt` ではなく、`catchLevel`(0 = 釣れない)、`catchWeight`、`baitLevel`(0 = 餌にならない)を足す。`FishProfileParser` に検証とテストを足す。
+- `FishInfo` に `catchLevel`(0 = 釣れない)、`catchWeight`、`baitLevel`(0 = 餌にならない)の 3 つの int を足す。`FishProfileParser` に検証とテストを足す。
 - `FishProfileLoader` に、抽選プールを返す `pool()` と、アイテムから `baitLevel` を引く `baitLevelOf(ItemStack)` を足す。
 - 既存の同梱 JSON(バニラの魚、ゴミ、宝物)に `level` と `catch_weight` を足す。バニラの魚 4 種は `bait_level` も足す。ミミズ用の JSON(`worm.json`、`bait_level` のみ。`item` 以外の既存必須項目は省略可)を足す。
 
