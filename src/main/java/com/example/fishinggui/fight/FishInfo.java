@@ -21,11 +21,20 @@ public record FishInfo(Rarity rarity, float weightMin, float weightMax, int xp, 
         return Math.max(weightMin, Math.min(weightMax, Math.round(w * 10f) / 10f));
     }
 
-    /** Heavier fish raise tension faster; stamina and dashes are untouched. */
-    public FishProfile scaleForWeight(FishProfile base, float weight) {
+    private float weightFactor(float weight) {
         float t = weightMax > weightMin ? (weight - weightMin) / (weightMax - weightMin) : 0.5f;
         t = Math.max(0f, Math.min(1f, t));
-        float factor = LIGHTEST_TENSION_FACTOR + (HEAVIEST_TENSION_FACTOR - LIGHTEST_TENSION_FACTOR) * t;
+        return LIGHTEST_TENSION_FACTOR + (HEAVIEST_TENSION_FACTOR - LIGHTEST_TENSION_FACTOR) * t;
+    }
+
+    /** Fishing XP for a catch of this weight: the base XP x0.8 (lightest) to x1.3 (heaviest), at least 1. */
+    public int xpForWeight(float weight) {
+        return Math.max(1, Math.round(xp * weightFactor(weight)));
+    }
+
+    /** Heavier fish raise tension faster; stamina and dashes are untouched. */
+    public FishProfile scaleForWeight(FishProfile base, float weight) {
+        float factor = weightFactor(weight);
         return new FishProfile(base.stamina(), base.dashInterval(), base.dashPower(), base.tensionGain() * factor);
     }
 }

@@ -40,13 +40,13 @@ public final class PendingCatchManager {
     public static void open(ServerPlayer player, Vec3 origin, List<ItemStack> loot, FishInfo info, float weight) {
         ItemStack bonus = ResetRules.rollsDrop(player.getRandom().nextDouble())
                 ? new ItemStack(ModItems.RESET_DROP.get()) : ItemStack.EMPTY;
-        Pending old = PENDING.put(player.getUUID(), new Pending(origin, loot, info.xp(), info.rarity(), bonus));
+        Pending old = PENDING.put(player.getUUID(), new Pending(origin, loot, info.xpForWeight(weight), info.rarity(), bonus));
         if (old != null) {
             CatchResolver.deliver(player, old.origin(), old.loot(), true);
             deliverBonus(player, old);
         }
         ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
-                new CatchResultPacket(loot.get(0), (byte) info.rarity().ordinal(), weight, info.xp()));
+                new CatchResultPacket(loot.get(0), (byte) info.rarity().ordinal(), weight, info.xpForWeight(weight)));
     }
 
     /** KEEP delivers the items (plus the vanilla XP orb); RELEASE gives fishing XP; CONVERT gives points only. */

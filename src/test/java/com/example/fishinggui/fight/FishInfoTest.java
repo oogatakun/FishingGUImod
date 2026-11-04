@@ -41,6 +41,19 @@ class FishInfoTest {
     }
 
     @Test
+    void xpForWeightMapsRangeToPointEightThroughOnePointThree() {
+        FishInfo info = new FishInfo(Rarity.COMMON, 1.0f, 3.0f, 100);
+        assertEquals(80, info.xpForWeight(1.0f));
+        assertEquals(130, info.xpForWeight(3.0f));
+        assertEquals(105, new FishInfo(Rarity.COMMON, 0.5f, 0.5f, 100).xpForWeight(0.5f));
+    }
+
+    @Test
+    void xpForWeightNeverDropsBelowOne() {
+        assertEquals(1, new FishInfo(Rarity.COMMON, 1.0f, 3.0f, 0).xpForWeight(1.0f));
+    }
+
+    @Test
     void scaleForWeightOnlyTouchesTensionGain() {
         FishProfile p = INFO.scaleForWeight(BASE, 3.0f);
         assertEquals(BASE.stamina(), p.stamina());
