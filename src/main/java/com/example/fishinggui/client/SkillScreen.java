@@ -1,6 +1,13 @@
 package com.example.fishinggui.client;
 
+import com.example.fishinggui.item.ModItems;
 import com.example.fishinggui.net.ModNetwork;
+import com.example.fishinggui.net.SkillResetPacket;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.screens.ConfirmScreen;
+import net.minecraft.world.item.ItemStack;
 import com.example.fishinggui.net.SkillBuyPacket;
 import com.example.fishinggui.net.SkillSyncPacket;
 import net.minecraft.client.gui.GuiGraphics;
@@ -52,6 +59,29 @@ public class SkillScreen extends Screen {
             }
             y += ROW_H;
         }
+        addResetButton(y);
+    }
+
+    private void addResetButton(int y) {
+        var player = Minecraft.getInstance().player;
+        boolean hasItem = player != null && (player.getInventory().contains(new ItemStack(ModItems.RESET_DROP.get())));
+        boolean hasSkill = ClientSkills.skills().stream().anyMatch(e -> e.level() > 0);
+        Button reset = Button.builder(
+                Component.translatable("gui.fishinggui.skills.reset").withStyle(ChatFormatting.RED), b -> {
+                    Minecraft mc = Minecraft.getInstance();
+                    mc.setScreen(new ConfirmScreen(yes -> {
+                        if (yes) {
+                            ModNetwork.CHANNEL.sendToServer(new SkillResetPacket());
+                        }
+                        mc.setScreen(this);
+                    }, Component.translatable("gui.fishinggui.skills.reset"),
+                            Component.translatable("gui.fishinggui.skills.reset.confirm")));
+                }).bounds((this.width - 120) / 2, y + 4, 120, 20).build();
+        reset.active = hasItem && hasSkill;
+        if (!hasItem) {
+            reset.setTooltip(Tooltip.create(Component.translatable("gui.fishinggui.skills.reset.need_item")));
+        }
+        addRenderableWidget(reset);
     }
 
     @Override

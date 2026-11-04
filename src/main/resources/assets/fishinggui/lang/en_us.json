@@ -97,5 +97,11 @@
   "gui.fishinggui.skills.title": "Skills",
   "gui.fishinggui.skills.points": "Points: %s",
   "gui.fishinggui.skills.buy": "Learn (%s)",
-  "gui.fishinggui.skills.max": "MAX"
+  "gui.fishinggui.skills.max": "MAX",
+  "item.fishinggui.reset_drop": "Drop of Oblivion",
+  "gui.fishinggui.skills.reset": "Reset",
+  "gui.fishinggui.skills.reset.need_item": "Requires a Drop of Oblivion",
+  "gui.fishinggui.skills.reset.confirm": "Really reset all skills?",
+  "gui.fishinggui.skills.reset.done": "Skills reset (+%s points)",
+  "gui.fishinggui.reset_drop.found": "You found a Drop of Oblivion!"
 }

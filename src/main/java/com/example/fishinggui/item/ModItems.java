@@ -22,6 +22,9 @@ public final class ModItems {
 
     public static final RegistryObject<Item> WORM = ITEMS.register("worm", () -> new Item(new Item.Properties()));
 
+    public static final RegistryObject<Item> RESET_DROP =
+            ITEMS.register("reset_drop", () -> new Item(new Item.Properties()));
+
     public static final Map<String, RegistryObject<Item>> FISH = registerFish();
 
     private static Map<String, RegistryObject<Item>> registerFish() {
@@ -40,6 +43,7 @@ public final class ModItems {
             .icon(() -> new ItemStack(Items.FISHING_ROD))
             .displayItems((params, output) -> {
                 output.accept(WORM.get());
+                output.accept(RESET_DROP.get());
                 FISH.values().forEach(r -> output.accept(r.get()));
             })
             .build());

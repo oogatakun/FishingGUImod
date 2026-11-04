@@ -4,7 +4,9 @@ import com.example.fishinggui.FishingGuiMod;
 import com.example.fishinggui.fight.FishInfo;
 import com.example.fishinggui.fight.Rarity;
 import com.example.fishinggui.net.CatchChoicePacket;
+import com.example.fishinggui.item.ModItems;
 import com.example.fishinggui.skill.PointRules;
+import com.example.fishinggui.skill.ResetRules;
 import com.example.fishinggui.skill.SkillData;
 import com.example.fishinggui.skill.SkillService;
 import net.minecraft.network.chat.Component;
@@ -27,7 +29,7 @@ import net.minecraftforge.network.PacketDistributor;
 /** Holds a successful catch until the player picks Keep or Release on the catch screen. */
 @Mod.EventBusSubscriber(modid = FishingGuiMod.MOD_ID)
 public final class PendingCatchManager {
-    private record Pending(Vec3 origin, List<ItemStack> loot, int xp, Rarity rarity) {
+    private record Pending(Vec3 origin, List<ItemStack> loot, int xp, Rarity rarity, ItemStack bonus) {
     }
 
     private static final Map<UUID, Pending> PENDING = new HashMap<>();
@@ -36,9 +38,12 @@ public final class PendingCatchManager {
     }
 
     public static void open(ServerPlayer player, Vec3 origin, List<ItemStack> loot, FishInfo info, float weight) {
-        Pending old = PENDING.put(player.getUUID(), new Pending(origin, loot, info.xp(), info.rarity()));
+        ItemStack bonus = ResetRules.rollsDrop(player.getRandom().nextDouble())
+                ? new ItemStack(ModItems.RESET_DROP.get()) : ItemStack.EMPTY;
+        Pending old = PENDING.put(player.getUUID(), new Pending(origin, loot, info.xp(), info.rarity(), bonus));
         if (old != null) {
             CatchResolver.deliver(player, old.origin(), old.loot(), true);
+            deliverBonus(player, old);
         }
         ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
                 new CatchResultPacket(loot.get(0), (byte) info.rarity().ordinal(), weight, info.xp()));
@@ -52,6 +57,7 @@ public final class PendingCatchManager {
         }
         if (choice == CatchChoicePacket.RELEASE) {
             FishingService.award(player, pending.xp());
+            deliverBonus(player, pending);
         } else if (choice == CatchChoicePacket.CONVERT) {
             int gained = PointRules.pointsFor(pending.rarity());
             SkillService.addPoints(player, gained);
@@ -59,7 +65,16 @@ public final class PendingCatchManager {
                     SkillData.get(player).points()));
         } else {
             CatchResolver.deliver(player, pending.origin(), pending.loot(), true);
+            deliverBonus(player, pending);
         }
+    }
+
+    private static void deliverBonus(ServerPlayer player, Pending pending) {
+        if (pending.bonus().isEmpty()) {
+            return;
+        }
+        CatchResolver.deliver(player, pending.origin(), List.of(pending.bonus().copy()), false);
+        player.sendSystemMessage(Component.translatable("gui.fishinggui.reset_drop.found"));
     }
 
     @SubscribeEvent

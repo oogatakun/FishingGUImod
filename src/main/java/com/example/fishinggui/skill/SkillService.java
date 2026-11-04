@@ -4,9 +4,14 @@ import com.example.fishinggui.FishingGuiMod;
 import com.example.fishinggui.data.SkillLoader;
 import com.example.fishinggui.net.ModNetwork;
 import com.example.fishinggui.net.SkillSyncPacket;
+import com.example.fishinggui.item.ModItems;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -40,6 +45,36 @@ public final class SkillService {
         }
         SkillData.set(player, state.buy(def));
         sync(player);
+    }
+
+    /** Consumes one reset drop and refunds every learned skill; does nothing unless both are present. */
+    public static void reset(ServerPlayer player) {
+        SkillState state = SkillData.get(player);
+        if (state.skills().isEmpty()) {
+            return;
+        }
+        Inventory inv = player.getInventory();
+        ItemStack found = ItemStack.EMPTY;
+        for (List<ItemStack> list : List.of(inv.items, inv.offhand)) {
+            for (ItemStack s : list) {
+                if (s.is(ModItems.RESET_DROP.get()) && !s.isEmpty()) {
+                    found = s;
+                    break;
+                }
+            }
+            if (!found.isEmpty()) {
+                break;
+            }
+        }
+        if (found.isEmpty()) {
+            return;
+        }
+        Map<String, SkillDef> defs = SkillLoader.skills();
+        int refund = state.refundOf(defs);
+        found.shrink(1);
+        SkillData.set(player, state.reset(defs));
+        sync(player);
+        player.sendSystemMessage(Component.translatable("gui.fishinggui.skills.reset.done", refund));
     }
 
     public static void sync(ServerPlayer player) {

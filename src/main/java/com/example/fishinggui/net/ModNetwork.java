@@ -42,5 +42,8 @@ public final class ModNetwork {
         CHANNEL.messageBuilder(SkillBuyPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(SkillBuyPacket::encode).decoder(SkillBuyPacket::decode)
                 .consumerMainThread(SkillBuyPacket::handle).add();
+        CHANNEL.messageBuilder(SkillResetPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(SkillResetPacket::encode).decoder(SkillResetPacket::decode)
+                .consumerMainThread(SkillResetPacket::handle).add();
     }
 }
