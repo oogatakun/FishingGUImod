@@ -1,7 +1,9 @@
 package com.example.fishinggui.data;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.example.fishinggui.fight.FishProfile;
 import com.google.gson.JsonObject;
@@ -27,6 +29,32 @@ class FishProfileParserTest {
         FishProfileParser.Entry e = FishProfileParser.parse(json("{\"item\":\"minecraft:cod\",\"stamina\":70}"));
         assertEquals(new FishProfile(70f, FishProfile.DEFAULT.dashInterval(), FishProfile.DEFAULT.dashPower(),
                 FishProfile.DEFAULT.tensionGain()), e.profile());
+    }
+
+    @Test
+    void foodOverrideAbsentByDefault() {
+        FishProfileParser.Entry e = FishProfileParser.parse(json("{\"item\":\"minecraft:cod\",\"stamina\":70}"));
+        assertTrue(e.info().foodOverride().isEmpty());
+        assertNull(e.info().food());
+    }
+
+    @Test
+    void parsesFoodOverride() {
+        FishProfileParser.Entry e = FishProfileParser.parse(json("{\"item\":\"a:b\",\"stamina\":70,"
+                + "\"food\":{\"nutrition\":6,\"saturation\":0.8,\"heal\":3}}"));
+        assertEquals(new com.example.fishinggui.fight.FoodOverride(6, 0.8f, 3), e.info().foodOverride().get());
+    }
+
+    @Test
+    void rejectsInvalidFoodOverride() {
+        for (String food : new String[] { "{\"nutrition\":-1,\"saturation\":0.5,\"heal\":0}",
+                "{\"nutrition\":2.5,\"saturation\":0.5,\"heal\":0}",
+                "{\"nutrition\":2,\"saturation\":-0.5,\"heal\":0}",
+                "{\"nutrition\":2,\"saturation\":0.5,\"heal\":-1}",
+                "{\"nutrition\":2,\"saturation\":0.5}", "5" }) {
+            assertThrows(IllegalArgumentException.class,
+                    () -> FishProfileParser.parse(json("{\"item\":\"a:b\",\"food\":" + food + "}")), food);
+        }
     }
 
     @Test

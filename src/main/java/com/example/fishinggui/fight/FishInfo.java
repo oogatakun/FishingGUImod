@@ -4,8 +4,19 @@ import java.util.Random;
 
 /** Per-fish catch data: rarity, weight range (kg) and fishing XP. Pure Java. */
 public record FishInfo(Rarity rarity, float weightMin, float weightMax, int xp, int catchLevel, int catchWeight,
-        int baitLevel) {
+        int baitLevel, FoodOverride food) {
     public static final FishInfo DEFAULT = new FishInfo(Rarity.COMMON, 0.1f, 1.0f, 10);
+
+    /** Fish data without a food override (cooked values are derived from level and rarity). */
+    public FishInfo(Rarity rarity, float weightMin, float weightMax, int xp, int catchLevel, int catchWeight,
+            int baitLevel) {
+        this(rarity, weightMin, weightMax, xp, catchLevel, catchWeight, baitLevel, null);
+    }
+
+    /** Optional per-fish food override; empty means use the automatic values. */
+    public java.util.Optional<FoodOverride> foodOverride() {
+        return java.util.Optional.ofNullable(food);
+    }
 
     /** Fish data without catch-pool or bait data (not catchable, not a bait). */
     public FishInfo(Rarity rarity, float weightMin, float weightMax, int xp) {

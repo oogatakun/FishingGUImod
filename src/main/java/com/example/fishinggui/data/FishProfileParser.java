@@ -2,6 +2,7 @@ package com.example.fishinggui.data;
 
 import com.example.fishinggui.fight.FishInfo;
 import com.example.fishinggui.fight.FishProfile;
+import com.example.fishinggui.fight.FoodOverride;
 import com.example.fishinggui.fight.Rarity;
 import com.example.fishinggui.level.LevelCurve;
 import com.google.gson.JsonElement;
@@ -56,7 +57,37 @@ public final class FishProfileParser {
         int catchWeight = integer(json, "catch_weight", 10, 1, Integer.MAX_VALUE);
         int baitLevel = integer(json, "bait_level", 0, 1, LevelCurve.MAX_LEVEL);
         return new Entry(item, new FishProfile(stamina, (int) dashInterval, dashPower, tensionGain),
-                new FishInfo(rarity, weightMin, weightMax, (int) xp, catchLevel, catchWeight, baitLevel));
+                new FishInfo(rarity, weightMin, weightMax, (int) xp, catchLevel, catchWeight, baitLevel,
+                        food(json)));
+    }
+
+    private static FoodOverride food(JsonObject json) {
+        JsonElement e = json.get("food");
+        if (e == null) {
+            return null;
+        }
+        if (!e.isJsonObject()) {
+            throw new IllegalArgumentException("'food' must be an object");
+        }
+        JsonObject f = e.getAsJsonObject();
+        for (String key : new String[] { "nutrition", "saturation", "heal" }) {
+            if (!f.has(key)) {
+                throw new IllegalArgumentException("'food' requires '" + key + "'");
+            }
+        }
+        float nutrition = number(f, "nutrition", 0f);
+        float saturation = number(f, "saturation", 0f);
+        float heal = number(f, "heal", 0f);
+        if (nutrition < 0f || nutrition != Math.floor(nutrition)) {
+            throw new IllegalArgumentException("food.nutrition must be an integer >= 0");
+        }
+        if (saturation < 0f) {
+            throw new IllegalArgumentException("food.saturation must be >= 0");
+        }
+        if (heal < 0f || heal != Math.floor(heal)) {
+            throw new IllegalArgumentException("food.heal must be an integer >= 0");
+        }
+        return new FoodOverride((int) nutrition, saturation, (int) heal);
     }
 
     /** Optional integer in [min, max]; {@code fallback} when absent (the fallback itself is not range-checked). */
