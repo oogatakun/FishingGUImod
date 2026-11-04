@@ -69,6 +69,7 @@ public final class ModItems {
                 FISH.values().forEach(r -> output.accept(r.get()));
                 COOKED.values().forEach(r -> output.accept(r.get()));
                 output.accept(BURNT_FISH.get());
+                output.accept(com.example.fishinggui.block.ModBlocks.SHICHIRIN_ITEM.get());
             })
             .build());
 

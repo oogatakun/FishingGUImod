@@ -12,6 +12,12 @@ public final class ClientEvents {
     }
 
     @SubscribeEvent
+    public static void onRegisterRenderers(net.minecraftforge.client.event.EntityRenderersEvent.RegisterRenderers event) {
+        event.registerBlockEntityRenderer(com.example.fishinggui.block.ModBlocks.SHICHIRIN_BE.get(),
+                ShichirinRenderer::new);
+    }
+
+    @SubscribeEvent
     public static void onRegisterOverlays(RegisterGuiOverlaysEvent event) {
         event.registerAboveAll("level_up",
                 (gui, graphics, partialTick, width, height) -> LevelUpOverlay.render(graphics, width, height));

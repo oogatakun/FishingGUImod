@@ -160,6 +160,8 @@
   "item.fishinggui.cooked_jinbeizame": "焼いたジンベエザメ",
   "item.fishinggui.cooked_coelacanth": "焼いたシーラカンス",
   "item.fishinggui.cooked_manbo": "焼いたマンボウ",
+  "block.fishinggui.shichirin": "七輪",
+  "tooltip.fishinggui.shichirin": "木炭か石炭を入れて、魚を焼こう。",
   "item.fishinggui.burnt_fish": "焦げた魚",
   "tooltip.fishinggui.cooked_heal": "体力 +%s"
 }

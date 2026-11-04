@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "lit=false": { "model": "fishinggui:block/shichirin" },
+    "lit=true": { "model": "fishinggui:block/shichirin_lit" }
+  }
+}

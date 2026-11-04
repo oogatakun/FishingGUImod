@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["BBB", "BIB"],
+  "key": {
+    "B": { "item": "minecraft:brick" },
+    "I": { "item": "minecraft:iron_ingot" }
+  },
+  "result": { "item": "fishinggui:shichirin" }
+}

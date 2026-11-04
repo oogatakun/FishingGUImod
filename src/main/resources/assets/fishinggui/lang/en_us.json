@@ -160,6 +160,8 @@
   "item.fishinggui.cooked_jinbeizame": "Grilled Whale Shark",
   "item.fishinggui.cooked_coelacanth": "Grilled Coelacanth",
   "item.fishinggui.cooked_manbo": "Grilled Ocean Sunfish",
+  "block.fishinggui.shichirin": "Shichirin",
+  "tooltip.fishinggui.shichirin": "Add charcoal or coal, then grill fish on it.",
   "item.fishinggui.burnt_fish": "Burnt Fish",
   "tooltip.fishinggui.cooked_heal": "Health +%s"
 }
