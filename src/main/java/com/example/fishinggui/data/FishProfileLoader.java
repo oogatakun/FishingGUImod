@@ -99,4 +99,9 @@ public final class FishProfileLoader extends SimpleJsonResourceReloadListener {
         ResourceLocation id = ForgeRegistries.ITEMS.getKey(loot.get(0).getItem());
         return infos.getOrDefault(id, FishInfo.DEFAULT);
     }
+
+    /** Fish data for an item id (server side, from the loaded datapack); DEFAULT when unknown. */
+    public static FishInfo infoFor(ResourceLocation id) {
+        return infos.getOrDefault(id, FishInfo.DEFAULT);
+    }
 }

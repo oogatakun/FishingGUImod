@@ -5,6 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import com.example.fishinggui.food.FoodRules;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -35,6 +37,26 @@ public final class ModItems {
         return map;
     }
 
+    /** Grilled fish by raw fish id (FishIds). Nutrition/saturation come from the level; heal is applied on eating. */
+    public static final Map<String, RegistryObject<Item>> COOKED = registerCooked();
+
+    public static final RegistryObject<Item> BURNT_FISH = ITEMS.register("burnt_fish", () -> new Item(
+            new Item.Properties().food(new FoodProperties.Builder().nutrition(1).saturationMod(0.1f).build())));
+
+    private static Map<String, RegistryObject<Item>> registerCooked() {
+        Map<String, RegistryObject<Item>> map = new LinkedHashMap<>();
+        for (String id : FishIds.ALL) {
+            int level = FishLevels.BY_ID.get(FishingGuiMod.MOD_ID + ":" + id);
+            FoodProperties food = new FoodProperties.Builder()
+                    .nutrition(FoodRules.nutrition(level))
+                    .saturationMod(FoodRules.saturationModifier(level))
+                    .build();
+            map.put(id, ITEMS.register("cooked_" + id,
+                    () -> new CookedFishItem(new Item.Properties().food(food), id)));
+        }
+        return map;
+    }
+
     private ModItems() {
     }
 
@@ -45,6 +67,8 @@ public final class ModItems {
                 output.accept(WORM.get());
                 output.accept(RESET_DROP.get());
                 FISH.values().forEach(r -> output.accept(r.get()));
+                COOKED.values().forEach(r -> output.accept(r.get()));
+                output.accept(BURNT_FISH.get());
             })
             .build());
 
