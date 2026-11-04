@@ -7,7 +7,6 @@ import com.example.fishinggui.net.SkillSyncPacket;
 import com.example.fishinggui.item.ModItems;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
@@ -47,17 +46,21 @@ public final class SkillService {
         sync(player);
     }
 
-    /** Consumes one reset drop and refunds every learned skill; does nothing unless both are present. */
-    public static void reset(ServerPlayer player) {
+    /** Resets one skill to level 0 using one reset drop; does nothing unless the skill is learned and a drop is held. */
+    public static void reset(ServerPlayer player, String skillId) {
+        SkillDef def = SkillLoader.skills().get(skillId);
+        if (def == null) {
+            return;
+        }
         SkillState state = SkillData.get(player);
-        if (state.skills().isEmpty()) {
+        if (state.levelOf(skillId) <= 0) {
             return;
         }
         Inventory inv = player.getInventory();
         ItemStack found = ItemStack.EMPTY;
         for (List<ItemStack> list : List.of(inv.items, inv.offhand)) {
             for (ItemStack s : list) {
-                if (s.is(ModItems.RESET_DROP.get()) && !s.isEmpty()) {
+                if (!s.isEmpty() && s.is(ModItems.RESET_DROP.get())) {
                     found = s;
                     break;
                 }
@@ -69,12 +72,12 @@ public final class SkillService {
         if (found.isEmpty()) {
             return;
         }
-        Map<String, SkillDef> defs = SkillLoader.skills();
-        int refund = state.refundOf(defs);
+        int refund = state.refundOfSkill(def);
         found.shrink(1);
-        SkillData.set(player, state.reset(defs));
+        SkillData.set(player, state.resetSkill(def));
         sync(player);
-        player.sendSystemMessage(Component.translatable("gui.fishinggui.skills.reset.done", refund));
+        player.sendSystemMessage(Component.translatable("gui.fishinggui.skills.reset.done",
+                Component.translatable("skill.fishinggui." + skillId), refund));
     }
 
     public static void sync(ServerPlayer player) {

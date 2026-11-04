@@ -5,9 +5,9 @@ import com.example.fishinggui.net.ModNetwork;
 import com.example.fishinggui.net.SkillResetPacket;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.entity.player.Inventory;
 import com.example.fishinggui.net.SkillBuyPacket;
 import com.example.fishinggui.net.SkillSyncPacket;
 import net.minecraft.client.gui.GuiGraphics;
@@ -18,8 +18,10 @@ import net.minecraft.network.chat.Component;
 /** Lists the skills with their level and a Learn button; the server decides every purchase. */
 public class SkillScreen extends Screen {
     private static final int ROW_H = 46;
-    private static final int ROW_W = 340;
+    private static final int ROW_W = 420;
     private static final int BTN_W = 80;
+    private static final int RESET_W = 60;
+    private static final int GAP = 4;
 
     public SkillScreen() {
         super(Component.translatable("gui.fishinggui.skills.title"));
@@ -38,12 +40,33 @@ public class SkillScreen extends Screen {
         return 50;
     }
 
+    private static boolean holdsResetDrop() {
+        var player = Minecraft.getInstance().player;
+        if (player == null) {
+            return false;
+        }
+        Inventory inv = player.getInventory();
+        for (ItemStack s : inv.items) {
+            if (s.is(ModItems.RESET_DROP.get())) {
+                return true;
+            }
+        }
+        for (ItemStack s : inv.offhand) {
+            if (s.is(ModItems.RESET_DROP.get())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     protected void init() {
         int left = (this.width - ROW_W) / 2;
         int y = top();
+        boolean hasDrop = holdsResetDrop();
+        int btnX = left + ROW_W - RESET_W - GAP - BTN_W;
+        int resetX = left + ROW_W - RESET_W;
         for (SkillSyncPacket.Entry e : ClientSkills.skills()) {
-            int btnX = left + ROW_W - BTN_W;
             if (e.level() >= e.maxLevel()) {
                 Button max = Button.builder(Component.translatable("gui.fishinggui.skills.max"), b -> { })
                         .bounds(btnX, y + 12, BTN_W, 20).build();
@@ -57,31 +80,27 @@ public class SkillScreen extends Screen {
                 buy.active = ClientSkills.points() >= cost;
                 addRenderableWidget(buy);
             }
+            if (hasDrop) {
+                Button reset = Button.builder(
+                        Component.translatable("gui.fishinggui.skills.reset").withStyle(ChatFormatting.RED),
+                        b -> confirmReset(e.id())).bounds(resetX, y + 12, RESET_W, 20).build();
+                reset.active = e.level() > 0;
+                addRenderableWidget(reset);
+            }
             y += ROW_H;
         }
-        addResetButton(y);
     }
 
-    private void addResetButton(int y) {
-        var player = Minecraft.getInstance().player;
-        boolean hasItem = player != null && (player.getInventory().contains(new ItemStack(ModItems.RESET_DROP.get())));
-        boolean hasSkill = ClientSkills.skills().stream().anyMatch(e -> e.level() > 0);
-        Button reset = Button.builder(
-                Component.translatable("gui.fishinggui.skills.reset").withStyle(ChatFormatting.RED), b -> {
-                    Minecraft mc = Minecraft.getInstance();
-                    mc.setScreen(new ConfirmScreen(yes -> {
-                        if (yes) {
-                            ModNetwork.CHANNEL.sendToServer(new SkillResetPacket());
-                        }
-                        mc.setScreen(this);
-                    }, Component.translatable("gui.fishinggui.skills.reset"),
-                            Component.translatable("gui.fishinggui.skills.reset.confirm")));
-                }).bounds((this.width - 120) / 2, y + 4, 120, 20).build();
-        reset.active = hasItem && hasSkill;
-        if (!hasItem) {
-            reset.setTooltip(Tooltip.create(Component.translatable("gui.fishinggui.skills.reset.need_item")));
-        }
-        addRenderableWidget(reset);
+    private void confirmReset(String skillId) {
+        Minecraft mc = Minecraft.getInstance();
+        Component name = Component.translatable("skill.fishinggui." + skillId);
+        mc.setScreen(new ConfirmScreen(yes -> {
+            if (yes) {
+                ModNetwork.CHANNEL.sendToServer(new SkillResetPacket(skillId));
+            }
+            mc.setScreen(this);
+        }, Component.translatable("gui.fishinggui.skills.reset"),
+                Component.translatable("gui.fishinggui.skills.reset.confirm", name)));
     }
 
     @Override
@@ -98,7 +117,7 @@ public class SkillScreen extends Screen {
             g.drawString(this.font, name, left, y + 2, 0xFFFFFF);
             g.drawString(this.font, "Lv." + e.level() + "/" + e.maxLevel(), left + this.font.width(name) + 8, y + 2,
                     0x55FF55);
-            int textW = ROW_W - BTN_W - 10;
+            int textW = ROW_W - BTN_W - RESET_W - GAP * 2 - 6;
             int ly = y + 14;
             for (var line : this.font.split(Component.translatable("skill.fishinggui." + e.id() + ".desc"), textW)) {
                 g.drawString(this.font, line, left, ly, 0xAAAAAA);

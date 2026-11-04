@@ -39,24 +39,23 @@ public record SkillState(int points, Map<String, Integer> skills) {
         return new SkillState(points - def.nextCost(level), next);
     }
 
-    /** Points that would come back on reset: for each known skill, the first {@code level} costs summed. */
-    public int refundOf(Map<String, SkillDef> defs) {
+    /** Points that would come back when {@code def} is reset: the first {@code level} costs summed. */
+    public int refundOfSkill(SkillDef def) {
+        int n = Math.min(levelOf(def.id()), def.cost().size());
         int total = 0;
-        for (Map.Entry<String, Integer> e : skills.entrySet()) {
-            SkillDef def = defs.get(e.getKey());
-            if (def == null) {
-                continue;
-            }
-            int n = Math.min(e.getValue(), def.cost().size());
-            for (int i = 0; i < n; i++) {
-                total += def.cost().get(i);
-            }
+        for (int i = 0; i < n; i++) {
+            total += def.cost().get(i);
         }
         return total;
     }
 
-    /** Refunds every learned skill and clears them; unknown skill ids are dropped without refund. */
-    public SkillState reset(Map<String, SkillDef> defs) {
-        return new SkillState(points + refundOf(defs), Map.of());
+    /** Sets this skill to level 0 and refunds its cost; other skills are untouched. Level 0 returns this. */
+    public SkillState resetSkill(SkillDef def) {
+        if (levelOf(def.id()) <= 0) {
+            return this;
+        }
+        Map<String, Integer> next = new HashMap<>(skills);
+        next.remove(def.id());
+        return new SkillState(points + refundOfSkill(def), next);
     }
 }

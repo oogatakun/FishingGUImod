@@ -19,6 +19,11 @@ public final class FishTooltipHandler {
     @SubscribeEvent
     public static void onTooltip(ItemTooltipEvent event) {
         var key = ForgeRegistries.ITEMS.getKey(event.getItemStack().getItem());
+        if (key != null && "fishinggui:reset_drop".equals(key.toString())) {
+            event.getToolTip().add(Component.translatable("item.fishinggui.reset_drop.desc")
+                    .withStyle(ChatFormatting.GRAY));
+            return;
+        }
         Integer level = key == null ? null : FishLevels.BY_ID.get(key.toString());
         if (level == null) {
             return;

@@ -59,4 +59,44 @@ class SkillStateTest {
         assertEquals(2, DEF.nextCost(1));
         assertTrue(SkillState.START.addPoints(1).canBuy(DEF));
     }
+
+    @Test
+    void refundOfSkillSumsLearnedLevels() {
+        assertEquals(0, new SkillState(0, Map.of("x", 0)).refundOfSkill(DEF));
+        assertEquals(1, new SkillState(0, Map.of("x", 1)).refundOfSkill(DEF));
+        assertEquals(3, new SkillState(0, Map.of("x", 2)).refundOfSkill(DEF));
+        assertEquals(6, new SkillState(0, Map.of("x", 3)).refundOfSkill(DEF));
+        assertEquals(0, SkillState.START.refundOfSkill(DEF));
+    }
+
+    @Test
+    void refundClampsLevelAboveCostList() {
+        assertEquals(6, new SkillState(0, Map.of("x", 99)).refundOfSkill(DEF));
+    }
+
+    @Test
+    void resetSkillRefundsAndClearsOnlyThatSkill() {
+        SkillState s = new SkillState(4, Map.of("x", 2, "y", 1));
+        SkillState r = s.resetSkill(DEF);
+        assertEquals(0, r.levelOf("x"));
+        assertEquals(7, r.points());
+        assertEquals(1, r.levelOf("y"));
+        assertEquals(2, s.levelOf("x"));
+        assertEquals(4, s.points());
+    }
+
+    @Test
+    void resetSkillAtLevelZeroReturnsUnchanged() {
+        SkillState s = new SkillState(4, Map.of("y", 1));
+        assertEquals(s, s.resetSkill(DEF));
+        assertEquals(SkillState.START, SkillState.START.resetSkill(DEF));
+    }
+
+    @Test
+    void resetSkillDefWithShortCostListRefundsWhatExists() {
+        SkillDef shortDef = new SkillDef("z", 3, List.of(2));
+        SkillState r = new SkillState(0, Map.of("z", 3)).resetSkill(shortDef);
+        assertEquals(2, r.points());
+        assertEquals(0, r.levelOf("z"));
+    }
 }

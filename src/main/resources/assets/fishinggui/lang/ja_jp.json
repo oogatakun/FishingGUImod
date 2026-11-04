@@ -98,10 +98,10 @@
   "gui.fishinggui.skills.points": "所持ポイント: %s",
   "gui.fishinggui.skills.buy": "取得（%s）",
   "gui.fishinggui.skills.max": "MAX",
+  "item.fishinggui.reset_drop.desc": "スキル画面で使うと、選んだスキル1つをLv0に戻し、使ったポイントを返す。",
   "item.fishinggui.reset_drop": "忘却の雫",
   "gui.fishinggui.skills.reset": "リセット",
-  "gui.fishinggui.skills.reset.need_item": "忘却の雫が必要",
-  "gui.fishinggui.skills.reset.confirm": "本当にリセットしますか？",
-  "gui.fishinggui.skills.reset.done": "スキルをリセットした（+%s ポイント）",
+  "gui.fishinggui.skills.reset.confirm": "「%s」をリセットしますか？ レベルは0に戻り、使ったポイントが返ります。",
+  "gui.fishinggui.skills.reset.done": "%sをリセットした（+%s ポイント）",
   "gui.fishinggui.reset_drop.found": "忘却の雫を手に入れた！"
 }

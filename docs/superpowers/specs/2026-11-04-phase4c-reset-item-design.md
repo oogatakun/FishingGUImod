@@ -15,32 +15,33 @@
 - 当たったら、受け取り時にチャットで知らせる(`gui.fishinggui.reset_drop.found`)。
 - 確率は純 Java の定数にし、抽選は `ResetRules.rollsDrop(double random)`(`random < chance`)で単体テストする。
 
-## 3. リセット
+## 3. リセット(スキル 1 つずつ)
 
-- 純 Java の `SkillState.reset(Map<String,SkillDef> defs)`:
-  - 戻すポイント = 各スキルについて、`cost` の先頭から現在のレベルの数だけ足した合計。
-  - 結果は、ポイント = 現在 + 戻す分、スキルは空。
-  - `defs` に無いスキル ID は、戻すポイント 0 で捨てる。
-  - `SkillState.refundOf(defs)` で戻すポイントだけも返す(単体テスト)。
-- `SkillService.reset(ServerPlayer)`:
-  - スキルが 1 つも無い(戻すポイントが 0 で、スキル空)なら何もしない(アイテム消費なし)。
-  - インベントリ(メイン、ホットバー、オフハンド)に `reset_drop` が無ければ何もしない。
-  - あれば 1 個消費し、`SkillData.set` で保存、`sync`。チャットで「スキルをリセットした(+N ポイント)」を表示。
-- パケット `SkillResetPacket`(中身なし、クライアント→サーバー)。サーバーがすべて検証する。
+- 1 個の `reset_drop` で、選んだスキル 1 つだけを完全に Lv0 に戻す。他のスキルは変えない。
+- 純 Java の `SkillState`:
+  - `refundOfSkill(SkillDef def)`: `cost` の先頭から現在のレベルの数だけ足した合計(`cost` の長さを超える分は打ち切り)。
+  - `resetSkill(SkillDef def)`: そのスキルを外し、ポイント = 現在 + 戻す分。そのスキルのレベルが 0 なら `this` をそのまま返す。
+- `SkillService.reset(ServerPlayer, String skillId)`(サーバー側の検証):
+  - スキル ID が存在しなければ何もしない。
+  - そのスキルのレベルが 0 なら何もしない(アイテム消費なし)。
+  - メインインベントリ・ホットバー・オフハンドに `reset_drop` が無ければ何もしない。
+  - あれば丁度 1 個消費し、`SkillData.set` で保存、`sync`。チャットで「<スキル名>をリセットした(+N ポイント)」を表示。
+- パケット `SkillResetPacket(String skillId)`(クライアント→サーバー)。サーバーがすべて検証する。
 
 ## 4. スキル画面
 
-- 画面の下に「リセット」ボタン(赤字)。押すと確認画面(「本当にリセットしますか？」はい / いいえ)を出し、はいで `SkillResetPacket` を送る。
-- 押せる条件(クライアント側の見た目だけ): プレイヤーが `reset_drop` を持っている、かつスキルを 1 つ以上取得している。持っていなければ押せない状態で、ツールチップに「忘却の雫が必要」。
-- 確認画面は `ConfirmScreen` を使ってよい。確認後は SkillScreen に戻る。
+- 画面下の単一のリセットボタンは無し。各スキル行の「取得 / MAX」ボタンの右に、小さな赤字の「リセット」ボタン(幅 60)を置く。行の幅 `ROW_W` は 420。説明文はボタンの左側の幅に収まるよう折り返す。
+- クライアントが `reset_drop` を持っていない(メインインベントリ + オフハンド。防具は見ない)ときは、ボタンを一切表示しない。
+- 持っているときは全行に表示し、そのスキルのレベルが 0 の行は押せない状態にする。
+- 押すと `ConfirmScreen`(スキル名入り、はい / いいえ)を出し、はいで `SkillResetPacket(skillId)` を送る。確認後は SkillScreen に戻る。
 - SkillSync のたびに画面を更新(既存の `refresh()`)。
 
 ## 5. 言語ファイル(ja / en)
 
-`item.fishinggui.reset_drop`、`gui.fishinggui.skills.reset`、`gui.fishinggui.skills.reset.need_item`、`gui.fishinggui.skills.reset.confirm`、`gui.fishinggui.skills.reset.done`(引数: 戻したポイント)、`gui.fishinggui.reset_drop.found`。
+`item.fishinggui.reset_drop`、`item.fishinggui.reset_drop.desc`(ツールチップの灰色の説明。`FishTooltipHandler` で追加)、`gui.fishinggui.skills.reset`、`gui.fishinggui.skills.reset.confirm`(引数: スキル名)、`gui.fishinggui.skills.reset.done`(引数: スキル名、戻したポイント)、`gui.fishinggui.reset_drop.found`。`need_item` は廃止。
 
 ## 6. テスト
 
-- `SkillStateTest`: `refundOf` と `reset`(複数スキル、レベル 0、未知 ID)。
+- `SkillStateTest`: `refundOfSkill` と `resetSkill`(1 スキルの返却、レベル 0 は変更なし、他スキルは不変、打ち切り)。
 - `ResetRulesTest`: `rollsDrop` の境界。
 - ビルド: `./gradlew compileJava test build`。
