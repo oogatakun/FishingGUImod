@@ -1,5 +1,6 @@
 {
   "variants": {
+    "servings=0": { "model": "fishinggui:block/seafood_hotpot_0" },
     "servings=1": { "model": "fishinggui:block/seafood_hotpot_1" },
     "servings=2": { "model": "fishinggui:block/seafood_hotpot_2" },
     "servings=3": { "model": "fishinggui:block/seafood_hotpot_3" },

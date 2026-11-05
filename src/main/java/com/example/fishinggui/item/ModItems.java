@@ -52,10 +52,10 @@ public final class ModItems {
             () -> new HotpotItem(com.example.fishinggui.block.ModBlocks.SEAFOOD_HOTPOT.get(),
                     new Item.Properties().stacksTo(16)));
 
-    /** One bowl of hotpot: modest hunger, but a lot of saturation so the nourishment lasts. */
+    /** One bowl of hotpot; also grants Farmer's Delight's Nourishment for 5 minutes when FD is installed. */
     public static final RegistryObject<Item> SEAFOOD_HOTPOT_BOWL = ITEMS.register("seafood_hotpot_bowl",
             () -> new HotpotBowlItem(new Item.Properties().stacksTo(16).food(new FoodProperties.Builder()
-                    .nutrition(8).saturationMod(1.6f).build())));
+                    .nutrition(8).saturationMod(0.8f).build())));
 
     private static Map<String, RegistryObject<Item>> registerCooked() {
         Map<String, RegistryObject<Item>> map = new LinkedHashMap<>();

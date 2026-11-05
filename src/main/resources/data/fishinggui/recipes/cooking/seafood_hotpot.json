@@ -25,5 +25,8 @@
   ],
   "result": {
     "item": "fishinggui:seafood_hotpot"
+  },
+  "container": {
+    "item": "minecraft:bowl"
   }
 }
