@@ -166,6 +166,7 @@
   "item.fishinggui.seafood_hotpot": "Seafood Hotpot",
   "block.fishinggui.seafood_hotpot": "Seafood Hotpot",
   "item.fishinggui.seafood_hotpot_bowl": "Seafood Hotpot Bowl",
+  "item.fishinggui.empty_seafood_hotpot": "Empty Seafood Hotpot",
   "tooltip.fishinggui.seafood_hotpot": "Placeable",
   "itemGroup.fishinggui.farmers_delight": "Fishing: Farmer's Delight",
   "tooltip.fishinggui.shichirin": "Add charcoal or coal, light it with flint and steel, then grill fish. A water bucket puts it out.",

@@ -4,13 +4,44 @@
     {
       "rolls": 1.0,
       "bonus_rolls": 0.0,
-      "entries": [ { "type": "minecraft:item", "name": "fishinggui:seafood_hotpot" } ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "fishinggui:seafood_hotpot"
+        }
+      ],
       "conditions": [
-        { "condition": "minecraft:survives_explosion" },
+        {
+          "condition": "minecraft:survives_explosion"
+        },
         {
           "condition": "minecraft:block_state_property",
           "block": "fishinggui:seafood_hotpot",
-          "properties": { "servings": "4" }
+          "properties": {
+            "servings": "4"
+          }
+        }
+      ]
+    },
+    {
+      "rolls": 1.0,
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "fishinggui:empty_seafood_hotpot"
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        },
+        {
+          "condition": "minecraft:block_state_property",
+          "block": "fishinggui:seafood_hotpot",
+          "properties": {
+            "servings": "0"
+          }
         }
       ]
     }

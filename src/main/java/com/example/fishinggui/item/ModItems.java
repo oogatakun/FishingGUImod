@@ -54,7 +54,12 @@ public final class ModItems {
     /** The pot, placed as a block; right-click it with a bowl to serve SEAFOOD_HOTPOT_BOWL. */
     public static final RegistryObject<Item> SEAFOOD_HOTPOT = ITEMS.register("seafood_hotpot",
             () -> new HotpotItem(com.example.fishinggui.block.ModBlocks.SEAFOOD_HOTPOT.get(),
-                    new Item.Properties().stacksTo(16)));
+                    new Item.Properties().stacksTo(16), false));
+
+    /** The emptied pot: placing it gives an empty pot again. */
+    public static final RegistryObject<Item> EMPTY_SEAFOOD_HOTPOT = ITEMS.register("empty_seafood_hotpot",
+            () -> new HotpotItem(com.example.fishinggui.block.ModBlocks.SEAFOOD_HOTPOT.get(),
+                    new Item.Properties().stacksTo(16), true));
 
     /** One bowl of hotpot; also grants Farmer's Delight's Nourishment for 5 minutes when FD is installed. */
     public static final RegistryObject<Item> SEAFOOD_HOTPOT_BOWL = ITEMS.register("seafood_hotpot_bowl",
@@ -102,6 +107,7 @@ public final class ModItems {
                     .displayItems((params, output) -> {
                         output.accept(FISH_FILLET.get());
                         output.accept(SEAFOOD_HOTPOT.get());
+                        output.accept(EMPTY_SEAFOOD_HOTPOT.get());
                         output.accept(SEAFOOD_HOTPOT_BOWL.get());
                     })
                     .build());

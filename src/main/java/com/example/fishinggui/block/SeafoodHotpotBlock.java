@@ -63,14 +63,28 @@ public class SeafoodHotpotBlock extends Block {
             BlockHitResult hit) {
         int servings = state.getValue(SERVINGS);
         ItemStack held = player.getItemInHand(hand);
+        if (held.is(ModItems.SEAFOOD_HOTPOT_BOWL.get()) && servings < MAX_SERVINGS) {
+            // Pour a served portion back into the pot; the bowl comes back empty.
+            if (level.isClientSide) {
+                return InteractionResult.SUCCESS;
+            }
+            if (!player.getAbilities().instabuild) {
+                held.shrink(1);
+                give(player, new ItemStack(Items.BOWL));
+            }
+            level.playSound(null, pos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 0.8f, 1.0f);
+            level.setBlock(pos, state.setValue(SERVINGS, servings + 1), 3);
+            return InteractionResult.CONSUME;
+        }
         if (servings == 0) {
-            // The pot is empty: breaking it hands back the bowl it was cooked with.
             if (level.isClientSide) {
                 return InteractionResult.SUCCESS;
             }
             level.removeBlock(pos, false);
             level.playSound(null, pos, SoundEvents.STONE_BREAK, SoundSource.BLOCKS, 0.8f, 1.0f);
-            give(player, new ItemStack(Items.BOWL));
+            // Sneak: pick the empty pot up as an item; otherwise break it and take the bowl it was cooked with.
+            give(player, player.isShiftKeyDown() ? new ItemStack(ModItems.EMPTY_SEAFOOD_HOTPOT.get())
+                    : new ItemStack(Items.BOWL));
             return InteractionResult.CONSUME;
         }
         if (!held.is(Items.BOWL)) {
