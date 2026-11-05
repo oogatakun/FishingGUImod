@@ -2,7 +2,10 @@ package com.example.fishinggui.block;
 
 import com.example.fishinggui.food.CookingRules;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -74,12 +77,63 @@ public class ShichirinBlock extends BaseEntityBlock {
             return InteractionResult.PASS;
         }
         ItemStack held = player.getItemInHand(hand);
+        boolean lit = state.getValue(LIT);
         if (held.is(Items.CHARCOAL) || held.is(Items.COAL)) {
             if (level.isClientSide) {
                 return InteractionResult.SUCCESS;
             }
-            if (be.tryAddFuel() && !player.getAbilities().instabuild) {
-                held.shrink(1);
+            boolean coal = held.is(Items.COAL);
+            if (be.tryAddFuel(coal)) {
+                if (!player.getAbilities().instabuild) {
+                    held.shrink(1);
+                }
+                level.playSound(null, pos, coal ? SoundEvents.GRAVEL_PLACE : SoundEvents.WOOD_PLACE,
+                        SoundSource.BLOCKS, 0.8f, coal ? 0.9f : 1.2f);
+                if (level instanceof ServerLevel sl) {
+                    sl.sendParticles(new ItemParticleOption(ParticleTypes.ITEM,
+                            new ItemStack(coal ? Items.COAL : Items.CHARCOAL)),
+                            pos.getX() + 0.5, pos.getY() + 0.55, pos.getZ() + 0.5, 8, 0.15, 0.05, 0.15, 0.05);
+                }
+            }
+            return InteractionResult.CONSUME;
+        }
+        if (held.is(Items.FLINT_AND_STEEL)) {
+            if (lit) {
+                return InteractionResult.PASS;
+            }
+            if (level.isClientSide) {
+                return InteractionResult.SUCCESS;
+            }
+            if (be.fuelTicks() <= 0) {
+                player.displayClientMessage(Component.translatable("gui.fishinggui.shichirin.no_fuel"), true);
+                return InteractionResult.CONSUME;
+            }
+            level.playSound(null, pos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 1.0f,
+                    level.getRandom().nextFloat() * 0.4f + 0.8f);
+            level.setBlock(pos, state.setValue(LIT, true)
+                    .setValue(WEAK, be.fuelTicks() < ShichirinBlockEntity.WEAK_TICKS), 3);
+            held.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(hand));
+            if (level instanceof ServerLevel sl) {
+                sl.sendParticles(ParticleTypes.FLAME, pos.getX() + 0.5, pos.getY() + 0.6, pos.getZ() + 0.5, 10,
+                        0.15, 0.05, 0.15, 0.02);
+            }
+            return InteractionResult.CONSUME;
+        }
+        if (held.is(Items.WATER_BUCKET)) {
+            if (!lit) {
+                return InteractionResult.PASS;
+            }
+            if (level.isClientSide) {
+                return InteractionResult.SUCCESS;
+            }
+            level.setBlock(pos, state.setValue(LIT, false).setValue(WEAK, false), 3);
+            level.playSound(null, pos, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 1.0f, 1.0f);
+            level.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 0.6f, 1.0f);
+            if (level instanceof ServerLevel sl) {
+                sl.sendParticles(ParticleTypes.LARGE_SMOKE, pos.getX() + 0.5, pos.getY() + 0.6, pos.getZ() + 0.5,
+                        14, 0.2, 0.1, 0.2, 0.03);
+                sl.sendParticles(ParticleTypes.CLOUD, pos.getX() + 0.5, pos.getY() + 0.6, pos.getZ() + 0.5,
+                        8, 0.2, 0.1, 0.2, 0.05);
             }
             return InteractionResult.CONSUME;
         }

@@ -12,8 +12,11 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -27,6 +30,7 @@ public class ShichirinBlockEntity extends BlockEntity {
     public static final int WEAK_TICKS = 600;
 
     private int fuelTicks;
+    private final List<Boolean> fuelKinds = new ArrayList<>();
     private final ItemStack[] raw = {ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY};
     private final int[] progress = new int[SLOTS];
 
@@ -38,13 +42,30 @@ public class ShichirinBlockEntity extends BlockEntity {
         return fuelTicks;
     }
 
-    public boolean tryAddFuel() {
+    /** Adds one charcoal (coal == false) or coal (coal == true); it only burns once the shichirin is lit. */
+    public boolean tryAddFuel(boolean coal) {
         if (fuelTicks + CookingRules.FUEL_TICKS > MAX_FUEL_TICKS) {
             return false;
         }
         fuelTicks += CookingRules.FUEL_TICKS;
+        fuelKinds.add(coal);
         changed();
         return true;
+    }
+
+    /** The fuel item lying in the bowl at index i (0 = the one burning first); EMPTY past the last one. */
+    public ItemStack fuelItem(int i) {
+        return i < fuelKinds.size() ? new ItemStack(fuelKinds.get(i) ? Items.COAL : Items.CHARCOAL) : ItemStack.EMPTY;
+    }
+
+    private void syncFuelKinds() {
+        int units = (fuelTicks + CookingRules.FUEL_TICKS - 1) / CookingRules.FUEL_TICKS;
+        while (fuelKinds.size() > units) {
+            fuelKinds.remove(0);
+        }
+        while (fuelKinds.size() < units) {
+            fuelKinds.add(false);
+        }
     }
 
     public boolean tryPlace(ItemStack held) {
@@ -144,10 +165,13 @@ public class ShichirinBlockEntity extends BlockEntity {
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, ShichirinBlockEntity be) {
-        boolean lit = be.fuelTicks > 0;
+        boolean lit = state.getValue(ShichirinBlock.LIT);
         boolean sync = false;
         if (lit) {
             be.fuelTicks--;
+            int unitsBefore = be.fuelKinds.size();
+            be.syncFuelKinds();
+            sync = be.fuelKinds.size() != unitsBefore;
             for (int i = 0; i < SLOTS; i++) {
                 if (be.raw[i].isEmpty()) {
                     continue;
@@ -161,9 +185,12 @@ public class ShichirinBlockEntity extends BlockEntity {
             }
             be.setChanged();
         }
-        boolean nowLit = be.fuelTicks > 0;
+        boolean nowLit = lit && be.fuelTicks > 0;
         boolean nowWeak = nowLit && be.fuelTicks < WEAK_TICKS;
         if (state.getValue(ShichirinBlock.LIT) != nowLit || state.getValue(ShichirinBlock.WEAK) != nowWeak) {
+            if (lit && !nowLit) {
+                level.playSound(null, pos, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.5f, 1.2f);
+            }
             level.setBlock(pos, state.setValue(ShichirinBlock.LIT, nowLit).setValue(ShichirinBlock.WEAK, nowWeak), 3);
         }
         if (sync) {
@@ -175,6 +202,11 @@ public class ShichirinBlockEntity extends BlockEntity {
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
         tag.putInt("Fuel", fuelTicks);
+        int[] kinds = new int[fuelKinds.size()];
+        for (int i = 0; i < kinds.length; i++) {
+            kinds[i] = fuelKinds.get(i) ? 2 : 1;
+        }
+        tag.putIntArray("FuelKinds", kinds);
         for (int i = 0; i < SLOTS; i++) {
             tag.put("Raw" + i, raw[i].save(new CompoundTag()));
             tag.putInt("Progress" + i, progress[i]);
@@ -185,6 +217,11 @@ public class ShichirinBlockEntity extends BlockEntity {
     public void load(CompoundTag tag) {
         super.load(tag);
         fuelTicks = Math.min(tag.getInt("Fuel"), MAX_FUEL_TICKS);
+        fuelKinds.clear();
+        for (int k : tag.getIntArray("FuelKinds")) {
+            fuelKinds.add(k == 2);
+        }
+        syncFuelKinds();
         for (int i = 0; i < SLOTS; i++) {
             raw[i] = tag.contains("Raw" + i) ? ItemStack.of(tag.getCompound("Raw" + i)) : ItemStack.EMPTY;
             progress[i] = tag.getInt("Progress" + i);

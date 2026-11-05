@@ -12,6 +12,8 @@ import net.minecraft.world.item.ItemStack;
 
 /** Draws the fish lying on the grill: raw while cooking, cooked or burnt item once done. */
 public class ShichirinRenderer implements BlockEntityRenderer<ShichirinBlockEntity> {
+    private static final double[][] FUEL_SPOTS = {{0.4, 0.4}, {0.6, 0.42}, {0.42, 0.6}, {0.6, 0.58}};
+
     private final BlockEntityRendererProvider.Context ctx;
 
     public ShichirinRenderer(BlockEntityRendererProvider.Context ctx) {
@@ -21,6 +23,20 @@ public class ShichirinRenderer implements BlockEntityRenderer<ShichirinBlockEnti
     @Override
     public void render(ShichirinBlockEntity be, float partialTick, PoseStack pose, MultiBufferSource buffers,
             int light, int overlay) {
+        for (int i = 0; i < FUEL_SPOTS.length; i++) {
+            ItemStack fuel = be.fuelItem(i);
+            if (fuel.isEmpty()) {
+                continue;
+            }
+            pose.pushPose();
+            pose.translate(FUEL_SPOTS[i][0], 0.53, FUEL_SPOTS[i][1]);
+            pose.mulPose(Axis.XP.rotationDegrees(90));
+            pose.mulPose(Axis.ZP.rotationDegrees(i * 70));
+            pose.scale(0.3f, 0.3f, 0.3f);
+            ctx.getItemRenderer().renderStatic(fuel, ItemDisplayContext.FIXED, light, OverlayTexture.NO_OVERLAY,
+                    pose, buffers, be.getLevel(), (int) be.getBlockPos().asLong() + 10 + i);
+            pose.popPose();
+        }
         for (int i = 0; i < ShichirinBlockEntity.SLOTS; i++) {
             ItemStack stack = be.display(i);
             if (stack.isEmpty()) {

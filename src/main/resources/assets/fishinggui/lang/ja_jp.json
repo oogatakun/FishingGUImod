@@ -161,7 +161,8 @@
   "item.fishinggui.cooked_coelacanth": "焼いたシーラカンス",
   "item.fishinggui.cooked_manbo": "焼いたマンボウ",
   "block.fishinggui.shichirin": "七輪",
-  "tooltip.fishinggui.shichirin": "木炭か石炭を入れて、魚を焼こう。",
+  "gui.fishinggui.shichirin.no_fuel": "燃料が入っていない",
+  "tooltip.fishinggui.shichirin": "木炭か石炭を入れて、火打ち石と打ち金で火をつけ、魚を焼こう。水バケツで火を消せる。",
   "item.fishinggui.burnt_fish": "焦げた魚",
   "tooltip.fishinggui.cooked_heal": "体力 +%s"
 }

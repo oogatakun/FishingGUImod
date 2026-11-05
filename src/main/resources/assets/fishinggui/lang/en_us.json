@@ -161,7 +161,8 @@
   "item.fishinggui.cooked_coelacanth": "Grilled Coelacanth",
   "item.fishinggui.cooked_manbo": "Grilled Ocean Sunfish",
   "block.fishinggui.shichirin": "Shichirin",
-  "tooltip.fishinggui.shichirin": "Add charcoal or coal, then grill fish on it.",
+  "gui.fishinggui.shichirin.no_fuel": "No fuel inside",
+  "tooltip.fishinggui.shichirin": "Add charcoal or coal, light it with flint and steel, then grill fish. A water bucket puts it out.",
   "item.fishinggui.burnt_fish": "Burnt Fish",
   "tooltip.fishinggui.cooked_heal": "Health +%s"
 }
