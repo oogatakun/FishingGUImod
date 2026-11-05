@@ -32,6 +32,10 @@ public final class ModBlocks {
                     .strength(1.0f).sound(SoundType.STONE).noOcclusion()
                     .lightLevel(s -> !s.getValue(ShichirinBlock.LIT) ? 0 : s.getValue(ShichirinBlock.WEAK) ? 7 : 13)));
 
+    public static final RegistryObject<Block> SEAFOOD_HOTPOT = BLOCKS.register("seafood_hotpot",
+            () -> new SeafoodHotpotBlock(Block.Properties.of().mapColor(MapColor.TERRACOTTA_ORANGE)
+                    .strength(0.5f).sound(SoundType.STONE).noOcclusion()));
+
     public static final RegistryObject<Item> SHICHIRIN_ITEM = BLOCK_ITEMS.register("shichirin",
             () -> new BlockItem(SHICHIRIN.get(), new Item.Properties()) {
                 @Override

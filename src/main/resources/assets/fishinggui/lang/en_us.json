@@ -164,6 +164,8 @@
   "gui.fishinggui.shichirin.no_fuel": "No fuel inside",
   "item.fishinggui.fish_fillet": "Fish Fillet",
   "item.fishinggui.seafood_hotpot": "Seafood Hotpot",
+  "block.fishinggui.seafood_hotpot": "Seafood Hotpot",
+  "tooltip.fishinggui.seafood_hotpot": "Sneak + right-click to place. A placed pot has 4 servings.",
   "tooltip.fishinggui.shichirin": "Add charcoal or coal, light it with flint and steel, then grill fish. A water bucket puts it out.",
   "item.fishinggui.burnt_fish": "Burnt Fish",
   "tooltip.fishinggui.cooked_heal": "Health +%s"

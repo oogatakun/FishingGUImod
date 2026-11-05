@@ -48,7 +48,7 @@ public final class ModItems {
             ITEMS.register("fish_fillet", () -> new Item(new Item.Properties()));
 
     public static final RegistryObject<Item> SEAFOOD_HOTPOT = ITEMS.register("seafood_hotpot",
-            () -> new BowlFoodItem(new Item.Properties().stacksTo(16).food(new FoodProperties.Builder()
+            () -> new HotpotItem(com.example.fishinggui.block.ModBlocks.SEAFOOD_HOTPOT.get(), new Item.Properties().stacksTo(16).food(new FoodProperties.Builder()
                     .nutrition(10).saturationMod(0.8f).build())));
 
     private static Map<String, RegistryObject<Item>> registerCooked() {

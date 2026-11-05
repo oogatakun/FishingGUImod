@@ -164,6 +164,8 @@
   "gui.fishinggui.shichirin.no_fuel": "燃料が入っていない",
   "item.fishinggui.fish_fillet": "魚の切り身",
   "item.fishinggui.seafood_hotpot": "海鮮鍋",
+  "block.fishinggui.seafood_hotpot": "海鮮鍋",
+  "tooltip.fishinggui.seafood_hotpot": "スニーク＋右クリックで置ける。置いた鍋は4回分食べられる。",
   "tooltip.fishinggui.shichirin": "木炭か石炭を入れて、火打ち石と打ち金で火をつけ、魚を焼こう。水バケツで火を消せる。",
   "item.fishinggui.burnt_fish": "焦げた魚",
   "tooltip.fishinggui.cooked_heal": "体力 +%s"
