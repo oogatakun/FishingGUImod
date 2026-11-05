@@ -96,7 +96,7 @@ public class SeafoodHotpotBlock extends Block {
 
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
-        if (random.nextInt(6) == 0) {
+        if (state.getValue(SERVINGS) > 0 && random.nextInt(6) == 0) {
             level.addParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.getX() + 0.35 + random.nextDouble() * 0.3,
                     pos.getY() + 0.5, pos.getZ() + 0.35 + random.nextDouble() * 0.3, 0, 0.02, 0);
         }

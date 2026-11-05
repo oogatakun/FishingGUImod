@@ -48,7 +48,8 @@ public final class ModItems {
 
     /** Cut up on a Farmer's Delight cutting board; used by the seafood hotpot. */
     public static final RegistryObject<Item> FISH_FILLET =
-            ITEMS.register("fish_fillet", () -> new Item(new Item.Properties()));
+            ITEMS.register("fish_fillet", () -> new Item(new Item.Properties().food(
+                    new FoodProperties.Builder().nutrition(1).saturationMod(0.3f).fast().build())));
 
     /** The pot, placed as a block; right-click it with a bowl to serve SEAFOOD_HOTPOT_BOWL. */
     public static final RegistryObject<Item> SEAFOOD_HOTPOT = ITEMS.register("seafood_hotpot",
