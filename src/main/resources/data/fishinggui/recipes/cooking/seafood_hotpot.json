@@ -23,9 +23,6 @@
       "tag": "forge:crops/cabbage"
     }
   ],
-  "container": {
-    "item": "minecraft:bowl"
-  },
   "result": {
     "item": "fishinggui:seafood_hotpot"
   }

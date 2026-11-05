@@ -47,9 +47,15 @@ public final class ModItems {
     public static final RegistryObject<Item> FISH_FILLET =
             ITEMS.register("fish_fillet", () -> new Item(new Item.Properties()));
 
+    /** The pot, placed as a block; right-click it with a bowl to serve SEAFOOD_HOTPOT_BOWL. */
     public static final RegistryObject<Item> SEAFOOD_HOTPOT = ITEMS.register("seafood_hotpot",
-            () -> new HotpotItem(com.example.fishinggui.block.ModBlocks.SEAFOOD_HOTPOT.get(), new Item.Properties().stacksTo(16).food(new FoodProperties.Builder()
-                    .nutrition(10).saturationMod(0.8f).build())));
+            () -> new HotpotItem(com.example.fishinggui.block.ModBlocks.SEAFOOD_HOTPOT.get(),
+                    new Item.Properties().stacksTo(16)));
+
+    /** One bowl of hotpot: modest hunger, but a lot of saturation so the nourishment lasts. */
+    public static final RegistryObject<Item> SEAFOOD_HOTPOT_BOWL = ITEMS.register("seafood_hotpot_bowl",
+            () -> new HotpotBowlItem(new Item.Properties().stacksTo(16).food(new FoodProperties.Builder()
+                    .nutrition(8).saturationMod(1.6f).build())));
 
     private static Map<String, RegistryObject<Item>> registerCooked() {
         Map<String, RegistryObject<Item>> map = new LinkedHashMap<>();
@@ -79,6 +85,7 @@ public final class ModItems {
                 output.accept(BURNT_FISH.get());
                 output.accept(FISH_FILLET.get());
                 output.accept(SEAFOOD_HOTPOT.get());
+                output.accept(SEAFOOD_HOTPOT_BOWL.get());
                 output.accept(com.example.fishinggui.block.ModBlocks.SHICHIRIN_ITEM.get());
             })
             .build());

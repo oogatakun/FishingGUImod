@@ -1,6 +1,3 @@
 {
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "fishinggui:item/seafood_hotpot"
-  }
+  "parent": "fishinggui:block/seafood_hotpot_4"
 }

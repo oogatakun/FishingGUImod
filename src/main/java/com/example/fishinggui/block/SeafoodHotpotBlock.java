@@ -8,6 +8,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import com.example.fishinggui.item.ModItems;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -24,13 +25,11 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-/** A pot of seafood hotpot placed in the world; each right-click eats one of its servings. */
+/** A pot of seafood hotpot placed in the world; right-click it with a bowl to serve one portion. */
 public class SeafoodHotpotBlock extends Block {
     public static final int MAX_SERVINGS = 4;
     public static final IntegerProperty SERVINGS = IntegerProperty.create("servings", 1, MAX_SERVINGS);
     private static final VoxelShape SHAPE = Block.box(2, 0, 2, 14, 6, 14);
-    private static final int SERVING_NUTRITION = 3;
-    private static final float SERVING_SATURATION = 0.8f;
 
     public SeafoodHotpotBlock(Properties properties) {
         super(properties);
@@ -62,24 +61,26 @@ public class SeafoodHotpotBlock extends Block {
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
             BlockHitResult hit) {
-        if (!player.canEat(false)) {
+        ItemStack held = player.getItemInHand(hand);
+        if (!held.is(Items.BOWL)) {
             return InteractionResult.PASS;
         }
         if (level.isClientSide) {
             return InteractionResult.SUCCESS;
         }
-        player.getFoodData().eat(SERVING_NUTRITION, SERVING_SATURATION);
-        level.playSound(null, pos, SoundEvents.GENERIC_EAT, SoundSource.PLAYERS, 0.8f,
-                level.getRandom().nextFloat() * 0.1f + 0.9f);
+        if (!player.getAbilities().instabuild) {
+            held.shrink(1);
+        }
+        ItemStack serving = new ItemStack(ModItems.SEAFOOD_HOTPOT_BOWL.get());
+        if (!player.getInventory().add(serving)) {
+            player.drop(serving, false);
+        }
+        level.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 0.8f, 1.0f);
         int servings = state.getValue(SERVINGS);
         if (servings > 1) {
             level.setBlock(pos, state.setValue(SERVINGS, servings - 1), 3);
         } else {
             level.removeBlock(pos, false);
-            ItemStack bowl = new ItemStack(Items.BOWL);
-            if (!player.getInventory().add(bowl)) {
-                player.drop(bowl, false);
-            }
         }
         return InteractionResult.CONSUME;
     }
