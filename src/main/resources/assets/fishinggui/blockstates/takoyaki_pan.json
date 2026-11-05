@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=south,powered=false": {
+      "model": "fishinggui:block/takoyaki_pan"
+    },
+    "facing=south,powered=true": {
+      "model": "fishinggui:block/takoyaki_pan_on"
+    },
+    "facing=west,powered=false": {
+      "model": "fishinggui:block/takoyaki_pan",
+      "y": 90
+    },
+    "facing=west,powered=true": {
+      "model": "fishinggui:block/takoyaki_pan_on",
+      "y": 90
+    },
+    "facing=north,powered=false": {
+      "model": "fishinggui:block/takoyaki_pan",
+      "y": 180
+    },
+    "facing=north,powered=true": {
+      "model": "fishinggui:block/takoyaki_pan_on",
+      "y": 180
+    },
+    "facing=east,powered=false": {
+      "model": "fishinggui:block/takoyaki_pan",
+      "y": 270
+    },
+    "facing=east,powered=true": {
+      "model": "fishinggui:block/takoyaki_pan_on",
+      "y": 270
+    }
+  }
+}

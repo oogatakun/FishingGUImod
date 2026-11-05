@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "fishinggui:octopus"
+    }
+  ],
+  "result": {
+    "item": "fishinggui:cut_octopus",
+    "count": 6
+  }
+}

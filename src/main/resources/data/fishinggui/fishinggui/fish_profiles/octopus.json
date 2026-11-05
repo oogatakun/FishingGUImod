@@ -1,0 +1,13 @@
+{
+  "item": "fishinggui:octopus",
+  "stamina": 70,
+  "dash_interval": 90,
+  "dash_power": 0.8,
+  "tension_gain": 1.0,
+  "rarity": "uncommon",
+  "weight_min": 0.5,
+  "weight_max": 3.0,
+  "xp": 10,
+  "level": 4,
+  "catch_weight": 8
+}

@@ -15,6 +15,8 @@ public final class ClientEvents {
     public static void onRegisterRenderers(net.minecraftforge.client.event.EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(com.example.fishinggui.block.ModBlocks.SHICHIRIN_BE.get(),
                 ShichirinRenderer::new);
+        event.registerBlockEntityRenderer(com.example.fishinggui.block.ModBlocks.TAKOYAKI_PAN_BE.get(),
+                TakoyakiPanRenderer::new);
     }
 
     @SubscribeEvent

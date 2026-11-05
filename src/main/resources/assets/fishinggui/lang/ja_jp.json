@@ -170,6 +170,17 @@
   "tooltip.fishinggui.seafood_hotpot": "設置可能",
   "itemGroup.fishinggui.farmers_delight": "魚釣り: ファーマーズディライト連携",
   "gui.fishinggui.bait.required": "釣りには餌が必要です(オフハンドに持つ)",
+  "block.fishinggui.takoyaki_pan": "たこ焼き器",
+  "item.fishinggui.octopus": "タコ",
+  "item.fishinggui.cut_octopus": "切ったタコ",
+  "item.fishinggui.takoyaki_batter": "たこ焼きの生地",
+  "item.fishinggui.ice_pick": "アイスピック",
+  "item.fishinggui.mayonnaise": "マヨネーズ",
+  "item.fishinggui.aonori": "青のり",
+  "item.fishinggui.takoyaki": "たこ焼き",
+  "tooltip.fishinggui.takoyaki_pan": "隣のレバーをONにすると加熱される",
+  "gui.fishinggui.takoyaki.nothing": "今は使えない",
+  "gui.fishinggui.takoyaki.no_topping": "トッピングをのせてから",
   "tooltip.fishinggui.shichirin": "木炭か石炭を入れて、火打ち石と打ち金で火をつけ、魚を焼こう。水バケツで火を消せる。",
   "item.fishinggui.burnt_fish": "焦げた魚"
 }

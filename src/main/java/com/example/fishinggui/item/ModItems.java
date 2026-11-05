@@ -66,6 +66,27 @@ public final class ModItems {
             () -> new HotpotBowlItem(new Item.Properties().stacksTo(16).food(new FoodProperties.Builder()
                     .nutrition(8).saturationMod(0.8f).build())));
 
+    public static final RegistryObject<Item> OCTOPUS = ITEMS.register("octopus", () -> new Item(new Item.Properties()));
+
+    public static final RegistryObject<Item> CUT_OCTOPUS =
+            ITEMS.register("cut_octopus", () -> new Item(new Item.Properties()));
+
+    public static final RegistryObject<Item> TAKOYAKI_BATTER =
+            ITEMS.register("takoyaki_batter", () -> new Item(new Item.Properties()));
+
+    public static final RegistryObject<Item> ICE_PICK =
+            ITEMS.register("ice_pick", () -> new Item(new Item.Properties().stacksTo(1).durability(64)));
+
+    public static final RegistryObject<Item> MAYONNAISE =
+            ITEMS.register("mayonnaise", () -> new Item(new Item.Properties()));
+
+    public static final RegistryObject<Item> AONORI = ITEMS.register("aonori", () -> new Item(new Item.Properties()));
+
+    /** Six pieces on a boat; each bite eats one (see TakoyakiItem). */
+    public static final RegistryObject<Item> TAKOYAKI = ITEMS.register("takoyaki",
+            () -> new TakoyakiItem(new Item.Properties().durability(6).food(new FoodProperties.Builder()
+                    .nutrition(4).saturationMod(0.7f).build())));
+
     private static Map<String, RegistryObject<Item>> registerCooked() {
         Map<String, RegistryObject<Item>> map = new LinkedHashMap<>();
         for (String id : FishIds.ALL) {
@@ -94,7 +115,15 @@ public final class ModItems {
                     output.accept(COOKED.get(id).get());
                 }
                 output.accept(BURNT_FISH.get());
+                output.accept(OCTOPUS.get());
                 output.accept(com.example.fishinggui.block.ModBlocks.SHICHIRIN_ITEM.get());
+                output.accept(com.example.fishinggui.block.ModBlocks.TAKOYAKI_PAN_ITEM.get());
+                output.accept(CUT_OCTOPUS.get());
+                output.accept(TAKOYAKI_BATTER.get());
+                output.accept(ICE_PICK.get());
+                output.accept(MAYONNAISE.get());
+                output.accept(AONORI.get());
+                output.accept(TAKOYAKI.get());
             })
             .build());
 

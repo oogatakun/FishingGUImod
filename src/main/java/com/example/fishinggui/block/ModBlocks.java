@@ -36,6 +36,18 @@ public final class ModBlocks {
             () -> new SeafoodHotpotBlock(Block.Properties.of().mapColor(MapColor.TERRACOTTA_ORANGE)
                     .strength(0.5f).sound(SoundType.STONE).noOcclusion()));
 
+    public static final RegistryObject<Block> TAKOYAKI_PAN = BLOCKS.register("takoyaki_pan",
+            () -> new TakoyakiPanBlock(Block.Properties.of().mapColor(MapColor.COLOR_RED)
+                    .strength(1.5f).sound(SoundType.METAL).noOcclusion()
+                    .lightLevel(s -> s.getValue(TakoyakiPanBlock.POWERED) ? 6 : 0)));
+
+    public static final RegistryObject<Item> TAKOYAKI_PAN_ITEM = BLOCK_ITEMS.register("takoyaki_pan",
+            () -> TakoyakiPanBlock.item(TAKOYAKI_PAN.get(), new Item.Properties()));
+
+    public static final RegistryObject<BlockEntityType<TakoyakiPanBlockEntity>> TAKOYAKI_PAN_BE =
+            BLOCK_ENTITIES.register("takoyaki_pan", () ->
+                    BlockEntityType.Builder.of(TakoyakiPanBlockEntity::new, TAKOYAKI_PAN.get()).build(null));
+
     public static final RegistryObject<Item> SHICHIRIN_ITEM = BLOCK_ITEMS.register("shichirin",
             () -> new BlockItem(SHICHIRIN.get(), new Item.Properties()) {
                 @Override
