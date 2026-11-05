@@ -1,0 +1,32 @@
+{
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "farmersdelight"
+    }
+  ],
+  "type": "farmersdelight:cutting",
+  "ingredients": [
+    {
+      "item": "fishinggui:coelacanth"
+    }
+  ],
+  "tool": [
+    {
+      "type": "farmersdelight:tool_action",
+      "action": "knife_dig"
+    },
+    {
+      "tag": "forge:tools/knives"
+    }
+  ],
+  "result": [
+    {
+      "item": "fishinggui:fish_fillet",
+      "count": 2
+    },
+    {
+      "item": "minecraft:bone_meal"
+    }
+  ]
+}

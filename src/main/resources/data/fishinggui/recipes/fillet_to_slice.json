@@ -1,0 +1,18 @@
+{
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "farmersdelight"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "fishinggui:fish_fillet"
+    }
+  ],
+  "result": {
+    "item": "farmersdelight:cod_slice",
+    "count": 1
+  }
+}

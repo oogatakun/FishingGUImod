@@ -43,6 +43,14 @@ public final class ModItems {
     public static final RegistryObject<Item> BURNT_FISH = ITEMS.register("burnt_fish", () -> new Item(
             new Item.Properties().food(new FoodProperties.Builder().nutrition(1).saturationMod(0.1f).build())));
 
+    /** Cut up on a Farmer's Delight cutting board; used by the seafood hotpot. */
+    public static final RegistryObject<Item> FISH_FILLET =
+            ITEMS.register("fish_fillet", () -> new Item(new Item.Properties()));
+
+    public static final RegistryObject<Item> SEAFOOD_HOTPOT = ITEMS.register("seafood_hotpot",
+            () -> new BowlFoodItem(new Item.Properties().stacksTo(16).food(new FoodProperties.Builder()
+                    .nutrition(10).saturationMod(0.8f).build())));
+
     private static Map<String, RegistryObject<Item>> registerCooked() {
         Map<String, RegistryObject<Item>> map = new LinkedHashMap<>();
         for (String id : FishIds.ALL) {
@@ -69,6 +77,8 @@ public final class ModItems {
                 FISH.values().forEach(r -> output.accept(r.get()));
                 COOKED.values().forEach(r -> output.accept(r.get()));
                 output.accept(BURNT_FISH.get());
+                output.accept(FISH_FILLET.get());
+                output.accept(SEAFOOD_HOTPOT.get());
                 output.accept(com.example.fishinggui.block.ModBlocks.SHICHIRIN_ITEM.get());
             })
             .build());
