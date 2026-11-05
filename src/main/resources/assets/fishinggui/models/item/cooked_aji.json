@@ -1,1 +1,1 @@
-{ "parent": "minecraft:item/generated", "textures": { "layer0": "fishinggui:item/cooked_fish" } }
+{ "parent": "minecraft:item/generated", "textures": { "layer0": "fishinggui:item/cooked_aji" } }
