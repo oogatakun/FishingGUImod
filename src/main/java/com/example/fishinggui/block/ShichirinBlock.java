@@ -98,7 +98,7 @@ public class ShichirinBlock extends BaseEntityBlock {
         if (level.isClientSide) {
             return InteractionResult.SUCCESS;
         }
-        ItemStack out = be.takeOut();
+        ItemStack out = be.takeOutNear(hit.getLocation().x - pos.getX(), hit.getLocation().z - pos.getZ());
         if (!out.isEmpty() && !player.getInventory().add(out)) {
             player.drop(out, false);
         }

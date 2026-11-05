@@ -12,8 +12,6 @@ import net.minecraft.world.item.ItemStack;
 
 /** Draws the fish lying on the grill: raw while cooking, cooked or burnt item once done. */
 public class ShichirinRenderer implements BlockEntityRenderer<ShichirinBlockEntity> {
-    private static final double[][] SPOTS = {{0.33, 0.35}, {0.67, 0.35}, {0.33, 0.65}, {0.67, 0.65}};
-
     private final BlockEntityRendererProvider.Context ctx;
 
     public ShichirinRenderer(BlockEntityRendererProvider.Context ctx) {
@@ -29,7 +27,7 @@ public class ShichirinRenderer implements BlockEntityRenderer<ShichirinBlockEnti
                 continue;
             }
             pose.pushPose();
-            pose.translate(SPOTS[i][0], 0.66, SPOTS[i][1]);
+            pose.translate(ShichirinBlockEntity.SPOTS[i][0], 0.66, ShichirinBlockEntity.SPOTS[i][1]);
             pose.mulPose(Axis.XP.rotationDegrees(90));
             pose.mulPose(Axis.ZP.rotationDegrees(i % 2 == 0 ? 30 : -30));
             pose.scale(0.36f, 0.36f, 0.36f);

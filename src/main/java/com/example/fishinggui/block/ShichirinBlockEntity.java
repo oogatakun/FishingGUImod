@@ -87,19 +87,32 @@ public class ShichirinBlockEntity extends BlockEntity {
         }
     }
 
-    /** Remove and return the item of a finished slot, else the raw fish of a cooking slot; EMPTY if none. */
-    public ItemStack takeOut() {
+    /** Block-local (x, z) of each grill slot, shared with the renderer. */
+    public static final double[][] SPOTS = {{0.33, 0.35}, {0.67, 0.35}, {0.33, 0.65}, {0.67, 0.65}};
+
+    /**
+     * Remove and return what the slot nearest to the block-local point (fx, fz) holds: the finished
+     * item, or the raw fish if it is still cooking. EMPTY if that slot is empty or nothing is placed.
+     */
+    public ItemStack takeOutNear(double fx, double fz) {
+        int best = -1;
+        double bestD = Double.MAX_VALUE;
         for (int i = 0; i < SLOTS; i++) {
-            if (!raw[i].isEmpty() && phase(i) != GrillSlot.Phase.RAW) {
-                return clear(i, display(i));
+            if (raw[i].isEmpty()) {
+                continue;
+            }
+            double dx = SPOTS[i][0] - fx;
+            double dz = SPOTS[i][1] - fz;
+            double d = dx * dx + dz * dz;
+            if (d < bestD) {
+                bestD = d;
+                best = i;
             }
         }
-        for (int i = 0; i < SLOTS; i++) {
-            if (!raw[i].isEmpty()) {
-                return clear(i, raw[i].copy());
-            }
+        if (best < 0) {
+            return ItemStack.EMPTY;
         }
-        return ItemStack.EMPTY;
+        return clear(best, phase(best) == GrillSlot.Phase.RAW ? raw[best].copy() : display(best));
     }
 
     private ItemStack clear(int i, ItemStack result) {
