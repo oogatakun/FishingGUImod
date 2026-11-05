@@ -92,6 +92,9 @@ public class ShichirinBlock extends BaseEntityBlock {
             }
             return InteractionResult.CONSUME;
         }
+        if (!player.isShiftKeyDown() || hand != InteractionHand.MAIN_HAND) {
+            return InteractionResult.PASS;
+        }
         if (level.isClientSide) {
             return InteractionResult.SUCCESS;
         }

@@ -20,11 +20,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class ShichirinBlockEntity extends BlockEntity {
-    public static final int SLOTS = 2;
+    public static final int SLOTS = 4;
     public static final int MAX_FUEL_TICKS = CookingRules.MAX_FUEL * CookingRules.FUEL_TICKS;
 
     private int fuelTicks;
-    private final ItemStack[] raw = {ItemStack.EMPTY, ItemStack.EMPTY};
+    private final ItemStack[] raw = {ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY};
     private final int[] progress = new int[SLOTS];
 
     public ShichirinBlockEntity(BlockPos pos, BlockState state) {
