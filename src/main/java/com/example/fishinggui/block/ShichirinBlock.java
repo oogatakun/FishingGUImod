@@ -3,6 +3,8 @@ package com.example.fishinggui.block;
 import com.example.fishinggui.food.CookingRules;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
@@ -29,16 +31,18 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 public class ShichirinBlock extends BaseEntityBlock {
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
+    /** Set while lit but nearly out of fuel: dimmer glow and fewer sparks. */
+    public static final BooleanProperty WEAK = BooleanProperty.create("weak");
     private static final VoxelShape SHAPE = Block.box(2, 0, 2, 14, 10, 14);
 
     public ShichirinBlock(Properties properties) {
         super(properties);
-        registerDefaultState(stateDefinition.any().setValue(LIT, false));
+        registerDefaultState(stateDefinition.any().setValue(LIT, false).setValue(WEAK, false));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(LIT);
+        builder.add(LIT, WEAK);
     }
 
     @Override
@@ -118,9 +122,31 @@ public class ShichirinBlock extends BaseEntityBlock {
 
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
-        if (state.getValue(LIT) && random.nextInt(8) == 0) {
+        if (!state.getValue(LIT)) {
+            return;
+        }
+        boolean weak = state.getValue(WEAK);
+        double x = pos.getX() + 0.5;
+        double y = pos.getY() + 0.55;
+        double z = pos.getZ() + 0.5;
+        if (random.nextInt(weak ? 5 : 8) == 0) {
             level.addParticle(ParticleTypes.SMOKE, pos.getX() + 0.35 + random.nextDouble() * 0.3,
                     pos.getY() + 0.75, pos.getZ() + 0.35 + random.nextDouble() * 0.3, 0, 0.03, 0);
+        }
+        // Embers drifting up out of the coals; sparse and short-lived when the fire is dying.
+        if (random.nextInt(weak ? 12 : 3) == 0) {
+            level.addParticle(weak ? ParticleTypes.SMALL_FLAME : ParticleTypes.FLAME,
+                    x + (random.nextDouble() - 0.5) * 0.4, y, z + (random.nextDouble() - 0.5) * 0.4,
+                    (random.nextDouble() - 0.5) * 0.02, 0.03 + random.nextDouble() * 0.03,
+                    (random.nextDouble() - 0.5) * 0.02);
+        }
+        if (!weak && random.nextInt(10) == 0) {
+            level.addParticle(ParticleTypes.LAVA, x + (random.nextDouble() - 0.5) * 0.3, y,
+                    z + (random.nextDouble() - 0.5) * 0.3, 0, 0, 0);
+        }
+        if (!weak && random.nextInt(24) == 0) {
+            level.playLocalSound(x, y, z, SoundEvents.CAMPFIRE_CRACKLE, SoundSource.BLOCKS, 0.4f,
+                    0.8f + random.nextFloat() * 0.4f, false);
         }
     }
 }

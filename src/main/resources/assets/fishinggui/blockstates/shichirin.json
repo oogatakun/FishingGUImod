@@ -1,6 +1,8 @@
 {
   "variants": {
-    "lit=false": { "model": "fishinggui:block/shichirin" },
-    "lit=true": { "model": "fishinggui:block/shichirin_lit" }
+    "lit=false,weak=false": { "model": "fishinggui:block/shichirin" },
+    "lit=false,weak=true": { "model": "fishinggui:block/shichirin" },
+    "lit=true,weak=false": { "model": "fishinggui:block/shichirin_lit" },
+    "lit=true,weak=true": { "model": "fishinggui:block/shichirin_weak" }
   }
 }

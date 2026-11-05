@@ -23,6 +23,9 @@ public class ShichirinBlockEntity extends BlockEntity {
     public static final int SLOTS = 4;
     public static final int MAX_FUEL_TICKS = CookingRules.MAX_FUEL * CookingRules.FUEL_TICKS;
 
+    /** Below this much fuel the fire counts as dying (weak glow). */
+    public static final int WEAK_TICKS = 600;
+
     private int fuelTicks;
     private final ItemStack[] raw = {ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY};
     private final int[] progress = new int[SLOTS];
@@ -159,8 +162,9 @@ public class ShichirinBlockEntity extends BlockEntity {
             be.setChanged();
         }
         boolean nowLit = be.fuelTicks > 0;
-        if (state.getValue(ShichirinBlock.LIT) != nowLit) {
-            level.setBlock(pos, state.setValue(ShichirinBlock.LIT, nowLit), 3);
+        boolean nowWeak = nowLit && be.fuelTicks < WEAK_TICKS;
+        if (state.getValue(ShichirinBlock.LIT) != nowLit || state.getValue(ShichirinBlock.WEAK) != nowWeak) {
+            level.setBlock(pos, state.setValue(ShichirinBlock.LIT, nowLit).setValue(ShichirinBlock.WEAK, nowWeak), 3);
         }
         if (sync) {
             level.sendBlockUpdated(pos, state, state, 3);

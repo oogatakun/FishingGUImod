@@ -30,7 +30,7 @@ public final class ModBlocks {
     public static final RegistryObject<Block> SHICHIRIN = BLOCKS.register("shichirin",
             () -> new ShichirinBlock(Block.Properties.of().mapColor(MapColor.TERRACOTTA_ORANGE)
                     .strength(1.0f).sound(SoundType.STONE).noOcclusion()
-                    .lightLevel(s -> s.getValue(ShichirinBlock.LIT) ? 13 : 0)));
+                    .lightLevel(s -> !s.getValue(ShichirinBlock.LIT) ? 0 : s.getValue(ShichirinBlock.WEAK) ? 7 : 13)));
 
     public static final RegistryObject<Item> SHICHIRIN_ITEM = BLOCK_ITEMS.register("shichirin",
             () -> new BlockItem(SHICHIRIN.get(), new Item.Properties()) {
