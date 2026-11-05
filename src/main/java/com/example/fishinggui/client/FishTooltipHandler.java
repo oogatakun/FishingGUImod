@@ -1,7 +1,6 @@
 package com.example.fishinggui.client;
 
 import com.example.fishinggui.FishingGuiMod;
-import com.example.fishinggui.item.CookedFishItem;
 import com.example.fishinggui.item.FishLevels;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -27,12 +26,6 @@ public final class FishTooltipHandler {
         }
         if (key != null && FishingGuiMod.MOD_ID.equals(key.getNamespace()) && key.getPath().startsWith("cooked_")) {
             String raw = key.getPath().substring("cooked_".length());
-            int heal = CookedFishItem.healFor(raw);
-            if (heal > 0) {
-                String hearts = heal % 2 == 0 ? String.valueOf(heal / 2) : String.valueOf(heal / 2.0);
-                event.getToolTip().add(Component.translatable("tooltip.fishinggui.cooked_heal", hearts)
-                        .withStyle(ChatFormatting.GRAY));
-            }
             Integer rawLevel = FishLevels.BY_ID.get(FishingGuiMod.MOD_ID + ":" + raw);
             if (rawLevel != null) {
                 event.getToolTip().add(Component.translatable("tooltip.fishinggui.fish_level", rawLevel)

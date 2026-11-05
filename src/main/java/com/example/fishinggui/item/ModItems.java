@@ -6,6 +6,8 @@ import java.util.Map;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import com.example.fishinggui.food.FoodRules;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -41,7 +43,8 @@ public final class ModItems {
     public static final Map<String, RegistryObject<Item>> COOKED = registerCooked();
 
     public static final RegistryObject<Item> BURNT_FISH = ITEMS.register("burnt_fish", () -> new Item(
-            new Item.Properties().food(new FoodProperties.Builder().nutrition(1).saturationMod(0.1f).build())));
+            new Item.Properties().food(new FoodProperties.Builder().nutrition(1).saturationMod(0.1f)
+                    .effect(() -> new MobEffectInstance(MobEffects.HUNGER, 600, 1), 1.0f).build())));
 
     /** Cut up on a Farmer's Delight cutting board; used by the seafood hotpot. */
     public static final RegistryObject<Item> FISH_FILLET =
@@ -80,15 +83,27 @@ public final class ModItems {
             .displayItems((params, output) -> {
                 output.accept(WORM.get());
                 output.accept(RESET_DROP.get());
-                FISH.values().forEach(r -> output.accept(r.get()));
-                COOKED.values().forEach(r -> output.accept(r.get()));
+                for (String id : FishIds.ALL) {
+                    output.accept(FISH.get(id).get());
+                    output.accept(COOKED.get(id).get());
+                }
                 output.accept(BURNT_FISH.get());
-                output.accept(FISH_FILLET.get());
-                output.accept(SEAFOOD_HOTPOT.get());
-                output.accept(SEAFOOD_HOTPOT_BOWL.get());
                 output.accept(com.example.fishinggui.block.ModBlocks.SHICHIRIN_ITEM.get());
             })
             .build());
+
+    /** Items that only matter together with Farmer's Delight. */
+    public static final RegistryObject<CreativeModeTab> FD_TAB = TABS.register("farmers_delight",
+            () -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.fishinggui.farmers_delight"))
+                    .icon(() -> new ItemStack(SEAFOOD_HOTPOT.get()))
+                    .withTabsBefore(TAB.getId())
+                    .displayItems((params, output) -> {
+                        output.accept(FISH_FILLET.get());
+                        output.accept(SEAFOOD_HOTPOT.get());
+                        output.accept(SEAFOOD_HOTPOT_BOWL.get());
+                    })
+                    .build());
 
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);
