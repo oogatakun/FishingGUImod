@@ -42,24 +42,26 @@ public final class FishingHookHandler {
             return;
         }
         FishingHook hook = player.fishing;
-        if (hook == null || hook.nibble <= 0) {
-            return;
-        }
-        consume(event);
         int fishingLevel = FishingData.get(player).level();
         ItemStack offhand = event.getHand() == InteractionHand.MAIN_HAND ? player.getOffhandItem() : ItemStack.EMPTY;
         int baitLevel = FishProfileLoader.baitLevelOf(offhand);
-        Item bait = null;
-        if (baitLevel > 0) {
-            if (baitLevel <= fishingLevel) {
-                bait = offhand.getItem();
-            } else {
-                // Chat as well as the action bar: the fight screen can cover the action bar.
-                player.displayClientMessage(Component.translatable("gui.fishinggui.bait.locked", baitLevel), false);
-                player.displayClientMessage(Component.translatable("gui.fishinggui.bait.locked", baitLevel), true);
+        if (hook == null) {
+            // Casting: a bait the player can use must be held in the off hand.
+            if (!baitUsable(player, baitLevel, fishingLevel)) {
+                consume(event);
             }
+            return;
         }
-        List<ItemStack> loot = CatchResolver.roll(player, event.getItemStack(), bait == null ? 0 : baitLevel, bait);
+        if (hook.nibble <= 0) {
+            return;
+        }
+        consume(event);
+        if (!baitUsable(player, baitLevel, fishingLevel)) {
+            hook.discard();
+            return;
+        }
+        Item bait = offhand.getItem();
+        List<ItemStack> loot = CatchResolver.roll(player, event.getItemStack(), baitLevel, bait);
         FishInfo info = FishProfileLoader.infoFor(loot);
         float weight = info.rollWeight(new Random());
         SkillState skills = SkillData.get(player);
@@ -68,6 +70,18 @@ public final class FishingHookHandler {
                 skills.levelOf(SkillEffects.DASH_EASE), skills.levelOf(SkillEffects.DASH_DELAY),
                 skills.levelOf(SkillEffects.REEL_SPEED));
         FightManager.start(player, hook, event.getHand(), profile, bait, loot, info, weight);
+    }
+
+    /** True if the bait is usable; otherwise tells the player why (chat as well as the action bar, since the GUI can cover it). */
+    private static boolean baitUsable(ServerPlayer player, int baitLevel, int fishingLevel) {
+        if (baitLevel > 0 && baitLevel <= fishingLevel) {
+            return true;
+        }
+        Component msg = baitLevel > 0 ? Component.translatable("gui.fishinggui.bait.locked", baitLevel)
+                : Component.translatable("gui.fishinggui.bait.required");
+        player.displayClientMessage(msg, false);
+        player.displayClientMessage(msg, true);
+        return false;
     }
 
     private static void consume(PlayerInteractEvent.RightClickItem event) {

@@ -169,6 +169,7 @@
   "item.fishinggui.empty_seafood_hotpot": "Empty Seafood Hotpot",
   "tooltip.fishinggui.seafood_hotpot": "Placeable",
   "itemGroup.fishinggui.farmers_delight": "Fishing: Farmer's Delight",
+  "gui.fishinggui.bait.required": "You need bait to fish (hold it in your off hand)",
   "tooltip.fishinggui.shichirin": "Add charcoal or coal, light it with flint and steel, then grill fish. A water bucket puts it out.",
   "item.fishinggui.burnt_fish": "Burnt Fish"
 }
