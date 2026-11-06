@@ -72,10 +72,10 @@ public final class ModItems {
             ITEMS.register("cut_octopus", () -> new Item(new Item.Properties()));
 
     public static final RegistryObject<Item> TAKOYAKI_BATTER =
-            ITEMS.register("takoyaki_batter", () -> new Item(new Item.Properties().durability(2)));
+            ITEMS.register("takoyaki_batter", () -> new Item(new Item.Properties().durability(24)));
 
     public static final RegistryObject<Item> ICE_PICK =
-            ITEMS.register("ice_pick", () -> new Item(new Item.Properties().stacksTo(1).durability(64)));
+            ITEMS.register("ice_pick", () -> new Item(new Item.Properties().stacksTo(1).durability(256)));
 
     public static final RegistryObject<Item> MAYONNAISE =
             ITEMS.register("mayonnaise", () -> new Item(new Item.Properties().durability(6)));

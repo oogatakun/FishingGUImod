@@ -43,49 +43,35 @@ public class TakoyakiPanBlockEntity extends BlockEntity {
         return false;
     }
 
-    /** Second pour on filled wells; otherwise the first pour on empty ones. Returns the wells changed. */
-    public int pour() {
-        int to = count(FILLED) > 0 ? COOKING : BATTER;
-        int from = to == COOKING ? FILLED : EMPTY;
-        return advance(from, to);
-    }
-
-    /** Puts up to {@code available} pieces of octopus into wells that have batter. */
-    public int addOctopus(int available) {
-        int n = 0;
-        for (int i = 0; i < WELLS && n < available; i++) {
-            if (stage[i] == BATTER) {
-                set(i, FILLED);
-                n++;
-            }
+    /** Batter into an empty well, or the second pour over a filled one. True if the well changed. */
+    public boolean pourWell(int well) {
+        if (stage[well] == EMPTY) {
+            return move(well, BATTER);
         }
-        return changed(n);
+        return stage[well] == FILLED && move(well, COOKING);
     }
 
-    public int flip() {
-        return advance(FLIP, COOKING_BACK);
+    /** Octopus into a well that has batter. */
+    public boolean addOctopusWell(int well) {
+        return stage[well] == BATTER && move(well, FILLED);
     }
 
-    /** Adds a topping to every ready well that does not have it yet. */
-    public int topping(int bit) {
-        int n = 0;
-        for (int i = 0; i < WELLS; i++) {
-            if (stage[i] == READY && (toppings[i] & bit) == 0) {
-                toppings[i] |= bit;
-                n++;
-            }
+    public boolean flipWell(int well) {
+        return stage[well] == FLIP && move(well, COOKING_BACK);
+    }
+
+    /** Adds a topping to a ready well that does not have it yet. */
+    public boolean toppingWell(int well, int bit) {
+        if (stage[well] != READY || (toppings[well] & bit) != 0) {
+            return false;
         }
-        return changed(n);
+        toppings[well] |= bit;
+        return changed(1) > 0;
     }
 
-    public int count(int wantedStage) {
-        int n = 0;
-        for (int s : stage) {
-            if (s == wantedStage) {
-                n++;
-            }
-        }
-        return n;
+    private boolean move(int well, int newStage) {
+        set(well, newStage);
+        return changed(1) > 0;
     }
 
     public boolean readyWithoutTopping() {
@@ -103,17 +89,6 @@ public class TakoyakiPanBlockEntity extends BlockEntity {
         for (int i = 0; i < WELLS && n < max; i++) {
             if (stage[i] == READY && toppings[i] != 0) {
                 set(i, EMPTY);
-                n++;
-            }
-        }
-        return changed(n);
-    }
-
-    private int advance(int from, int to) {
-        int n = 0;
-        for (int i = 0; i < WELLS; i++) {
-            if (stage[i] == from) {
-                set(i, to);
                 n++;
             }
         }

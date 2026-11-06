@@ -45,5 +45,8 @@ public final class ModNetwork {
         CHANNEL.messageBuilder(SkillResetPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(SkillResetPacket::encode).decoder(SkillResetPacket::decode)
                 .consumerMainThread(SkillResetPacket::handle).add();
+        CHANNEL.messageBuilder(TakoyakiActionPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(TakoyakiActionPacket::encode).decoder(TakoyakiActionPacket::decode)
+                .consumerMainThread(TakoyakiActionPacket::handle).add();
     }
 }

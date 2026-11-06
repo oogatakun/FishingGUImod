@@ -181,6 +181,15 @@
   "tooltip.fishinggui.takoyaki_pan": "隣のレバーをONにすると加熱される",
   "gui.fishinggui.takoyaki.nothing": "今は使えない",
   "gui.fishinggui.takoyaki.no_topping": "トッピングをのせてから",
+  "gui.fishinggui.takoyaki.hint": "道具を選んで穴をクリック",
+  "gui.fishinggui.takoyaki.off": "レバーがOFFなので加熱されない",
+  "gui.fishinggui.takoyaki.stage.0": "空",
+  "gui.fishinggui.takoyaki.stage.1": "生地",
+  "gui.fishinggui.takoyaki.stage.2": "具入り（生地待ち）",
+  "gui.fishinggui.takoyaki.stage.3": "焼き中",
+  "gui.fishinggui.takoyaki.stage.4": "ひっくり返す",
+  "gui.fishinggui.takoyaki.stage.5": "裏を焼き中",
+  "gui.fishinggui.takoyaki.stage.6": "完成",
   "tooltip.fishinggui.shichirin": "木炭か石炭を入れて、火打ち石と打ち金で火をつけ、魚を焼こう。水バケツで火を消せる。",
   "item.fishinggui.burnt_fish": "焦げた魚"
 }

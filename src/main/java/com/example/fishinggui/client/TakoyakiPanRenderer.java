@@ -62,16 +62,10 @@ public class TakoyakiPanRenderer implements BlockEntityRenderer<TakoyakiPanBlock
             }
             return;
         }
-        // each side starts at the freshly-cooked colour and browns as it cooks
-        int[] fresh = {240, 218, 148};
-        int[] target = switch (stage) {
-            case COOKING, FLIP -> new int[] {224, 178, 84};
-            default -> new int[] {170, 96, 36};
-        };
-        float t = stage == COOKING || stage == COOKING_BACK ? progress : 1f;
-        int r = lerp(fresh[0], target[0], t);
-        int g = lerp(fresh[1], target[1], t);
-        int b = lerp(fresh[2], target[2], t);
+        int[] rgb = color(stage, progress);
+        int r = rgb[0];
+        int g = rgb[1];
+        int b = rgb[2];
         // a ball built from stacked boxes: narrow, wide, wide, narrow
         box(vc, pose, sprite, light, cx, cz, 2.3, FLOOR, FLOOR + 0.9, r, g, b);
         box(vc, pose, sprite, light, cx, cz, 2.7, FLOOR + 0.9, FLOOR + 1.8, r, g, b);
@@ -90,10 +84,6 @@ public class TakoyakiPanRenderer implements BlockEntityRenderer<TakoyakiPanBlock
             box(vc, pose, sprite, light, cx + 0.5, cz - 0.3, 0.35, 0.35, top, top + 0.25, 64, 140, 60);
             box(vc, pose, sprite, light, cx + 0.1, cz + 0.6, 0.35, 0.35, top, top + 0.25, 64, 140, 60);
         }
-    }
-
-    private static int lerp(int a, int b, float t) {
-        return Math.round(a + (b - a) * t);
     }
 
     private static void box(VertexConsumer vc, PoseStack pose, TextureAtlasSprite sprite, int light, double cx,

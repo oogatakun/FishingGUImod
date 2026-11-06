@@ -181,6 +181,15 @@
   "tooltip.fishinggui.takoyaki_pan": "Heats while a lever next to it is on",
   "gui.fishinggui.takoyaki.nothing": "Nothing to do right now",
   "gui.fishinggui.takoyaki.no_topping": "Add toppings first",
+  "gui.fishinggui.takoyaki.hint": "Pick a tool, then click a well",
+  "gui.fishinggui.takoyaki.off": "The lever is off, so it is not heating",
+  "gui.fishinggui.takoyaki.stage.0": "Empty",
+  "gui.fishinggui.takoyaki.stage.1": "Batter",
+  "gui.fishinggui.takoyaki.stage.2": "Filled (needs more batter)",
+  "gui.fishinggui.takoyaki.stage.3": "Cooking",
+  "gui.fishinggui.takoyaki.stage.4": "Flip it",
+  "gui.fishinggui.takoyaki.stage.5": "Cooking the other side",
+  "gui.fishinggui.takoyaki.stage.6": "Done",
   "tooltip.fishinggui.shichirin": "Add charcoal or coal, light it with flint and steel, then grill fish. A water bucket puts it out.",
   "item.fishinggui.burnt_fish": "Burnt Fish"
 }

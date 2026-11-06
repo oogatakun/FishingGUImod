@@ -1,12 +1,10 @@
 package com.example.fishinggui.block;
 
-import com.example.fishinggui.food.TakoyakiRules;
-import com.example.fishinggui.item.ModItems;
+import com.example.fishinggui.client.ClientHooks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -15,7 +13,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -34,10 +31,12 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 
 /**
- * A takoyaki pan. It heats while a lever next to it is on. Pour batter, add octopus, pour again, flip with an
- * ice pick, add toppings, then scoop the takoyaki up with a bowl.
+ * A takoyaki pan. It heats while a lever next to it is on. Right-click opens a screen to pour batter, add octopus,
+ * pour again, flip with an ice pick, add toppings and scoop the takoyaki up with a bowl, one well at a time.
  */
 public class TakoyakiPanBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
@@ -110,77 +109,10 @@ public class TakoyakiPanBlock extends BaseEntityBlock {
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
             BlockHitResult hit) {
-        ItemStack held = player.getItemInHand(hand);
-        boolean tool = held.is(ModItems.TAKOYAKI_BATTER.get()) || held.is(ModItems.CUT_OCTOPUS.get())
-                || held.is(ModItems.ICE_PICK.get()) || held.is(ModItems.MAYONNAISE.get())
-                || held.is(ModItems.AONORI.get()) || held.is(Items.BOWL);
-        if (!tool || !(level.getBlockEntity(pos) instanceof TakoyakiPanBlockEntity be)) {
-            return InteractionResult.PASS;
-        }
         if (level.isClientSide) {
-            return InteractionResult.SUCCESS;
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientHooks.openTakoyakiScreen(pos));
         }
-        boolean creative = player.getAbilities().instabuild;
-        int n;
-        SoundEvent sound = SoundEvents.BOTTLE_EMPTY;
-        if (held.is(ModItems.TAKOYAKI_BATTER.get())) {
-            n = be.pour();
-            if (n > 0 && !creative) {
-                held.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(hand));
-            }
-        } else if (held.is(ModItems.CUT_OCTOPUS.get())) {
-            n = be.addOctopus(creative ? TakoyakiRules.WELLS : held.getCount());
-            if (n > 0 && !creative) {
-                held.shrink(n);
-            }
-            sound = SoundEvents.SLIME_BLOCK_PLACE;
-        } else if (held.is(ModItems.ICE_PICK.get())) {
-            n = be.flip();
-            if (n > 0 && !creative) {
-                held.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(hand));
-            }
-            sound = SoundEvents.ITEM_FRAME_ROTATE_ITEM;
-        } else if (held.is(ModItems.MAYONNAISE.get()) || held.is(ModItems.AONORI.get())) {
-            n = be.topping(held.is(ModItems.MAYONNAISE.get()) ? TakoyakiRules.MAYO : TakoyakiRules.AONORI);
-            if (n > 0 && !creative) {
-                if (!held.isDamageableItem()) {
-                    held.shrink(1);
-                } else if (held.getDamageValue() + 1 >= held.getMaxDamage()) {
-                    player.setItemInHand(hand, new ItemStack(Items.GLASS_BOTTLE));
-                } else {
-                    held.setDamageValue(held.getDamageValue() + 1);
-                }
-            }
-            sound = SoundEvents.HONEY_BLOCK_SLIDE;
-        } else {
-            n = scoop(be, player, held, creative);
-            sound = SoundEvents.ITEM_PICKUP;
-        }
-        if (n == 0) {
-            String key = held.is(Items.BOWL) && be.readyWithoutTopping()
-                    ? "gui.fishinggui.takoyaki.no_topping" : "gui.fishinggui.takoyaki.nothing";
-            player.displayClientMessage(Component.translatable(key), true);
-            return InteractionResult.CONSUME;
-        }
-        level.playSound(null, pos, sound, SoundSource.BLOCKS, 0.8f, 1.0f);
-        return InteractionResult.CONSUME;
-    }
-
-    /** Bowl in hand: scoop up to one boat of finished takoyaki. */
-    private static int scoop(TakoyakiPanBlockEntity be, Player player, ItemStack bowl, boolean creative) {
-        int n = be.collect(TakoyakiRules.PORTIONS);
-        if (n == 0) {
-            return 0;
-        }
-        if (!creative) {
-            bowl.shrink(1);
-        }
-        ItemStack boat = new ItemStack(ModItems.TAKOYAKI.get());
-        boat.setDamageValue(TakoyakiRules.PORTIONS - n);
-        if (!player.getInventory().add(boat)) {
-            player.drop(boat, false);
-        }
-        return n;
+        return InteractionResult.sidedSuccess(level.isClientSide);
     }
 
     @Override

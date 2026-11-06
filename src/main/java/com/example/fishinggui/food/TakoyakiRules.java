@@ -23,7 +23,31 @@ public final class TakoyakiRules {
     public static final int MAYO = 1;
     public static final int AONORI = 2;
 
+    /** Tools the pan screen offers, in toolbar order. */
+    public static final int TOOL_BATTER = 0;
+    public static final int TOOL_OCTOPUS = 1;
+    public static final int TOOL_PICK = 2;
+    public static final int TOOL_MAYO = 3;
+    public static final int TOOL_AONORI = 4;
+    public static final int TOOL_BOWL = 5;
+    public static final int TOOLS = 6;
+
+    private static final int[] FRESH = {240, 218, 148};
+    private static final int[] HALF_DONE = {224, 178, 84};
+    private static final int[] DONE = {170, 96, 36};
+
     private TakoyakiRules() {
+    }
+
+    /** RGB of a cooked well (COOKING or later). Each side starts at the freshly-cooked colour and browns. */
+    public static int[] color(int stage, float progress) {
+        int[] target = stage == COOKING || stage == FLIP ? HALF_DONE : DONE;
+        float t = stage == COOKING || stage == COOKING_BACK ? progress : 1f;
+        return new int[] {lerp(FRESH[0], target[0], t), lerp(FRESH[1], target[1], t), lerp(FRESH[2], target[2], t)};
+    }
+
+    private static int lerp(int a, int b, float t) {
+        return Math.round(a + (b - a) * t);
     }
 
     /** The stage a well moves to when its cooking timer runs out, or the same stage if it is not cooking. */
