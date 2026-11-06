@@ -78,7 +78,7 @@ public final class ModItems {
             ITEMS.register("ice_pick", () -> new Item(new Item.Properties().stacksTo(1).durability(64)));
 
     public static final RegistryObject<Item> MAYONNAISE =
-            ITEMS.register("mayonnaise", () -> new Item(new Item.Properties()));
+            ITEMS.register("mayonnaise", () -> new Item(new Item.Properties().durability(6)));
 
     public static final RegistryObject<Item> AONORI = ITEMS.register("aonori", () -> new Item(new Item.Properties()));
 

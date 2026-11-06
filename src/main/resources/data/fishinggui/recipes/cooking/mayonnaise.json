@@ -7,6 +7,6 @@
     { "item": "minecraft:egg" },
     { "item": "minecraft:sugar" }
   ],
-  "result": { "item": "fishinggui:mayonnaise", "count": 4 },
+  "result": { "item": "fishinggui:mayonnaise" },
   "container": { "item": "minecraft:glass_bottle" }
 }

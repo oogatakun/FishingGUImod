@@ -143,7 +143,13 @@ public class TakoyakiPanBlock extends BaseEntityBlock {
         } else if (held.is(ModItems.MAYONNAISE.get()) || held.is(ModItems.AONORI.get())) {
             n = be.topping(held.is(ModItems.MAYONNAISE.get()) ? TakoyakiRules.MAYO : TakoyakiRules.AONORI);
             if (n > 0 && !creative) {
-                held.shrink(1);
+                if (!held.isDamageableItem()) {
+                    held.shrink(1);
+                } else if (held.getDamageValue() + 1 >= held.getMaxDamage()) {
+                    player.setItemInHand(hand, new ItemStack(Items.GLASS_BOTTLE));
+                } else {
+                    held.setDamageValue(held.getDamageValue() + 1);
+                }
             }
             sound = SoundEvents.HONEY_BLOCK_SLIDE;
         } else {
