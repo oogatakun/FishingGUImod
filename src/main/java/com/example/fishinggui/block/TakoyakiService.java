@@ -132,24 +132,42 @@ public final class TakoyakiService {
         }
     }
 
-    /** Bowl: scoop the chosen wells (up to one boat) of finished takoyaki. */
+    /**
+     * Bowl: scoop the chosen wells. Pieces go onto a boat that is not full yet; only a new boat uses up a bowl, so
+     * scooping one well at a time does not leave a pile of one-piece boats.
+     */
     private static boolean scoop(TakoyakiPanBlockEntity be, ServerPlayer player, int mask, boolean creative) {
         Inventory inv = player.getInventory();
-        int slot = findSlot(inv, Items.BOWL);
-        if (slot < 0 && !creative) {
+        int bowlSlot = findSlot(inv, Items.BOWL);
+        ItemStack partial = ItemStack.EMPTY;
+        for (ItemStack s : inv.items) {
+            if (s.is(ModItems.TAKOYAKI.get()) && s.getDamageValue() > 0) {
+                partial = s;
+                break;
+            }
+        }
+        int capacity = partial.getDamageValue() + (bowlSlot >= 0 || creative ? PORTIONS : 0);
+        if (capacity == 0) {
             return false;
         }
-        int n = be.collectWells(mask, PORTIONS);
+        int n = be.collectWells(mask, capacity);
         if (n == 0) {
             return false;
         }
-        if (!creative) {
-            inv.getItem(slot).shrink(1);
+        int onto = Math.min(n, partial.getDamageValue());
+        if (onto > 0) {
+            partial.setDamageValue(partial.getDamageValue() - onto);
         }
-        ItemStack boat = new ItemStack(ModItems.TAKOYAKI.get());
-        boat.setDamageValue(PORTIONS - n);
-        if (!inv.add(boat)) {
-            player.drop(boat, false);
+        int rest = n - onto;
+        if (rest > 0) {
+            if (!creative) {
+                inv.getItem(bowlSlot).shrink(1);
+            }
+            ItemStack boat = new ItemStack(ModItems.TAKOYAKI.get());
+            boat.setDamageValue(PORTIONS - rest);
+            if (!inv.add(boat)) {
+                player.drop(boat, false);
+            }
         }
         return true;
     }
