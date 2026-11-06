@@ -117,13 +117,6 @@ public final class ModItems {
                 output.accept(BURNT_FISH.get());
                 output.accept(OCTOPUS.get());
                 output.accept(com.example.fishinggui.block.ModBlocks.SHICHIRIN_ITEM.get());
-                output.accept(com.example.fishinggui.block.ModBlocks.TAKOYAKI_PAN_ITEM.get());
-                output.accept(CUT_OCTOPUS.get());
-                output.accept(TAKOYAKI_BATTER.get());
-                output.accept(ICE_PICK.get());
-                output.accept(MAYONNAISE.get());
-                output.accept(AONORI.get());
-                output.accept(TAKOYAKI.get());
             })
             .build());
 
@@ -138,6 +131,13 @@ public final class ModItems {
                         output.accept(SEAFOOD_HOTPOT.get());
                         output.accept(EMPTY_SEAFOOD_HOTPOT.get());
                         output.accept(SEAFOOD_HOTPOT_BOWL.get());
+                        output.accept(com.example.fishinggui.block.ModBlocks.TAKOYAKI_PAN_ITEM.get());
+                        output.accept(CUT_OCTOPUS.get());
+                        output.accept(TAKOYAKI_BATTER.get());
+                        output.accept(ICE_PICK.get());
+                        output.accept(MAYONNAISE.get());
+                        output.accept(AONORI.get());
+                        output.accept(TAKOYAKI.get());
                     })
                     .build());
 
