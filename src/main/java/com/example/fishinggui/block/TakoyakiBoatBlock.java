@@ -10,6 +10,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -27,10 +28,10 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-/** A boat of takoyaki set down on a surface; right-click eats one piece, breaking it gives back what is left. */
+/** A boat of takoyaki set down on a surface; right-click eats one piece, an emptied boat stays until it is picked up (sneak) for the bowl. */
 public class TakoyakiBoatBlock extends Block {
     public static final int MAX_PIECES = 6;
-    public static final IntegerProperty PIECES = IntegerProperty.create("pieces", 1, MAX_PIECES);
+    public static final IntegerProperty PIECES = IntegerProperty.create("pieces", 0, MAX_PIECES);
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     private static final VoxelShape SHAPE = Block.box(1, 0, 1, 15, 6, 15);
 
@@ -69,15 +70,39 @@ public class TakoyakiBoatBlock extends Block {
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
             BlockHitResult hit) {
+        int pieces = state.getValue(PIECES);
+        ItemStack held = player.getItemInHand(hand);
+        boolean add = held.is(ModItems.TAKOYAKI.get()) && pieces < MAX_PIECES;
+        boolean take = !add && player.isShiftKeyDown();
+        boolean eat = !add && !take && pieces > 0;
+        if (!add && !take && !eat) {
+            return InteractionResult.PASS;
+        }
         if (level.isClientSide) {
             return InteractionResult.SUCCESS;
         }
-        int pieces = state.getValue(PIECES);
-        player.getFoodData().eat(4, 0.7f);
-        level.playSound(null, pos, SoundEvents.GENERIC_EAT, SoundSource.PLAYERS, 0.8f, 1.0f);
-        if (pieces <= 1) {
+        if (add) {
+            // set one piece from the boat in hand down onto the placed one
+            if (!player.getAbilities().instabuild) {
+                if (held.getDamageValue() + 1 >= held.getMaxDamage()) {
+                    player.setItemInHand(hand, new ItemStack(Items.BOWL));
+                } else {
+                    held.setDamageValue(held.getDamageValue() + 1);
+                }
+            }
+            level.setBlock(pos, state.setValue(PIECES, pieces + 1), 3);
+            level.playSound(null, pos, SoundEvents.SLIME_BLOCK_PLACE, SoundSource.BLOCKS, 0.6f, 1.2f);
+        } else if (take) {
+            // sneak: pick the boat up (an empty one gives the bowl back)
             level.removeBlock(pos, false);
+            level.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.6f, 1.0f);
+            ItemStack back = asItem(state);
+            if (!player.getInventory().add(back)) {
+                player.drop(back, false);
+            }
         } else {
+            player.getFoodData().eat(4, 0.7f);
+            level.playSound(null, pos, SoundEvents.GENERIC_EAT, SoundSource.PLAYERS, 0.8f, 1.0f);
             level.setBlock(pos, state.setValue(PIECES, pieces - 1), 3);
         }
         return InteractionResult.CONSUME;
@@ -85,6 +110,9 @@ public class TakoyakiBoatBlock extends Block {
 
     /** The boat as an item again, with the pieces that are left. */
     public static ItemStack asItem(BlockState state) {
+        if (state.getValue(PIECES) == 0) {
+            return new ItemStack(Items.BOWL);
+        }
         ItemStack stack = new ItemStack(ModItems.TAKOYAKI.get());
         stack.setDamageValue(MAX_PIECES - state.getValue(PIECES));
         return stack;
