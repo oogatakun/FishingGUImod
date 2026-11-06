@@ -1,0 +1,60 @@
+{
+  "parent": "minecraft:item/handheld_rod",
+  "textures": {
+    "layer0": "fishinggui:item/tackle_rod_1"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 1
+      },
+      "model": "fishinggui:item/tackle_rod_1"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 2
+      },
+      "model": "fishinggui:item/tackle_rod_2"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3
+      },
+      "model": "fishinggui:item/tackle_rod_3"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4
+      },
+      "model": "fishinggui:item/tackle_rod_4"
+    },
+    {
+      "predicate": {
+        "cast": 1,
+        "custom_model_data": 1
+      },
+      "model": "fishinggui:item/tackle_rod_cast_1"
+    },
+    {
+      "predicate": {
+        "cast": 1,
+        "custom_model_data": 2
+      },
+      "model": "fishinggui:item/tackle_rod_cast_2"
+    },
+    {
+      "predicate": {
+        "cast": 1,
+        "custom_model_data": 3
+      },
+      "model": "fishinggui:item/tackle_rod_cast_3"
+    },
+    {
+      "predicate": {
+        "cast": 1,
+        "custom_model_data": 4
+      },
+      "model": "fishinggui:item/tackle_rod_cast_4"
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+package com.example.fishinggui.item;
+
+import com.example.fishinggui.tackle.Part;
+import com.example.fishinggui.tackle.RodSetup;
+import java.util.List;
+import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.FishingRodItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
+
+/** A rod assembled at a tackle bench: the fitted parts live in the stack's NBT and decide its numbers. */
+public class TackleRodItem extends FishingRodItem {
+    private static final String TAG = "Tackle";
+
+    public TackleRodItem(Properties properties) {
+        super(properties);
+    }
+
+    /** The parts fitted to a rod stack; empty if it is not a tackle rod. */
+    public static RodSetup setupOf(ItemStack stack) {
+        RodSetup setup = new RodSetup();
+        if (!(stack.getItem() instanceof TackleRodItem) || !stack.hasTag()) {
+            return setup;
+        }
+        CompoundTag tag = stack.getTagElement(TAG);
+        if (tag == null) {
+            return setup;
+        }
+        for (Part part : Part.values()) {
+            setup = setup.with(part, tag.getInt(part.id()));
+        }
+        return setup;
+    }
+
+    /** Builds the rod item for a setup; {@code damage} carries the wear of the fitted rod blank. */
+    public static ItemStack assemble(RodSetup setup, int damage) {
+        ItemStack stack = new ItemStack(ModItems.TACKLE_ROD.get());
+        CompoundTag tag = new CompoundTag();
+        for (Part part : Part.values()) {
+            if (setup.rank(part) > 0) {
+                tag.putInt(part.id(), setup.rank(part));
+            }
+        }
+        stack.getOrCreateTag().put(TAG, tag);
+        stack.getOrCreateTag().putInt("CustomModelData", Math.max(1, setup.rank(Part.ROD_BLANK)));
+        stack.setDamageValue(Math.max(0, Math.min(setup.durability() - 1, damage)));
+        return stack;
+    }
+
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        int max = setupOf(stack).durability();
+        return max > 0 ? max : super.getMaxDamage(stack);
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+        RodSetup setup = setupOf(stack);
+        for (Part part : Part.values()) {
+            if (!part.available()) {
+                continue;
+            }
+            int rank = setup.rank(part);
+            Component name = rank > 0
+                    ? Component.translatable("item.fishinggui." + part.itemName(rank))
+                    : Component.translatable("tooltip.fishinggui.rod.none").withStyle(ChatFormatting.DARK_GRAY);
+            tooltip.add(Component.translatable("tooltip.fishinggui.rod.slot." + part.id(), name)
+                    .withStyle(ChatFormatting.GRAY));
+        }
+        tooltip.add(Component.empty());
+        tooltip.add(Component.translatable("tooltip.fishinggui.rod.level_cap", setup.levelCap())
+                .withStyle(ChatFormatting.GREEN));
+    }
+}

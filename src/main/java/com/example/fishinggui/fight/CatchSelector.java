@@ -18,7 +18,20 @@ public final class CatchSelector {
     public record Entry(String id, int level, int catchWeight) {
     }
 
+    /** What a plain vanilla rod can bring up: vanilla items of the lowest levels, which are the junk. */
+    public static final int JUNK_MAX_LEVEL = 3;
+
     private CatchSelector() {
+    }
+
+    public static List<Entry> junk(List<Entry> pool) {
+        List<Entry> out = new ArrayList<>();
+        for (Entry e : pool) {
+            if (e.id().startsWith("minecraft:") && e.level() <= JUNK_MAX_LEVEL) {
+                out.add(e);
+            }
+        }
+        return out;
     }
 
     static double upChance(boolean hasBait, float luck) {

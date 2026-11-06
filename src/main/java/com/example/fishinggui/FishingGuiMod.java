@@ -15,6 +15,7 @@ public class FishingGuiMod {
         modBus.addListener(this::commonSetup);
         ModItems.register(modBus);
         com.example.fishinggui.block.ModBlocks.register(modBus);
+        com.example.fishinggui.block.ModMenus.register(modBus);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {

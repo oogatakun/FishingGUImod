@@ -2,6 +2,7 @@ package com.example.fishinggui.item;
 
 import com.example.fishinggui.FishingGuiMod;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -88,6 +89,35 @@ public final class ModItems {
                     new Item.Properties().durability(6).food(new FoodProperties.Builder()
                     .nutrition(4).saturationMod(0.7f).build())));
 
+    /** Rod parts that can be built today, by part and rank (index 0 is rank 1). */
+    public static final Map<com.example.fishinggui.tackle.Part, List<RegistryObject<Item>>> PARTS =
+            registerParts();
+
+    /** A rod assembled at a tackle bench. */
+    public static final RegistryObject<Item> TACKLE_ROD = ITEMS.register("tackle_rod",
+            () -> new TackleRodItem(new Item.Properties().stacksTo(1).durability(128)));
+
+    private static Map<com.example.fishinggui.tackle.Part, List<RegistryObject<Item>>> registerParts() {
+        Map<com.example.fishinggui.tackle.Part, List<RegistryObject<Item>>> map =
+                new java.util.EnumMap<>(com.example.fishinggui.tackle.Part.class);
+        for (com.example.fishinggui.tackle.Part part : com.example.fishinggui.tackle.Part.values()) {
+            if (!part.available()) {
+                continue;
+            }
+            List<RegistryObject<Item>> ranks = new java.util.ArrayList<>();
+            for (int rank = 1; rank <= com.example.fishinggui.tackle.Part.MAX_RANK; rank++) {
+                int r = rank;
+                ranks.add(ITEMS.register(part.itemName(rank), () -> new TacklePartItem(part, r,
+                        part == com.example.fishinggui.tackle.Part.ROD_BLANK
+                                ? new Item.Properties().stacksTo(1).durability(
+                                        com.example.fishinggui.tackle.RodSetup.durabilityOf(r))
+                                : new Item.Properties().stacksTo(16))));
+            }
+            map.put(part, List.copyOf(ranks));
+        }
+        return map;
+    }
+
     private static Map<String, RegistryObject<Item>> registerCooked() {
         Map<String, RegistryObject<Item>> map = new LinkedHashMap<>();
         for (String id : FishIds.ALL) {
@@ -117,6 +147,9 @@ public final class ModItems {
                 }
                 output.accept(BURNT_FISH.get());
                 output.accept(OCTOPUS.get());
+                output.accept(com.example.fishinggui.block.ModBlocks.TACKLE_BENCH_ITEM.get());
+                output.accept(TACKLE_ROD.get());
+                PARTS.values().forEach(l -> l.forEach(p -> output.accept(p.get())));
                 output.accept(com.example.fishinggui.block.ModBlocks.SHICHIRIN_ITEM.get());
             })
             .build());

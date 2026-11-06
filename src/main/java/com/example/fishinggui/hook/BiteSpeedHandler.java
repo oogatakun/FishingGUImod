@@ -25,7 +25,13 @@ public final class BiteSpeedHandler {
         if (hook == null || FightManager.isFighting(player) || hook.nibble != 0) {
             return;
         }
-        double extra = SkillEffects.biteSpeedExtraTicks(SkillData.get(player).levelOf(SkillEffects.BITE_SPEED));
+        net.minecraft.world.item.ItemStack rod = player.getMainHandItem().getItem()
+                instanceof net.minecraft.world.item.FishingRodItem ? player.getMainHandItem()
+                : player.getOffhandItem();
+        double cut = com.example.fishinggui.item.TackleRodItem.setupOf(rod).biteCut();
+        double skill = SkillEffects.biteSpeedBonus(SkillData.get(player).levelOf(SkillEffects.BITE_SPEED));
+        double reduction = 1.0 - (1.0 - skill) * (1.0 - cut);
+        double extra = reduction / (1.0 - reduction);
         if (extra <= 0) {
             return;
         }

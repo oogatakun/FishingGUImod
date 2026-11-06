@@ -20,6 +20,27 @@ public final class ClientEvents {
     }
 
     @SubscribeEvent
+    public static void onClientSetup(net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent event) {
+        event.enqueueWork(() -> {
+            net.minecraft.client.gui.screens.MenuScreens.register(
+                    com.example.fishinggui.block.ModMenus.TACKLE_BENCH.get(), TackleBenchScreen::new);
+            // the casting sprite, the same rule as the vanilla rod
+            net.minecraft.client.renderer.item.ItemProperties.register(
+                    com.example.fishinggui.item.ModItems.TACKLE_ROD.get(),
+                    new net.minecraft.resources.ResourceLocation("cast"), (stack, level, entity, seed) -> {
+                        if (!(entity instanceof net.minecraft.world.entity.player.Player player)) {
+                            return 0.0f;
+                        }
+                        boolean main = player.getMainHandItem() == stack;
+                        boolean off = player.getOffhandItem() == stack
+                                && !(player.getMainHandItem().getItem()
+                                        instanceof net.minecraft.world.item.FishingRodItem);
+                        return (main || off) && player.fishing != null ? 1.0f : 0.0f;
+                    });
+        });
+    }
+
+    @SubscribeEvent
     public static void onRegisterOverlays(RegisterGuiOverlaysEvent event) {
         event.registerAboveAll("level_up",
                 (gui, graphics, partialTick, width, height) -> LevelUpOverlay.render(graphics, width, height));

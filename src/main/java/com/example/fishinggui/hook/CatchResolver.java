@@ -3,6 +3,7 @@ package com.example.fishinggui.hook;
 import com.example.fishinggui.data.FishProfileLoader;
 import com.example.fishinggui.fight.CatchSelector;
 import com.example.fishinggui.fight.FishInfo;
+import com.example.fishinggui.item.TackleRodItem;
 import java.util.List;
 import java.util.Random;
 import net.minecraft.resources.ResourceLocation;
@@ -38,11 +39,17 @@ public final class CatchResolver {
     public static final int LINE_BREAK_ROD_DAMAGE = 5;
 
     public static List<ItemStack> roll(ServerPlayer player, ItemStack rod, int baitLevel, Item bait) {
-        float luck = EnchantmentHelper.getFishingLuckBonus(rod) + player.getLuck();
+        boolean tackle = rod.getItem() instanceof TackleRodItem;
+        float luck = EnchantmentHelper.getFishingLuckBonus(rod) + player.getLuck()
+                + (tackle ? TackleRodItem.setupOf(rod).hookLuck() : 0f);
         boolean hasBait = bait != null && baitLevel > 0;
         String baitId = hasBait ? String.valueOf(ForgeRegistries.ITEMS.getKey(bait)) : null;
-        CatchSelector.Entry entry = CatchSelector.select(FishProfileLoader.pool(), hasBait ? baitLevel : 1, hasBait,
-                luck, baitId, new Random());
+        // the vanilla rod only ever brings up junk
+        CatchSelector.Entry entry = tackle
+                ? CatchSelector.select(FishProfileLoader.pool(), hasBait ? baitLevel : 1, hasBait, luck, baitId,
+                        new Random())
+                : CatchSelector.select(CatchSelector.junk(FishProfileLoader.pool()),
+                        CatchSelector.JUNK_MAX_LEVEL, false, 0f, null, new Random());
         if (entry == null) {
             return List.of();
         }

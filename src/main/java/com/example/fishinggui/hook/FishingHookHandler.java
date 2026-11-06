@@ -9,6 +9,8 @@ import com.example.fishinggui.level.FishingData;
 import com.example.fishinggui.skill.SkillData;
 import com.example.fishinggui.skill.SkillEffects;
 import com.example.fishinggui.skill.SkillState;
+import com.example.fishinggui.item.TackleRodItem;
+import com.example.fishinggui.tackle.RodSetup;
 import java.util.List;
 import java.util.Random;
 import net.minecraft.network.chat.Component;
@@ -41,13 +43,17 @@ public final class FishingHookHandler {
             consume(event);
             return;
         }
+        ItemStack rodStack = event.getItemStack();
+        // only a rod built at a tackle bench fishes properly; the vanilla rod brings up junk
+        boolean tackle = rodStack.getItem() instanceof TackleRodItem;
+        RodSetup setup = TackleRodItem.setupOf(rodStack);
         FishingHook hook = player.fishing;
         int fishingLevel = FishingData.get(player).level();
         ItemStack offhand = event.getHand() == InteractionHand.MAIN_HAND ? player.getOffhandItem() : ItemStack.EMPTY;
-        int baitLevel = FishProfileLoader.baitLevelOf(offhand);
+        int baitLevel = tackle ? FishProfileLoader.baitLevelOf(offhand) : 0;
         if (hook == null) {
             // Casting: a bait the player can use must be held in the off hand.
-            if (!baitUsable(player, baitLevel, fishingLevel)) {
+            if (tackle && !baitUsable(player, baitLevel, fishingLevel, setup.levelCap())) {
                 consume(event);
             }
             return;
@@ -56,11 +62,11 @@ public final class FishingHookHandler {
             return;
         }
         consume(event);
-        if (!baitUsable(player, baitLevel, fishingLevel)) {
+        if (tackle && !baitUsable(player, baitLevel, fishingLevel, setup.levelCap())) {
             hook.discard();
             return;
         }
-        Item bait = offhand.getItem();
+        Item bait = tackle ? offhand.getItem() : null;
         List<ItemStack> loot = CatchResolver.roll(player, event.getItemStack(), baitLevel, bait);
         FishInfo info = FishProfileLoader.infoFor(loot);
         float weight = info.rollWeight(new Random());
@@ -69,15 +75,25 @@ public final class FishingHookHandler {
                 info.scaleForWeight(FishProfileLoader.profileFor(loot), weight), fishingLevel,
                 skills.levelOf(SkillEffects.DASH_EASE), skills.levelOf(SkillEffects.DASH_DELAY),
                 skills.levelOf(SkillEffects.REEL_SPEED));
+        if (tackle) {
+            profile = setup.apply(profile);
+        }
         FightManager.start(player, hook, event.getHand(), profile, bait, loot, info, weight);
     }
 
     /** True if the bait is usable; otherwise tells the player why (chat as well as the action bar, since the GUI can cover it). */
-    private static boolean baitUsable(ServerPlayer player, int baitLevel, int fishingLevel) {
-        if (baitLevel > 0 && baitLevel <= fishingLevel) {
+    private static boolean baitUsable(ServerPlayer player, int baitLevel, int fishingLevel, int rodCap) {
+        if (baitLevel > 0 && baitLevel <= fishingLevel && baitLevel <= rodCap) {
             return true;
         }
-        Component msg = baitLevel > 0 ? Component.translatable("gui.fishinggui.bait.locked", baitLevel)
+        Component msg = baitLevel > fishingLevel || baitLevel == 0 ? null : Component.translatable(
+                "gui.fishinggui.bait.rod_cap", rodCap);
+        if (msg != null) {
+            player.displayClientMessage(msg, false);
+            player.displayClientMessage(msg, true);
+            return false;
+        }
+        msg = baitLevel > 0 ? Component.translatable("gui.fishinggui.bait.locked", baitLevel)
                 : Component.translatable("gui.fishinggui.bait.required");
         player.displayClientMessage(msg, false);
         player.displayClientMessage(msg, true);

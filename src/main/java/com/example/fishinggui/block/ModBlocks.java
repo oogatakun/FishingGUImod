@@ -45,6 +45,13 @@ public final class ModBlocks {
             () -> new TakoyakiBoatBlock(Block.Properties.of().mapColor(MapColor.WOOD)
                     .strength(0.3f).sound(SoundType.WOOD).noOcclusion()));
 
+    public static final RegistryObject<Block> TACKLE_BENCH = BLOCKS.register("tackle_bench",
+            () -> new TackleBenchBlock(Block.Properties.of().mapColor(MapColor.WOOD)
+                    .strength(2.0f).sound(SoundType.WOOD).noOcclusion()));
+
+    public static final RegistryObject<Item> TACKLE_BENCH_ITEM = BLOCK_ITEMS.register("tackle_bench",
+            () -> new BlockItem(TACKLE_BENCH.get(), new Item.Properties()));
+
     public static final RegistryObject<Item> TAKOYAKI_PAN_ITEM = BLOCK_ITEMS.register("takoyaki_pan",
             () -> TakoyakiPanBlock.item(TAKOYAKI_PAN.get(), new Item.Properties()));
 
