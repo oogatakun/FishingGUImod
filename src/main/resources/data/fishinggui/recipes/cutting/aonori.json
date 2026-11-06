@@ -1,0 +1,13 @@
+{
+  "type": "farmersdelight:cutting",
+  "ingredients": [
+    { "item": "minecraft:dried_kelp" }
+  ],
+  "tool": [
+    { "type": "farmersdelight:tool_action", "action": "knife_dig" },
+    { "tag": "forge:tools/knives" }
+  ],
+  "result": [
+    { "item": "fishinggui:aonori", "count": 3 }
+  ]
+}

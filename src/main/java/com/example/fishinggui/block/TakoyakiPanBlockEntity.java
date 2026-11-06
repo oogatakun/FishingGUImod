@@ -29,6 +29,11 @@ public class TakoyakiPanBlockEntity extends BlockEntity {
         return toppings[well];
     }
 
+    /** How far a cooking well is towards its next stage, 0..1. */
+    public float progress(int well) {
+        return Math.min(1f, timer[well] / (float) COOK_TICKS);
+    }
+
     public boolean anyCooking() {
         for (int s : stage) {
             if (isCooking(s)) {
@@ -131,6 +136,18 @@ public class TakoyakiPanBlockEntity extends BlockEntity {
             }
         }
         return n;
+    }
+
+    /** Keeps the colour progress moving between server updates; the server's timers overwrite it on each sync. */
+    public static void clientTick(Level level, BlockPos pos, BlockState state, TakoyakiPanBlockEntity be) {
+        if (!state.getValue(TakoyakiPanBlock.POWERED)) {
+            return;
+        }
+        for (int i = 0; i < WELLS; i++) {
+            if (isCooking(be.stage[i]) && be.timer[i] < COOK_TICKS) {
+                be.timer[i]++;
+            }
+        }
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, TakoyakiPanBlockEntity be) {

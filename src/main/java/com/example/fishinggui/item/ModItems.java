@@ -72,7 +72,7 @@ public final class ModItems {
             ITEMS.register("cut_octopus", () -> new Item(new Item.Properties()));
 
     public static final RegistryObject<Item> TAKOYAKI_BATTER =
-            ITEMS.register("takoyaki_batter", () -> new Item(new Item.Properties()));
+            ITEMS.register("takoyaki_batter", () -> new Item(new Item.Properties().durability(2)));
 
     public static final RegistryObject<Item> ICE_PICK =
             ITEMS.register("ice_pick", () -> new Item(new Item.Properties().stacksTo(1).durability(64)));

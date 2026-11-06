@@ -1,0 +1,12 @@
+{
+  "type": "farmersdelight:cooking",
+  "cookingtime": 100,
+  "experience": 0.3,
+  "recipe_book_tab": "misc",
+  "ingredients": [
+    { "item": "minecraft:egg" },
+    { "item": "minecraft:sugar" }
+  ],
+  "result": { "item": "fishinggui:mayonnaise", "count": 4 },
+  "container": { "item": "minecraft:glass_bottle" }
+}

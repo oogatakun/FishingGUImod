@@ -43,14 +43,15 @@ public class TakoyakiPanRenderer implements BlockEntityRenderer<TakoyakiPanBlock
         for (int xi = 0; xi < XS.length; xi++) {
             for (int zi = 0; zi < ZS.length; zi++) {
                 int well = xi * ZS.length + zi;
-                drawWell(vc, pose, sprite, light, XS[xi], ZS[zi], be.stage(well), be.toppings(well));
+                drawWell(vc, pose, sprite, light, XS[xi], ZS[zi], be.stage(well), be.toppings(well),
+                        be.progress(well));
             }
         }
         pose.popPose();
     }
 
     private static void drawWell(VertexConsumer vc, PoseStack pose, TextureAtlasSprite sprite, int light, double cx,
-            double cz, int stage, int toppings) {
+            double cz, int stage, int toppings, float progress) {
         if (stage == EMPTY) {
             return;
         }
@@ -61,15 +62,16 @@ public class TakoyakiPanRenderer implements BlockEntityRenderer<TakoyakiPanBlock
             }
             return;
         }
-        int r;
-        int g;
-        int b;
-        switch (stage) {
-            case COOKING -> { r = 240; g = 218; b = 148; }
-            case FLIP -> { r = 224; g = 178; b = 84; }
-            case COOKING_BACK -> { r = 214; g = 156; b = 66; }
-            default -> { r = 170; g = 96; b = 36; }
-        }
+        // each side starts at the freshly-cooked colour and browns as it cooks
+        int[] fresh = {240, 218, 148};
+        int[] target = switch (stage) {
+            case COOKING, FLIP -> new int[] {224, 178, 84};
+            default -> new int[] {170, 96, 36};
+        };
+        float t = stage == COOKING || stage == COOKING_BACK ? progress : 1f;
+        int r = lerp(fresh[0], target[0], t);
+        int g = lerp(fresh[1], target[1], t);
+        int b = lerp(fresh[2], target[2], t);
         // a ball built from stacked boxes: narrow, wide, wide, narrow
         box(vc, pose, sprite, light, cx, cz, 2.3, FLOOR, FLOOR + 0.9, r, g, b);
         box(vc, pose, sprite, light, cx, cz, 2.7, FLOOR + 0.9, FLOOR + 1.8, r, g, b);
@@ -88,6 +90,10 @@ public class TakoyakiPanRenderer implements BlockEntityRenderer<TakoyakiPanBlock
             box(vc, pose, sprite, light, cx + 0.5, cz - 0.3, 0.35, 0.35, top, top + 0.25, 64, 140, 60);
             box(vc, pose, sprite, light, cx + 0.1, cz + 0.6, 0.35, 0.35, top, top + 0.25, 64, 140, 60);
         }
+    }
+
+    private static int lerp(int a, int b, float t) {
+        return Math.round(a + (b - a) * t);
     }
 
     private static void box(VertexConsumer vc, PoseStack pose, TextureAtlasSprite sprite, int light, double cx,

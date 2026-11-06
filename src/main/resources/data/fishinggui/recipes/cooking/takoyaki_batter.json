@@ -1,0 +1,12 @@
+{
+  "type": "farmersdelight:cooking",
+  "cookingtime": 200,
+  "experience": 0.3,
+  "recipe_book_tab": "misc",
+  "ingredients": [
+    { "item": "farmersdelight:wheat_dough" },
+    { "item": "minecraft:egg" },
+    { "item": "minecraft:wheat" }
+  ],
+  "result": { "item": "fishinggui:takoyaki_batter" }
+}

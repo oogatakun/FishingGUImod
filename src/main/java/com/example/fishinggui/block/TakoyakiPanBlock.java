@@ -103,8 +103,8 @@ public class TakoyakiPanBlock extends BaseEntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
             BlockEntityType<T> type) {
-        return level.isClientSide ? null
-                : createTickerHelper(type, ModBlocks.TAKOYAKI_PAN_BE.get(), TakoyakiPanBlockEntity::serverTick);
+        return createTickerHelper(type, ModBlocks.TAKOYAKI_PAN_BE.get(),
+                level.isClientSide ? TakoyakiPanBlockEntity::clientTick : TakoyakiPanBlockEntity::serverTick);
     }
 
     @Override
@@ -126,7 +126,7 @@ public class TakoyakiPanBlock extends BaseEntityBlock {
         if (held.is(ModItems.TAKOYAKI_BATTER.get())) {
             n = be.pour();
             if (n > 0 && !creative) {
-                held.shrink(1);
+                held.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(hand));
             }
         } else if (held.is(ModItems.CUT_OCTOPUS.get())) {
             n = be.addOctopus(creative ? TakoyakiRules.WELLS : held.getCount());
