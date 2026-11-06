@@ -41,6 +41,10 @@ public final class ModBlocks {
                     .strength(1.5f).sound(SoundType.METAL).noOcclusion()
                     .lightLevel(s -> s.getValue(TakoyakiPanBlock.POWERED) ? 6 : 0)));
 
+    public static final RegistryObject<Block> TAKOYAKI_BOAT = BLOCKS.register("takoyaki_boat",
+            () -> new TakoyakiBoatBlock(Block.Properties.of().mapColor(MapColor.WOOD)
+                    .strength(0.3f).sound(SoundType.WOOD).noOcclusion()));
+
     public static final RegistryObject<Item> TAKOYAKI_PAN_ITEM = BLOCK_ITEMS.register("takoyaki_pan",
             () -> TakoyakiPanBlock.item(TAKOYAKI_PAN.get(), new Item.Properties()));
 

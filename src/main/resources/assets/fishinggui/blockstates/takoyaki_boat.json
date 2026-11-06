@@ -1,0 +1,94 @@
+{
+  "variants": {
+    "facing=south,pieces=1": {
+      "model": "fishinggui:block/takoyaki_boat_1"
+    },
+    "facing=west,pieces=1": {
+      "model": "fishinggui:block/takoyaki_boat_1",
+      "y": 90
+    },
+    "facing=north,pieces=1": {
+      "model": "fishinggui:block/takoyaki_boat_1",
+      "y": 180
+    },
+    "facing=east,pieces=1": {
+      "model": "fishinggui:block/takoyaki_boat_1",
+      "y": 270
+    },
+    "facing=south,pieces=2": {
+      "model": "fishinggui:block/takoyaki_boat_2"
+    },
+    "facing=west,pieces=2": {
+      "model": "fishinggui:block/takoyaki_boat_2",
+      "y": 90
+    },
+    "facing=north,pieces=2": {
+      "model": "fishinggui:block/takoyaki_boat_2",
+      "y": 180
+    },
+    "facing=east,pieces=2": {
+      "model": "fishinggui:block/takoyaki_boat_2",
+      "y": 270
+    },
+    "facing=south,pieces=3": {
+      "model": "fishinggui:block/takoyaki_boat_3"
+    },
+    "facing=west,pieces=3": {
+      "model": "fishinggui:block/takoyaki_boat_3",
+      "y": 90
+    },
+    "facing=north,pieces=3": {
+      "model": "fishinggui:block/takoyaki_boat_3",
+      "y": 180
+    },
+    "facing=east,pieces=3": {
+      "model": "fishinggui:block/takoyaki_boat_3",
+      "y": 270
+    },
+    "facing=south,pieces=4": {
+      "model": "fishinggui:block/takoyaki_boat_4"
+    },
+    "facing=west,pieces=4": {
+      "model": "fishinggui:block/takoyaki_boat_4",
+      "y": 90
+    },
+    "facing=north,pieces=4": {
+      "model": "fishinggui:block/takoyaki_boat_4",
+      "y": 180
+    },
+    "facing=east,pieces=4": {
+      "model": "fishinggui:block/takoyaki_boat_4",
+      "y": 270
+    },
+    "facing=south,pieces=5": {
+      "model": "fishinggui:block/takoyaki_boat_5"
+    },
+    "facing=west,pieces=5": {
+      "model": "fishinggui:block/takoyaki_boat_5",
+      "y": 90
+    },
+    "facing=north,pieces=5": {
+      "model": "fishinggui:block/takoyaki_boat_5",
+      "y": 180
+    },
+    "facing=east,pieces=5": {
+      "model": "fishinggui:block/takoyaki_boat_5",
+      "y": 270
+    },
+    "facing=south,pieces=6": {
+      "model": "fishinggui:block/takoyaki_boat_6"
+    },
+    "facing=west,pieces=6": {
+      "model": "fishinggui:block/takoyaki_boat_6",
+      "y": 90
+    },
+    "facing=north,pieces=6": {
+      "model": "fishinggui:block/takoyaki_boat_6",
+      "y": 180
+    },
+    "facing=east,pieces=6": {
+      "model": "fishinggui:block/takoyaki_boat_6",
+      "y": 270
+    }
+  }
+}

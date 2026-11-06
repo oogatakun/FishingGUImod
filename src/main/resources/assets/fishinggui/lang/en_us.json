@@ -191,6 +191,7 @@
   "gui.fishinggui.takoyaki.stage.4": "Flip it",
   "gui.fishinggui.takoyaki.stage.5": "Cooking the other side",
   "gui.fishinggui.takoyaki.stage.6": "Done",
+  "block.fishinggui.takoyaki_boat": "Takoyaki (placed)",
   "tooltip.fishinggui.shichirin": "Add charcoal or coal, light it with flint and steel, then grill fish. A water bucket puts it out.",
   "item.fishinggui.burnt_fish": "Burnt Fish"
 }

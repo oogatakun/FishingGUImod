@@ -84,7 +84,8 @@ public final class ModItems {
 
     /** Six pieces on a boat; each bite eats one (see TakoyakiItem). */
     public static final RegistryObject<Item> TAKOYAKI = ITEMS.register("takoyaki",
-            () -> new TakoyakiItem(new Item.Properties().durability(6).food(new FoodProperties.Builder()
+            () -> new TakoyakiItem(com.example.fishinggui.block.ModBlocks.TAKOYAKI_BOAT.get(),
+                    new Item.Properties().durability(6).food(new FoodProperties.Builder()
                     .nutrition(4).saturationMod(0.7f).build())));
 
     private static Map<String, RegistryObject<Item>> registerCooked() {
