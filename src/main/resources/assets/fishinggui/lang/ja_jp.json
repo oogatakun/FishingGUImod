@@ -181,6 +181,7 @@
   "tooltip.fishinggui.takoyaki_pan": "隣のレバーをONにすると加熱される",
   "gui.fishinggui.takoyaki.nothing": "今は使えない",
   "gui.fishinggui.takoyaki.no_topping": "トッピングをのせてから",
+  "gui.fishinggui.takoyaki.close": "閉じる",
   "gui.fishinggui.takoyaki.hint": "道具を選んで穴をクリック",
   "gui.fishinggui.takoyaki.off": "レバーがOFFなので加熱されない",
   "gui.fishinggui.takoyaki.stage.0": "空",
