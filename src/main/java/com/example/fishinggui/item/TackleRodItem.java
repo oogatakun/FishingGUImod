@@ -60,6 +60,19 @@ public class TackleRodItem extends FishingRodItem {
         return max > 0 ? max : super.getMaxDamage(stack);
     }
 
+    /** The number a fitted part contributes, as shown next to its name; null if it has none. */
+    private static String statOf(RodSetup setup, Part part) {
+        return switch (part) {
+            case ROD_BLANK -> "Lv." + setup.levelCap() + " / " + setup.durability();
+            case REEL -> String.format(java.util.Locale.ROOT, "x%.2f", setup.reelSpeed());
+            case LINE -> String.format(java.util.Locale.ROOT, "x%.2f", setup.tensionScale());
+            case HOOK -> "+" + (int) setup.hookLuck();
+            case FLOAT -> "-" + Math.round(setup.biteCut() * 100) + "%";
+            case LEADER -> String.format(java.util.Locale.ROOT, "x%.2f", setup.dashScale());
+            case LURE -> Math.round(RodSetup.LURE_CHANCE * 100) + "%";
+        };
+    }
+
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         RodSetup setup = setupOf(stack);
@@ -71,8 +84,13 @@ public class TackleRodItem extends FishingRodItem {
             Component name = rank > 0
                     ? Component.translatable("item.fishinggui." + part.itemName(rank))
                     : Component.translatable("tooltip.fishinggui.rod.none").withStyle(ChatFormatting.DARK_GRAY);
-            tooltip.add(Component.translatable("tooltip.fishinggui.rod.slot." + part.id(), name)
-                    .withStyle(ChatFormatting.GRAY));
+            net.minecraft.network.chat.MutableComponent line = Component.translatable(
+                    "tooltip.fishinggui.rod.slot." + part.id(), name).withStyle(ChatFormatting.GRAY);
+            String stat = rank > 0 ? statOf(setup, part) : null;
+            if (stat != null) {
+                line.append(Component.literal("  " + stat).withStyle(ChatFormatting.GREEN));
+            }
+            tooltip.add(line);
         }
         if (setup.lureSpecies() != null) {
             net.minecraft.world.item.Item fish = net.minecraftforge.registries.ForgeRegistries.ITEMS.getValue(

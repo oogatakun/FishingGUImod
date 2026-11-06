@@ -33,6 +33,10 @@ public class TackleBenchMenu extends AbstractContainerMenu {
     public static final int INV_Y = 152;
 
     private final ContainerLevelAccess access;
+    private final boolean serverSide;
+    /** The parts laid out from the rod in the disassemble slot, as they were; null when nothing is laid out. */
+    private List<ItemStack> preview;
+    private boolean busy;
     private final Container parts = new SimpleContainer(PARTS.size() + 1) {
         @Override
         public void setChanged() {
@@ -78,12 +82,14 @@ public class TackleBenchMenu extends AbstractContainerMenu {
     public TackleBenchMenu(int id, Inventory inventory, ContainerLevelAccess access) {
         super(ModMenus.TACKLE_BENCH.get(), id);
         this.access = access;
+        this.serverSide = !inventory.player.level().isClientSide;
         for (int i = 0; i < PARTS.size(); i++) {
             Part part = PARTS.get(i);
             addSlot(new Slot(parts, i, partX(i), partY(i)) {
                 @Override
                 public boolean mayPlace(ItemStack stack) {
-                    return stack.getItem() instanceof TacklePartItem p && p.part() == part;
+                    return parts.getItem(disassembleSlot).isEmpty()
+                            && stack.getItem() instanceof TacklePartItem p && p.part() == part;
                 }
 
                 @Override
@@ -95,7 +101,8 @@ public class TackleBenchMenu extends AbstractContainerMenu {
         addSlot(new Slot(parts, disassembleSlot, disassembleX(), toolsY()) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                return stack.getItem() instanceof TackleRodItem && TackleRodItem.setupOf(stack).complete();
+                return stack.getItem() instanceof TackleRodItem && TackleRodItem.setupOf(stack).complete()
+                        && isPartsEmpty();
             }
 
             @Override
@@ -145,16 +152,29 @@ public class TackleBenchMenu extends AbstractContainerMenu {
 
     @Override
     public void slotsChanged(Container changed) {
-        if (changed != parts) {
+        if (changed != parts || busy) {
             return;
         }
         ItemStack rod = parts.getItem(disassembleSlot);
-        if (!rod.isEmpty() && isPartsEmpty()) {
-            takeApart(rod);
+        if (!serverSide) {
+            // the server alone decides what the disassembly does; the client only mirrors its slots
+        } else if (preview != null) {
+            if (rod.isEmpty()) {
+                // the rod was taken back out untouched: the laid-out parts vanish again
+                clearPartSlots();
+            } else if (!previewIntact()) {
+                // a part was taken: the rod is now taken apart for good
+                busy = true;
+                parts.setItem(disassembleSlot, ItemStack.EMPTY);
+                busy = false;
+                preview = null;
+            }
+        } else if (!rod.isEmpty() && isPartsEmpty()) {
+            layOut(rod);
         }
         RodSetup setup = setup();
         ItemStack out = ItemStack.EMPTY;
-        if (setup.complete()) {
+        if (setup.complete() && parts.getItem(disassembleSlot).isEmpty()) {
             out = TackleRodItem.assemble(setup, parts.getItem(0).getDamageValue());
         }
         result.setItem(0, out);
@@ -170,9 +190,31 @@ public class TackleBenchMenu extends AbstractContainerMenu {
         return true;
     }
 
-    /** Puts the parts of a finished rod back into their slots; the rod blank keeps the rod's wear. */
-    private void takeApart(ItemStack rod) {
+    private void clearPartSlots() {
+        busy = true;
+        for (int i = 0; i < PARTS.size(); i++) {
+            parts.setItem(i, ItemStack.EMPTY);
+        }
+        busy = false;
+        preview = null;
+    }
+
+    private boolean previewIntact() {
+        for (int i = 0; i < PARTS.size(); i++) {
+            if (!ItemStack.matches(parts.getItem(i), preview.get(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Lays the parts of a finished rod out in their slots; the rod blank keeps the rod's wear. The rod stays in its
+     * slot until one of the parts is taken, and taking it back out removes the laid-out parts again.
+     */
+    private void layOut(ItemStack rod) {
         RodSetup setup = TackleRodItem.setupOf(rod);
+        busy = true;
         for (int i = 0; i < PARTS.size(); i++) {
             Part part = PARTS.get(i);
             int rank = setup.rank(part);
@@ -187,7 +229,11 @@ public class TackleBenchMenu extends AbstractContainerMenu {
                 parts.setItem(i, stack);
             }
         }
-        parts.setItem(disassembleSlot, ItemStack.EMPTY);
+        busy = false;
+        preview = new ArrayList<>();
+        for (int i = 0; i < PARTS.size(); i++) {
+            preview.add(parts.getItem(i).copy());
+        }
     }
 
     @Override
@@ -238,6 +284,10 @@ public class TackleBenchMenu extends AbstractContainerMenu {
     @Override
     public void removed(Player player) {
         super.removed(player);
+        if (preview != null) {
+            // the rod is still whole in its slot: hand back the rod, not the parts laid out beside it
+            clearPartSlots();
+        }
         access.execute((level, pos) -> clearContainer(player, parts));
     }
 
