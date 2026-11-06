@@ -107,7 +107,9 @@ public final class ModItems {
             List<RegistryObject<Item>> ranks = new java.util.ArrayList<>();
             for (int rank = 1; rank <= com.example.fishinggui.tackle.Part.MAX_RANK; rank++) {
                 int r = rank;
-                ranks.add(ITEMS.register(part.itemName(rank), () -> new TacklePartItem(part, r,
+                ranks.add(ITEMS.register(part.itemName(rank), () -> part == com.example.fishinggui.tackle.Part.LURE
+                        ? new LureItem(r, new Item.Properties().stacksTo(16))
+                        : new TacklePartItem(part, r,
                         part == com.example.fishinggui.tackle.Part.ROD_BLANK
                                 ? new Item.Properties().stacksTo(1).durability(
                                         com.example.fishinggui.tackle.RodSetup.durabilityOf(r))

@@ -33,7 +33,7 @@ public class TackleRodItem extends FishingRodItem {
         for (Part part : Part.values()) {
             setup = setup.with(part, tag.getInt(part.id()));
         }
-        return setup;
+        return tag.contains("LureSpecies") ? setup.withLureSpecies(tag.getString("LureSpecies")) : setup;
     }
 
     /** Builds the rod item for a setup; {@code damage} carries the wear of the fitted rod blank. */
@@ -44,6 +44,9 @@ public class TackleRodItem extends FishingRodItem {
             if (setup.rank(part) > 0) {
                 tag.putInt(part.id(), setup.rank(part));
             }
+        }
+        if (setup.lureSpecies() != null) {
+            tag.putString("LureSpecies", setup.lureSpecies());
         }
         stack.getOrCreateTag().put(TAG, tag);
         stack.getOrCreateTag().putInt("CustomModelData", Math.max(1, setup.rank(Part.ROD_BLANK)));
@@ -70,6 +73,14 @@ public class TackleRodItem extends FishingRodItem {
                     : Component.translatable("tooltip.fishinggui.rod.none").withStyle(ChatFormatting.DARK_GRAY);
             tooltip.add(Component.translatable("tooltip.fishinggui.rod.slot." + part.id(), name)
                     .withStyle(ChatFormatting.GRAY));
+        }
+        if (setup.lureSpecies() != null) {
+            net.minecraft.world.item.Item fish = net.minecraftforge.registries.ForgeRegistries.ITEMS.getValue(
+                    new net.minecraft.resources.ResourceLocation(setup.lureSpecies()));
+            if (fish != null) {
+                tooltip.add(Component.translatable("tooltip.fishinggui.lure.species", fish.getDescription())
+                        .withStyle(ChatFormatting.AQUA));
+            }
         }
         tooltip.add(Component.empty());
         tooltip.add(Component.translatable("tooltip.fishinggui.rod.level_cap", setup.levelCap())

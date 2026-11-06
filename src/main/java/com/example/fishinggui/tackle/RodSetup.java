@@ -12,7 +12,13 @@ public final class RodSetup {
     private static final double[] BITE_CUT = {0.0, 0.05, 0.10, 0.15, 0.20};
     private static final double[] DASH = {1.0, 0.95, 0.90, 0.85, 0.80};
 
+    /** Chance per catch that a fitted lure calls its species. */
+    public static final double LURE_CHANCE = 0.10;
+    /** The highest fish level a lure of rank 1..4 can call: 5 per rank. */
+    public static final int LURE_LEVELS_PER_RANK = 5;
+
     private final int[] ranks = new int[Part.values().length];
+    private String lureSpecies;
 
     public RodSetup() {
     }
@@ -25,8 +31,27 @@ public final class RodSetup {
 
     public RodSetup with(Part part, int rank) {
         RodSetup next = new RodSetup(ranks);
+        next.lureSpecies = lureSpecies;
         next.ranks[part.ordinal()] = Math.max(0, Math.min(Part.MAX_RANK, rank));
         return next;
+    }
+
+    /** The same setup with the species its lure calls (an item id, or null). */
+    public RodSetup withLureSpecies(String species) {
+        RodSetup next = new RodSetup(ranks);
+        next.lureSpecies = species;
+        return next;
+    }
+
+    public String lureSpecies() {
+        return lureSpecies;
+    }
+
+    /** True if this catch should be the lure's species: {@code roll} is a uniform 0..1 draw. */
+    public boolean lureCalls(double roll, int speciesLevel) {
+        int rank = rank(Part.LURE);
+        return lureSpecies != null && rank > 0 && roll < LURE_CHANCE && speciesLevel > 0
+                && speciesLevel <= rank * LURE_LEVELS_PER_RANK;
     }
 
     public int rank(Part part) {

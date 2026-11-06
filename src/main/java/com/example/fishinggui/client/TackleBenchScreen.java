@@ -79,15 +79,15 @@ public class TackleBenchScreen extends AbstractContainerScreen<TackleBenchMenu> 
         int matX = x + 6;
         int matY = y + 18;
         int matW = 106;
-        int matH = TackleBenchMenu.toolsY() + 26 - 18;
+        int matH = matHeight();
         g.fill(matX - 1, matY - 1, matX + matW + 1, matY + matH + 1, FRAME);
         g.fill(matX, matY, matX + matW, matY + matH, MAT);
         stitch(g, matX + 3, matY + 3, matW - 6, matH - 6);
         // read-out panel
-        int px = x + 116;
+        int px = x + 120;
         int py = y + 18;
-        int pw = w - 116 - 8;
-        int ph = TackleBenchMenu.toolsY() + 26 - 18;
+        int pw = w - 120 - 8;
+        int ph = matHeight();
         g.fill(px - 1, py - 1, px + pw + 1, py + ph + 1, FRAME);
         g.fill(px, py, px + pw, py + ph, PANEL);
         g.fill(px, py, px + pw, py + 1, SLOT_EDGE_LIGHT);
@@ -103,6 +103,10 @@ public class TackleBenchScreen extends AbstractContainerScreen<TackleBenchMenu> 
         }
         drawPartSlots(g, x, y);
         drawArrow(g, x, y);
+    }
+
+    private static int matHeight() {
+        return Math.max(TackleBenchMenu.toolsY() + 26 - 18, 118);
     }
 
     private static void stitch(GuiGraphics g, int x, int y, int w, int h) {
@@ -173,29 +177,49 @@ public class TackleBenchScreen extends AbstractContainerScreen<TackleBenchMenu> 
     private void drawStats(GuiGraphics g, int x, int y, int width) {
         RodSetup setup = menu.setup();
         g.drawString(font, Component.translatable("gui.fishinggui.bench.stats"), x, y, GOLD, false);
-        int ty = y + 14;
+        int ty = y + 13;
         boolean rod = setup.rank(Part.ROD_BLANK) > 0;
         row(g, x, ty, width, "level_cap", rod ? "Lv." + setup.levelCap() : "-", rod);
-        row(g, x, ty + 10, width, "durability", rod ? String.valueOf(setup.durability()) : "-", rod);
+        row(g, x, ty + 9, width, "durability", rod ? String.valueOf(setup.durability()) : "-", rod);
         boolean reel = setup.rank(Part.REEL) > 0;
-        row(g, x, ty + 20, width, "reel", reel ? mult(setup.reelSpeed()) : "-", reel);
+        row(g, x, ty + 18, width, "reel", reel ? mult(setup.reelSpeed()) : "-", reel);
         boolean line = setup.rank(Part.LINE) > 0;
-        row(g, x, ty + 30, width, "tension", line ? mult(setup.tensionScale()) : "-", line);
+        row(g, x, ty + 27, width, "tension", line ? mult(setup.tensionScale()) : "-", line);
         boolean hook = setup.rank(Part.HOOK) > 0;
-        row(g, x, ty + 40, width, "luck", hook ? "+" + (int) setup.hookLuck() : "-", hook);
+        row(g, x, ty + 36, width, "luck", hook ? "+" + (int) setup.hookLuck() : "-", hook);
+        boolean bobber = setup.rank(Part.FLOAT) > 0;
+        row(g, x, ty + 45, width, "bite", bobber ? "-" + Math.round(setup.biteCut() * 100) + "%" : "-", bobber);
+        boolean leader = setup.rank(Part.LEADER) > 0;
+        row(g, x, ty + 54, width, "dash", leader ? mult(setup.dashScale()) : "-", leader);
+        boolean lure = setup.rank(Part.LURE) > 0;
+        String lureText = "-";
+        if (lure) {
+            net.minecraft.world.item.Item fish = setup.lureSpecies() == null ? null
+                    : net.minecraftforge.registries.ForgeRegistries.ITEMS.getValue(
+                            new net.minecraft.resources.ResourceLocation(setup.lureSpecies()));
+            lureText = fish == null ? Component.translatable("gui.fishinggui.bench.lure_unset").getString()
+                    : fish.getDescription().getString();
+        }
+        row(g, x, ty + 63, width, "lure", lureText, lure);
         List<Component> missing = new ArrayList<>();
         for (Part part : TackleBenchMenu.PARTS) {
             if (part.required() && setup.rank(part) == 0) {
                 missing.add(Component.translatable("gui.fishinggui.bench.part." + part.id()));
             }
         }
-        int my = ty + 54;
+        int my = ty + 77;
         if (missing.isEmpty()) {
             g.drawString(font, Component.translatable("gui.fishinggui.bench.ready"), x, my, GOOD, false);
         } else {
-            g.drawString(font, Component.translatable("gui.fishinggui.bench.missing"), x, my, BAD, false);
+            net.minecraft.network.chat.MutableComponent list = Component.empty();
             for (int i = 0; i < missing.size(); i++) {
-                g.drawString(font, missing.get(i), x + 4, my + 10 + i * 10, BAD, false);
+                list.append(i == 0 ? Component.empty() : Component.literal("・")).append(missing.get(i));
+            }
+            g.drawString(font, Component.translatable("gui.fishinggui.bench.missing"), x, my, BAD, false);
+            int ly = my + 10;
+            for (var l : font.split(list, width)) {
+                g.drawString(font, l, x, ly, BAD, false);
+                ly += 10;
             }
         }
     }

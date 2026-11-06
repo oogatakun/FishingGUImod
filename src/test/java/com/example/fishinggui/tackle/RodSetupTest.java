@@ -58,6 +58,22 @@ class RodSetupTest {
     }
 
     @Test
+    void lureCallsItsSpeciesOnlyOnALowRollAndWithinItsLevels() {
+        RodSetup s = new RodSetup().with(Part.LURE, 2).withLureSpecies("fishinggui:aji");
+        assertTrue(s.lureCalls(0.05, 10));
+        assertFalse(s.lureCalls(0.5, 10));
+        assertFalse(s.lureCalls(0.05, 11));
+        assertFalse(s.with(Part.LURE, 0).lureCalls(0.05, 1));
+        assertFalse(new RodSetup().with(Part.LURE, 2).lureCalls(0.05, 1));
+    }
+
+    @Test
+    void withKeepsTheLureSpecies() {
+        RodSetup s = new RodSetup().withLureSpecies("fishinggui:aji").with(Part.HOOK, 2);
+        assertEquals("fishinggui:aji", s.lureSpecies());
+    }
+
+    @Test
     void ranksAreClamped() {
         RodSetup s = new RodSetup(new int[] {9, -3});
         assertEquals(Part.MAX_RANK, s.rank(Part.ROD_BLANK));

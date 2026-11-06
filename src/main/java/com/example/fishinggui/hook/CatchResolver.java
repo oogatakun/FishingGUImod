@@ -53,7 +53,19 @@ public final class CatchResolver {
         if (entry == null) {
             return List.of();
         }
-        Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(entry.id()));
+        String id = entry.id();
+        if (tackle) {
+            com.example.fishinggui.tackle.RodSetup setup = TackleRodItem.setupOf(rod);
+            String species = setup.lureSpecies();
+            if (species != null) {
+                ResourceLocation called = ResourceLocation.tryParse(species);
+                int level = called == null ? 0 : FishProfileLoader.infoFor(called).catchLevel();
+                if (setup.lureCalls(player.getRandom().nextDouble(), level)) {
+                    id = species;
+                }
+            }
+        }
+        Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(id));
         if (item == null || item == Items.AIR) {
             return List.of();
         }

@@ -1,14 +1,14 @@
 package com.example.fishinggui.tackle;
 
-/** The seven parts of a rod. Float, leader and lure arrive in the second stage ({@link #available()}). */
+/** The seven parts of a rod. Each can be fitted at a tackle bench. */
 public enum Part {
     ROD_BLANK("rod_blank", true, true),
     REEL("reel", false, true),
     LINE("line", true, true),
     HOOK("hook", true, true),
-    FLOAT("float", false, false),
-    LEADER("leader", false, false),
-    LURE("lure", false, false);
+    FLOAT("float", false, true),
+    LEADER("leader", false, true),
+    LURE("lure", false, true);
 
     public static final String[] RANKS = {"wood", "iron", "diamond", "netherite"};
     public static final int MAX_RANK = RANKS.length;

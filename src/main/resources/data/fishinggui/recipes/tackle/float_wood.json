@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " R ",
+    " P ",
+    " S "
+  ],
+  "key": {
+    "R": {
+      "item": "minecraft:red_dye"
+    },
+    "P": {
+      "tag": "minecraft:planks"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "item": "fishinggui:float_wood"
+  }
+}

@@ -1,5 +1,6 @@
 package com.example.fishinggui.block;
 
+import com.example.fishinggui.item.LureItem;
 import com.example.fishinggui.item.ModItems;
 import com.example.fishinggui.item.TacklePartItem;
 import com.example.fishinggui.item.TackleRodItem;
@@ -27,9 +28,9 @@ public class TackleBenchMenu extends AbstractContainerMenu {
     public static final int PER_ROW = 4;
     public static final int SLOT = 18;
     public static final int PITCH = 24;
-    public static final int WIDTH = 224;
-    public static final int HEIGHT = 190;
-    public static final int INV_Y = 108;
+    public static final int WIDTH = 256;
+    public static final int HEIGHT = 236;
+    public static final int INV_Y = 152;
 
     private final ContainerLevelAccess access;
     private final Container parts = new SimpleContainer(PARTS.size() + 1) {
@@ -134,6 +135,9 @@ public class TackleBenchMenu extends AbstractContainerMenu {
         for (int i = 0; i < PARTS.size(); i++) {
             if (parts.getItem(i).getItem() instanceof TacklePartItem p) {
                 setup = setup.with(p.part(), p.rank());
+                if (p instanceof LureItem) {
+                    setup = setup.withLureSpecies(LureItem.speciesOf(parts.getItem(i)));
+                }
             }
         }
         return setup;
@@ -176,6 +180,9 @@ public class TackleBenchMenu extends AbstractContainerMenu {
                 ItemStack stack = new ItemStack(ModItems.PARTS.get(part).get(rank - 1).get());
                 if (part == Part.ROD_BLANK) {
                     stack.setDamageValue(rod.getDamageValue());
+                }
+                if (part == Part.LURE && setup.lureSpecies() != null) {
+                    LureItem.setSpecies(stack, setup.lureSpecies());
                 }
                 parts.setItem(i, stack);
             }

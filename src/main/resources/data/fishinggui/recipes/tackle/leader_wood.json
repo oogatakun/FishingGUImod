@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S",
+    "N",
+    "S"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:string"
+    },
+    "N": {
+      "item": "minecraft:iron_nugget"
+    }
+  },
+  "result": {
+    "item": "fishinggui:leader_wood"
+  }
+}

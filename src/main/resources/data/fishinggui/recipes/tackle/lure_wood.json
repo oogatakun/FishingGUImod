@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " F ",
+    "DPD",
+    " N "
+  ],
+  "key": {
+    "F": {
+      "item": "minecraft:feather"
+    },
+    "D": {
+      "item": "minecraft:red_dye"
+    },
+    "P": {
+      "tag": "minecraft:planks"
+    },
+    "N": {
+      "item": "minecraft:iron_nugget"
+    }
+  },
+  "result": {
+    "item": "fishinggui:lure_wood"
+  }
+}
