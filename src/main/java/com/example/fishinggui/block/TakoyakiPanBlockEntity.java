@@ -83,11 +83,11 @@ public class TakoyakiPanBlockEntity extends BlockEntity {
         return false;
     }
 
-    /** Takes up to {@code max} ready, topped takoyaki out of the pan. */
-    public int collect(int max) {
+    /** Takes up to {@code max} ready, topped takoyaki out of the wells in {@code mask}. */
+    public int collectWells(int mask, int max) {
         int n = 0;
         for (int i = 0; i < WELLS && n < max; i++) {
-            if (stage[i] == READY && toppings[i] != 0) {
+            if ((mask >> i & 1) != 0 && stage[i] == READY && toppings[i] != 0) {
                 set(i, EMPTY);
                 n++;
             }

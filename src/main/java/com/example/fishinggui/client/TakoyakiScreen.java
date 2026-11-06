@@ -7,6 +7,10 @@ import com.example.fishinggui.block.TakoyakiPanBlockEntity;
 import com.example.fishinggui.block.TakoyakiService;
 import com.example.fishinggui.net.ModNetwork;
 import com.example.fishinggui.net.TakoyakiActionPacket;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -36,6 +40,16 @@ public class TakoyakiScreen extends Screen {
 
     private final BlockPos pos;
     private int tool = -1;
+    /** Wells already poured or sprinkled during the current drag. */
+    private final Set<Integer> dragged = new HashSet<>();
+    /** Wells chosen with the bowl, sent as one scoop on release. */
+    private int pickedMask;
+    /** The well being stirred with the ice pick, and how far round (radians) the cursor has gone. */
+    private int spinWell = -1;
+    private double spinLast;
+    private double spinAccum;
+    /** Short-lived marks left by the tool as it is dragged: x, y, age in ticks. */
+    private final List<int[]> trail = new ArrayList<>();
 
     public TakoyakiScreen(BlockPos pos) {
         super(Component.translatable("block.fishinggui.takoyaki_pan"));
@@ -120,6 +134,7 @@ public class TakoyakiScreen extends Screen {
 
     @Override
     public void tick() {
+        trail.removeIf(t -> ++t[2] > 24);
         var player = Minecraft.getInstance().player;
         if (pan() == null || player == null
                 || player.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) > 64) {
@@ -142,15 +157,116 @@ public class TakoyakiScreen extends Screen {
                 return true;
             }
         }
+        int well = wellAt(mx, my);
+        if (well >= 0 && tool >= 0) {
+            dragged.clear();
+            pickedMask = 0;
+            spinWell = -1;
+            beginOn(well, mx, my);
+            return true;
+        }
+        return well >= 0;
+    }
+
+    private int wellAt(double mx, double my) {
         for (int well = 0; well < WELLS; well++) {
             if (inside(mx, my, cellX(well), cellY(well), CELL, CELL)) {
-                if (tool >= 0) {
-                    ModNetwork.CHANNEL.sendToServer(new TakoyakiActionPacket(pos, tool, well));
-                }
-                return true;
+                return well;
             }
         }
-        return false;
+        return -1;
+    }
+
+    private void send(int mask) {
+        ModNetwork.CHANNEL.sendToServer(new TakoyakiActionPacket(pos, tool, mask));
+    }
+
+    private void beginOn(int well, double mx, double my) {
+        TakoyakiPanBlockEntity be = pan();
+        if (be == null) {
+            return;
+        }
+        if (tool == TOOL_PICK) {
+            if (be.stage(well) == FLIP) {
+                spinWell = well;
+                spinLast = angle(well, mx, my);
+                spinAccum = 0;
+            } else {
+                send(1 << well);
+            }
+        } else if (tool == TOOL_BOWL) {
+            tryPick(be, well);
+        } else {
+            hit(well);
+        }
+    }
+
+    private void hit(int well) {
+        if (dragged.add(well)) {
+            send(1 << well);
+        }
+    }
+
+    private void tryPick(TakoyakiPanBlockEntity be, int well) {
+        if ((pickedMask >> well & 1) == 0 && be.stage(well) == READY && be.toppings(well) != 0
+                && Integer.bitCount(pickedMask) < PORTIONS) {
+            pickedMask |= 1 << well;
+            if (Integer.bitCount(pickedMask) == PORTIONS) {
+                send(pickedMask);
+                pickedMask = 0;
+            }
+        }
+    }
+
+    private double angle(int well, double mx, double my) {
+        return Math.atan2(my - (cellY(well) + CELL / 2.0), mx - (cellX(well) + CELL / 2.0));
+    }
+
+    @Override
+    public boolean mouseDragged(double mx, double my, int button, double dx, double dy) {
+        if (button != 0 || tool < 0) {
+            return super.mouseDragged(mx, my, button, dx, dy);
+        }
+        TakoyakiPanBlockEntity be = pan();
+        int well = wellAt(mx, my);
+        if (be != null && tool == TOOL_PICK && spinWell >= 0) {
+            double cx = cellX(spinWell) + CELL / 2.0;
+            double cy = cellY(spinWell) + CELL / 2.0;
+            if (Math.hypot(mx - cx, my - cy) > 4) {
+                double now = angle(spinWell, mx, my);
+                double delta = now - spinLast;
+                if (delta > Math.PI) {
+                    delta -= 2 * Math.PI;
+                } else if (delta < -Math.PI) {
+                    delta += 2 * Math.PI;
+                }
+                spinAccum += Math.abs(delta);
+                spinLast = now;
+                if (spinAccum >= 2 * Math.PI) {
+                    send(1 << spinWell);
+                    spinWell = -1;
+                }
+            }
+        } else if (be != null && well >= 0 && tool == TOOL_BOWL) {
+            tryPick(be, well);
+        } else if (well >= 0 && tool != TOOL_PICK) {
+            hit(well);
+        }
+        if (well >= 0 && tool != TOOL_PICK && tool != TOOL_BOWL && trail.size() < 80) {
+            trail.add(new int[] {(int) mx, (int) my, 0});
+        }
+        return true;
+    }
+
+    @Override
+    public boolean mouseReleased(double mx, double my, int button) {
+        if (tool == TOOL_BOWL && pickedMask != 0) {
+            send(pickedMask);
+        }
+        pickedMask = 0;
+        spinWell = -1;
+        dragged.clear();
+        return super.mouseReleased(mx, my, button);
     }
 
     private static boolean inside(double mx, double my, int x, int y, int w, int h) {
@@ -215,6 +331,7 @@ public class TakoyakiScreen extends Screen {
         } else if (hovered != null) {
             g.renderTooltip(font, hovered, mouseX, mouseY + (tool >= 0 ? 18 : 0));
         }
+        drawTrail(g);
         if (tool >= 0) {
             ItemStack held = findTool(tool);
             if (held.isEmpty()) {
@@ -223,6 +340,9 @@ public class TakoyakiScreen extends Screen {
             g.pose().pushPose();
             g.pose().translate(0, 0, 400);
             g.renderItem(held, mouseX - 8, mouseY - 8);
+            if (tool == TOOL_BOWL && pickedMask != 0) {
+                g.drawString(font, "x" + Integer.bitCount(pickedMask), mouseX + 8, mouseY + 2, 0xFFFFE070);
+            }
             g.pose().popPose();
         }
     }
@@ -259,7 +379,16 @@ public class TakoyakiScreen extends Screen {
         circle(g, cx, cy, 17, 0xFF111114);
         circle(g, cx, cy, 15, hot ? 0xFF2A1C18 : 0xFF1C1C20);
         circle(g, cx - 1, cy - 1, 12, hot ? 0xFF33221C : 0xFF222226);
-        if (stage == EMPTY) {
+        if (well == spinWell) {
+            int lit = (int) (spinAccum / (2 * Math.PI) * 12);
+            for (int i = 0; i < 12; i++) {
+                double a = i * Math.PI / 6 - Math.PI / 2;
+                int px = cx + (int) Math.round(Math.cos(a) * 22);
+                int py = cy + (int) Math.round(Math.sin(a) * 22);
+                g.fill(px - 1, py - 1, px + 2, py + 2, i < lit ? 0xFFFFE070 : 0xFF55555A);
+            }
+        }
+        if (stage == EMPTY || (pickedMask >> well & 1) != 0) {
             return;
         }
         if (stage == BATTER || stage == FILLED) {
@@ -285,6 +414,20 @@ public class TakoyakiScreen extends Screen {
         }
         if (stage == READY) {
             drawToppings(g, cx, cy, be.toppings(well));
+        }
+    }
+
+    private void drawTrail(GuiGraphics g) {
+        int color = switch (tool) {
+            case TOOL_MAYO -> 0xFCF8E4;
+            case TOOL_AONORI -> 0x3F8C3A;
+            case TOOL_OCTOPUS -> 0xE29AA0;
+            default -> 0xF5E8B0;
+        };
+        for (int[] t : trail) {
+            int alpha = Math.max(0, 255 - t[2] * 10);
+            int size = tool == TOOL_AONORI ? 2 : 3;
+            g.fill(t[0] - 1, t[1] - 1, t[0] - 1 + size, t[1] - 1 + size, alpha << 24 | color);
         }
     }
 

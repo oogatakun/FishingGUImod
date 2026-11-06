@@ -32,20 +32,51 @@ public final class TakoyakiService {
         };
     }
 
-    public static void apply(ServerPlayer player, BlockPos pos, int tool, int well) {
-        if (tool < 0 || tool >= TOOLS || well < 0 || well >= WELLS
+    public static void apply(ServerPlayer player, BlockPos pos, int tool, int mask) {
+        if (tool < 0 || tool >= TOOLS || mask == 0 || (mask & ~((1 << WELLS) - 1)) != 0
                 || player.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) > REACH_SQ
                 || !(player.level().getBlockEntity(pos) instanceof TakoyakiPanBlockEntity be)) {
             return;
         }
-        Inventory inv = player.getInventory();
         boolean creative = player.getAbilities().instabuild;
+        boolean any = false;
+        if (tool == TOOL_BOWL) {
+            any = scoop(be, player, mask, creative);
+        } else {
+            for (int well = 0; well < WELLS; well++) {
+                if ((mask >> well & 1) != 0) {
+                    any |= useOn(player, be, tool, well, creative);
+                }
+            }
+        }
+        if (any) {
+            player.level().playSound(null, pos, soundFor(tool), SoundSource.BLOCKS, 0.8f, 1.0f);
+        } else {
+            String key = tool == TOOL_BOWL && be.readyWithoutTopping()
+                    ? "gui.fishinggui.takoyaki.no_topping" : "gui.fishinggui.takoyaki.nothing";
+            player.displayClientMessage(Component.translatable(key), true);
+        }
+    }
+
+    private static SoundEvent soundFor(int tool) {
+        return switch (tool) {
+            case TOOL_OCTOPUS -> SoundEvents.SLIME_BLOCK_PLACE;
+            case TOOL_PICK -> SoundEvents.ITEM_FRAME_ROTATE_ITEM;
+            case TOOL_MAYO, TOOL_AONORI -> SoundEvents.HONEY_BLOCK_SLIDE;
+            case TOOL_BOWL -> SoundEvents.ITEM_PICKUP;
+            default -> SoundEvents.BOTTLE_EMPTY;
+        };
+    }
+
+    /** One tool on one well, paid for from the inventory. */
+    private static boolean useOn(ServerPlayer player, TakoyakiPanBlockEntity be, int tool, int well,
+            boolean creative) {
+        Inventory inv = player.getInventory();
         int slot = findSlot(inv, toolItem(tool));
         if (slot < 0 && !creative) {
-            return;
+            return false;
         }
         ItemStack stack = slot < 0 ? ItemStack.EMPTY : inv.getItem(slot);
-        SoundEvent sound = SoundEvents.BOTTLE_EMPTY;
         boolean done;
         switch (tool) {
             case TOOL_BATTER -> {
@@ -59,41 +90,27 @@ public final class TakoyakiService {
                 if (done && !creative) {
                     stack.shrink(1);
                 }
-                sound = SoundEvents.SLIME_BLOCK_PLACE;
             }
             case TOOL_PICK -> {
                 done = be.flipWell(well);
                 if (done && !creative) {
                     stack.hurtAndBreak(1, player, p -> { });
                 }
-                sound = SoundEvents.ITEM_FRAME_ROTATE_ITEM;
             }
             case TOOL_MAYO -> {
                 done = be.toppingWell(well, MAYO);
                 if (done && !creative) {
                     useMayonnaise(inv, slot, stack);
                 }
-                sound = SoundEvents.HONEY_BLOCK_SLIDE;
             }
-            case TOOL_AONORI -> {
+            default -> {
                 done = be.toppingWell(well, AONORI);
                 if (done && !creative) {
                     stack.shrink(1);
                 }
-                sound = SoundEvents.HONEY_BLOCK_SLIDE;
-            }
-            default -> {
-                done = scoop(be, player, stack, creative);
-                sound = SoundEvents.ITEM_PICKUP;
             }
         }
-        if (done) {
-            player.level().playSound(null, pos, sound, SoundSource.BLOCKS, 0.8f, 1.0f);
-        } else {
-            String key = tool == TOOL_BOWL && be.readyWithoutTopping()
-                    ? "gui.fishinggui.takoyaki.no_topping" : "gui.fishinggui.takoyaki.nothing";
-            player.displayClientMessage(Component.translatable(key), true);
-        }
+        return done;
     }
 
     /** Hotbar and main inventory first, then the off hand. */
@@ -115,18 +132,23 @@ public final class TakoyakiService {
         }
     }
 
-    /** Bowl: scoop up to one boat of finished takoyaki. */
-    private static boolean scoop(TakoyakiPanBlockEntity be, ServerPlayer player, ItemStack bowl, boolean creative) {
-        int n = be.collect(PORTIONS);
+    /** Bowl: scoop the chosen wells (up to one boat) of finished takoyaki. */
+    private static boolean scoop(TakoyakiPanBlockEntity be, ServerPlayer player, int mask, boolean creative) {
+        Inventory inv = player.getInventory();
+        int slot = findSlot(inv, Items.BOWL);
+        if (slot < 0 && !creative) {
+            return false;
+        }
+        int n = be.collectWells(mask, PORTIONS);
         if (n == 0) {
             return false;
         }
         if (!creative) {
-            bowl.shrink(1);
+            inv.getItem(slot).shrink(1);
         }
         ItemStack boat = new ItemStack(ModItems.TAKOYAKI.get());
         boat.setDamageValue(PORTIONS - n);
-        if (!player.getInventory().add(boat)) {
+        if (!inv.add(boat)) {
             player.drop(boat, false);
         }
         return true;

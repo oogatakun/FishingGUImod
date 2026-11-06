@@ -182,7 +182,7 @@
   "gui.fishinggui.takoyaki.nothing": "Nothing to do right now",
   "gui.fishinggui.takoyaki.no_topping": "Add toppings first",
   "gui.fishinggui.takoyaki.close": "Close",
-  "gui.fishinggui.takoyaki.hint": "Pick a tool, then click a well",
+  "gui.fishinggui.takoyaki.hint": "Drag to pour; stir with pick; sweep bowl",
   "gui.fishinggui.takoyaki.off": "The lever is off, so it is not heating",
   "gui.fishinggui.takoyaki.stage.0": "Empty",
   "gui.fishinggui.takoyaki.stage.1": "Batter",
