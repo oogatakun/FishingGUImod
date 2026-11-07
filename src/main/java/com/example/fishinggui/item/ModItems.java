@@ -52,6 +52,18 @@ public final class ModItems {
             ITEMS.register("fish_fillet", () -> new Item(new Item.Properties().food(
                     new FoodProperties.Builder().nutrition(1).saturationMod(0.3f).fast().build())));
 
+    /** The fillet of each fish, by raw fish id; cut from the fish on a Farmer's Delight cutting board. */
+    public static final Map<String, RegistryObject<Item>> FILLETS = registerFillets();
+
+    private static Map<String, RegistryObject<Item>> registerFillets() {
+        Map<String, RegistryObject<Item>> map = new LinkedHashMap<>();
+        for (String id : FishIds.ALL) {
+            map.put(id, ITEMS.register(id + "_fillet", () -> new Item(new Item.Properties().food(
+                    new FoodProperties.Builder().nutrition(1).saturationMod(0.3f).fast().build()))));
+        }
+        return map;
+    }
+
     /** The pot, placed as a block; right-click it with a bowl to serve SEAFOOD_HOTPOT_BOWL. */
     public static final RegistryObject<Item> SEAFOOD_HOTPOT = ITEMS.register("seafood_hotpot",
             () -> new HotpotItem(com.example.fishinggui.block.ModBlocks.SEAFOOD_HOTPOT.get(),
@@ -163,7 +175,9 @@ public final class ModItems {
                     .icon(() -> new ItemStack(SEAFOOD_HOTPOT.get()))
                     .withTabsBefore(TAB.getId())
                     .displayItems((params, output) -> {
-                        output.accept(FISH_FILLET.get());
+                        for (String id : FishIds.ALL) {
+                            output.accept(FILLETS.get(id).get());
+                        }
                         output.accept(SEAFOOD_HOTPOT.get());
                         output.accept(EMPTY_SEAFOOD_HOTPOT.get());
                         output.accept(SEAFOOD_HOTPOT_BOWL.get());

@@ -11,10 +11,10 @@
   "recipe_book_tab": "meals",
   "ingredients": [
     {
-      "item": "fishinggui:fish_fillet"
+      "tag": "fishinggui:fillets"
     },
     {
-      "item": "fishinggui:fish_fillet"
+      "tag": "fishinggui:fillets"
     },
     {
       "tag": "forge:crops/onion"
