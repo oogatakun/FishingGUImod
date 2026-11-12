@@ -13,6 +13,7 @@ public final class ClientEvents {
 
     @SubscribeEvent
     public static void onRegisterRenderers(net.minecraftforge.client.event.EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(net.minecraft.world.entity.EntityType.FISHING_BOBBER, TackleHookRenderer::new);
         event.registerBlockEntityRenderer(com.example.fishinggui.block.ModBlocks.SHICHIRIN_BE.get(),
                 ShichirinRenderer::new);
         event.registerBlockEntityRenderer(com.example.fishinggui.block.ModBlocks.TAKOYAKI_PAN_BE.get(),
