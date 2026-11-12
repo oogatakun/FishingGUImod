@@ -82,9 +82,12 @@ public final class TackleRodModel extends BakedModelWrapper<BakedModel> {
         layers.add(texture(Part.ROD_BLANK.itemName(setup.rank(Part.ROD_BLANK), setup.style(Part.ROD_BLANK))));
         addLayer(layers, "rodreel_", variant(setup, Part.REEL), null);
         addLayer(layers, "rodline_", variant(setup, Part.LINE), state);
-        addLayer(layers, "rodfloat_", variant(setup, Part.FLOAT), state);
-        addLayer(layers, "rodhook_", variant(setup, Part.HOOK), state);
-        addLayer(layers, "rodlure_", variant(setup, Part.LURE), state);
+        if (!cast) {
+            // once cast, the float, lure and hook are out on the water (see TackleHookRenderer)
+            addLayer(layers, "rodfloat_", variant(setup, Part.FLOAT), state);
+            addLayer(layers, "rodhook_", variant(setup, Part.HOOK), state);
+            addLayer(layers, "rodlure_", variant(setup, Part.LURE), state);
+        }
 
         TextureAtlas atlas = Minecraft.getInstance().getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS);
         ModelState modelState = BlockModelRotation.X0_Y0;
