@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    [
+      {
+        "item": "fishinggui:lure_wood"
+      },
+      {
+        "item": "fishinggui:lure_spinning_wood"
+      },
+      {
+        "item": "fishinggui:lure_telescopic_wood"
+      }
+    ],
+    {
+      "item": "minecraft:gold_ingot"
+    },
+    {
+      "item": "minecraft:redstone"
+    }
+  ],
+  "result": {
+    "item": "fishinggui:lure_beginner_spinning_wood"
+  }
+}

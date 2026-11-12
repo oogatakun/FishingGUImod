@@ -2,6 +2,7 @@ package com.example.fishinggui.item;
 
 import com.example.fishinggui.tackle.Part;
 import com.example.fishinggui.tackle.RodSetup;
+import com.example.fishinggui.tackle.Style;
 import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -31,7 +32,7 @@ public class TackleRodItem extends FishingRodItem {
             return setup;
         }
         for (Part part : Part.values()) {
-            setup = setup.with(part, tag.getInt(part.id()));
+            setup = setup.with(part, tag.getInt(part.id()), Style.byId(tag.getString(part.id() + "_style")));
         }
         return tag.contains("LureSpecies") ? setup.withLureSpecies(tag.getString("LureSpecies")) : setup;
     }
@@ -43,6 +44,9 @@ public class TackleRodItem extends FishingRodItem {
         for (Part part : Part.values()) {
             if (setup.rank(part) > 0) {
                 tag.putInt(part.id(), setup.rank(part));
+                if (setup.style(part) != null) {
+                    tag.putString(part.id() + "_style", setup.style(part).id());
+                }
             }
         }
         if (setup.lureSpecies() != null) {
@@ -69,7 +73,7 @@ public class TackleRodItem extends FishingRodItem {
             case HOOK -> "+" + (int) setup.hookLuck();
             case FLOAT -> "-" + Math.round(setup.biteCut() * 100) + "%";
             case LEADER -> String.format(java.util.Locale.ROOT, "x%.2f", setup.dashScale());
-            case LURE -> Math.round(RodSetup.LURE_CHANCE * 100) + "%";
+            case LURE -> Math.round(setup.lureChance() * 100) + "%";
         };
     }
 
@@ -82,7 +86,7 @@ public class TackleRodItem extends FishingRodItem {
             }
             int rank = setup.rank(part);
             Component name = rank > 0
-                    ? Component.translatable("item.fishinggui." + part.itemName(rank))
+                    ? Component.translatable("item.fishinggui." + part.itemName(rank, setup.style(part)))
                     : Component.translatable("tooltip.fishinggui.rod.none").withStyle(ChatFormatting.DARK_GRAY);
             net.minecraft.network.chat.MutableComponent line = Component.translatable(
                     "tooltip.fishinggui.rod.slot." + part.id(), name).withStyle(ChatFormatting.GRAY);
@@ -101,6 +105,13 @@ public class TackleRodItem extends FishingRodItem {
             }
         }
         tooltip.add(Component.empty());
+        boolean over = setup.overweight() > 0;
+        tooltip.add(Component.translatable("tooltip.fishinggui.rod.load", setup.weight(), setup.capacity())
+                .withStyle(over ? ChatFormatting.RED : ChatFormatting.GRAY));
+        if (over) {
+            tooltip.add(Component.translatable("tooltip.fishinggui.rod.overweight", setup.overweight())
+                    .withStyle(ChatFormatting.RED));
+        }
         tooltip.add(Component.translatable("tooltip.fishinggui.rod.level_cap", setup.levelCap())
                 .withStyle(ChatFormatting.GREEN));
     }

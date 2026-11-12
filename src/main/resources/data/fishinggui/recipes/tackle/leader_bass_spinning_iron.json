@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    [
+      {
+        "item": "fishinggui:leader_iron"
+      },
+      {
+        "item": "fishinggui:leader_bass_bait_iron"
+      }
+    ],
+    {
+      "item": "minecraft:gold_ingot"
+    },
+    {
+      "item": "minecraft:gold_ingot"
+    },
+    {
+      "item": "minecraft:redstone"
+    },
+    {
+      "item": "minecraft:redstone"
+    }
+  ],
+  "result": {
+    "item": "fishinggui:leader_bass_spinning_iron"
+  }
+}

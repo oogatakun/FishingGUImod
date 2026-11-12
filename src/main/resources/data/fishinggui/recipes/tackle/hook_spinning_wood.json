@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    [
+      {
+        "item": "fishinggui:hook_wood"
+      },
+      {
+        "item": "fishinggui:hook_beginner_spinning_wood"
+      },
+      {
+        "item": "fishinggui:hook_telescopic_wood"
+      }
+    ],
+    {
+      "item": "minecraft:copper_ingot"
+    },
+    {
+      "item": "minecraft:lapis_lazuli"
+    }
+  ],
+  "result": {
+    "item": "fishinggui:hook_spinning_wood"
+  }
+}

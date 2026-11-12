@@ -4,6 +4,7 @@ import com.example.fishinggui.data.FishProfileLoader;
 import com.example.fishinggui.fight.FishInfo;
 import com.example.fishinggui.tackle.Part;
 import com.example.fishinggui.tackle.RodSetup;
+import com.example.fishinggui.tackle.Style;
 import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -21,8 +22,8 @@ import org.jetbrains.annotations.Nullable;
 public class LureItem extends TacklePartItem {
     private static final String SPECIES = "Species";
 
-    public LureItem(int rank, Properties properties) {
-        super(Part.LURE, rank, properties);
+    public LureItem(int rank, Style style, Properties properties) {
+        super(Part.LURE, rank, style, properties);
     }
 
     @Nullable

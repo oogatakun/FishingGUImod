@@ -119,17 +119,48 @@ public final class ModItems {
             List<RegistryObject<Item>> ranks = new java.util.ArrayList<>();
             for (int rank = 1; rank <= com.example.fishinggui.tackle.Part.MAX_RANK; rank++) {
                 int r = rank;
-                ranks.add(ITEMS.register(part.itemName(rank), () -> part == com.example.fishinggui.tackle.Part.LURE
-                        ? new LureItem(r, new Item.Properties().stacksTo(16))
-                        : new TacklePartItem(part, r,
-                        part == com.example.fishinggui.tackle.Part.ROD_BLANK
-                                ? new Item.Properties().stacksTo(1).durability(
-                                        com.example.fishinggui.tackle.RodSetup.durabilityOf(r))
-                                : new Item.Properties().stacksTo(16))));
+                ranks.add(ITEMS.register(part.itemName(rank), () -> partItem(part, r, null)));
             }
             map.put(part, List.copyOf(ranks));
         }
         return map;
+    }
+
+    private static Item partItem(com.example.fishinggui.tackle.Part part, int rank,
+            com.example.fishinggui.tackle.Style style) {
+        if (part == com.example.fishinggui.tackle.Part.LURE) {
+            return new LureItem(rank, style, new Item.Properties().stacksTo(16));
+        }
+        return new TacklePartItem(part, rank, style, part == com.example.fishinggui.tackle.Part.ROD_BLANK
+                ? new Item.Properties().stacksTo(1).durability(
+                        com.example.fishinggui.tackle.RodSetup.durabilityOf(rank, style))
+                : new Item.Properties().stacksTo(16));
+    }
+
+    /** The parts in a fishing style, by part and style. */
+    public static final Map<com.example.fishinggui.tackle.Part, Map<com.example.fishinggui.tackle.Style,
+            RegistryObject<Item>>> STYLED = registerStyled();
+
+    private static Map<com.example.fishinggui.tackle.Part, Map<com.example.fishinggui.tackle.Style,
+            RegistryObject<Item>>> registerStyled() {
+        Map<com.example.fishinggui.tackle.Part, Map<com.example.fishinggui.tackle.Style, RegistryObject<Item>>> map =
+                new java.util.EnumMap<>(com.example.fishinggui.tackle.Part.class);
+        for (com.example.fishinggui.tackle.Part part : com.example.fishinggui.tackle.Part.values()) {
+            Map<com.example.fishinggui.tackle.Style, RegistryObject<Item>> styles =
+                    new java.util.EnumMap<>(com.example.fishinggui.tackle.Style.class);
+            for (com.example.fishinggui.tackle.Style style : com.example.fishinggui.tackle.Style.values()) {
+                styles.put(style, ITEMS.register(part.itemName(style.rank(), style),
+                        () -> partItem(part, style.rank(), style)));
+            }
+            map.put(part, styles);
+        }
+        return map;
+    }
+
+    /** The item of a part at a rank, in a style or (null) plain. */
+    public static Item part(com.example.fishinggui.tackle.Part part, int rank,
+            com.example.fishinggui.tackle.Style style) {
+        return style == null ? PARTS.get(part).get(rank - 1).get() : STYLED.get(part).get(style).get();
     }
 
     private static Map<String, RegistryObject<Item>> registerCooked() {
@@ -164,6 +195,7 @@ public final class ModItems {
                 output.accept(com.example.fishinggui.block.ModBlocks.TACKLE_BENCH_ITEM.get());
                 output.accept(TACKLE_ROD.get());
                 PARTS.values().forEach(l -> l.forEach(p -> output.accept(p.get())));
+                STYLED.values().forEach(m -> m.values().forEach(p -> output.accept(p.get())));
                 output.accept(com.example.fishinggui.block.ModBlocks.SHICHIRIN_ITEM.get());
             })
             .build());

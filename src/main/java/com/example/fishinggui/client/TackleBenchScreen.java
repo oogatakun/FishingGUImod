@@ -201,13 +201,19 @@ public class TackleBenchScreen extends AbstractContainerScreen<TackleBenchMenu> 
                     : fish.getDescription().getString();
         }
         row(g, x, ty + 63, width, "lure", lureText, lure);
+        if (rod) {
+            boolean over = setup.overweight() > 0;
+            g.drawString(font, Component.translatable("gui.fishinggui.bench.load"), x, ty + 72, TEXT, false);
+            String load = setup.weight() + "/" + setup.capacity();
+            g.drawString(font, load, x + width - font.width(load), ty + 72, over ? BAD : GOOD, false);
+        }
         List<Component> missing = new ArrayList<>();
         for (Part part : TackleBenchMenu.PARTS) {
             if (part.required() && setup.rank(part) == 0) {
                 missing.add(Component.translatable("gui.fishinggui.bench.part." + part.id()));
             }
         }
-        int my = ty + 77;
+        int my = ty + 84;
         if (missing.isEmpty()) {
             g.drawString(font, Component.translatable("gui.fishinggui.bench.ready"), x, my, GOOD, false);
         } else {

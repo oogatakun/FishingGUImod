@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    [
+      {
+        "item": "fishinggui:float_wood"
+      },
+      {
+        "item": "fishinggui:float_beginner_spinning_wood"
+      },
+      {
+        "item": "fishinggui:float_telescopic_wood"
+      }
+    ],
+    {
+      "item": "minecraft:copper_ingot"
+    },
+    {
+      "item": "minecraft:lapis_lazuli"
+    }
+  ],
+  "result": {
+    "item": "fishinggui:float_spinning_wood"
+  }
+}

@@ -141,7 +141,7 @@ public class TackleBenchMenu extends AbstractContainerMenu {
         RodSetup setup = new RodSetup();
         for (int i = 0; i < PARTS.size(); i++) {
             if (parts.getItem(i).getItem() instanceof TacklePartItem p) {
-                setup = setup.with(p.part(), p.rank());
+                setup = setup.with(p.part(), p.rank(), p.style());
                 if (p instanceof LureItem) {
                     setup = setup.withLureSpecies(LureItem.speciesOf(parts.getItem(i)));
                 }
@@ -219,7 +219,7 @@ public class TackleBenchMenu extends AbstractContainerMenu {
             Part part = PARTS.get(i);
             int rank = setup.rank(part);
             if (rank > 0) {
-                ItemStack stack = new ItemStack(ModItems.PARTS.get(part).get(rank - 1).get());
+                ItemStack stack = new ItemStack(ModItems.part(part, rank, setup.style(part)));
                 if (part == Part.ROD_BLANK) {
                     stack.setDamageValue(rod.getDamageValue());
                 }

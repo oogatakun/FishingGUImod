@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    [
+      {
+        "item": "fishinggui:line_wood"
+      },
+      {
+        "item": "fishinggui:line_beginner_spinning_wood"
+      },
+      {
+        "item": "fishinggui:line_spinning_wood"
+      }
+    ],
+    {
+      "item": "minecraft:amethyst_shard"
+    },
+    {
+      "item": "minecraft:string"
+    }
+  ],
+  "result": {
+    "item": "fishinggui:line_telescopic_wood"
+  }
+}

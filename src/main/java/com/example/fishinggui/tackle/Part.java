@@ -40,4 +40,9 @@ public enum Part {
     public String itemName(int rank) {
         return id + "_" + RANKS[rank - 1];
     }
+
+    /** Registry name of a part item in a style, e.g. {@code reel_bass_bait_iron}; the plain part when null. */
+    public String itemName(int rank, Style style) {
+        return style == null ? itemName(rank) : id + "_" + style.id() + "_" + RANKS[rank - 1];
+    }
 }
