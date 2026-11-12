@@ -11,18 +11,18 @@
 - テクスチャ: ユーザーが渡す。無い型は今は作らず、標準型の絵で代用する
 
 ## 型の仕組み(2026-11-12 改訂: ユーザーのロッドセット絵に合わせる)
-- 型 = 「釣りのスタイル」のセット。各ランクに2つ。現行の標準型(今あるパーツ)に加えて、ランクごとに 標準 + 2型 = 3種類
-- ユーザーの絵(ロッド/リール/ライン/リーダー/ルアーの5パーツ分。フックとフロートは未提供):
+- 型 = 「釣りのスタイル」のセット。鉄・ダイヤ・ネザライトは各ランク2つ、木は3つ。現行の標準型(今あるパーツ)は、そのまま残す
+- ユーザーの絵(ロッド/リール/ライン/リーダー/ルアーの5パーツ分。フックとフロートは未提供)。木の3つ目の「スピニング」は、`spinning_rod` / `spinning_reel` / `pe_line` / `fluorocarbon_leader` / `minnow_lure` の5枚:
 
 | ランク | 型A | 型B |
 |---|---|---|
-| 木 | 入門スピニングセット | 振出竿セット |
+| 木 | 入門スピニングセット / スピニング | 振出竿セット |
 | 鉄 | バス・スピニング | バス・ベイト |
 | ダイヤ | エギング | オフショアジギング |
 | ネザライト | GTポッピング | ビッグゲーム |
 
-- アイテムID: `<part>_<type>_<rank>`(例: `rod_blank_beginner_spinning_wood`)。型のIDは英名(`beginner_spinning` / `telescopic` / `bass_spinning` / `bass_bait` / `eging` / `offshore_jigging` / `gt_popping` / `big_game`)。標準型は現行ID(`reel_wood` 等)を維持し、既存のワールドを壊さない
-- 型はランク専用(木のパーツには木の2型だけ)。パーツ数: 現行28種 + 型付き(8型 × 7パーツ) = 84種
+- アイテムID: `<part>_<type>_<rank>`(例: `rod_blank_beginner_spinning_wood`)。型のIDは英名(`beginner_spinning` / `spinning` / `telescopic` / `bass_spinning` / `bass_bait` / `eging` / `offshore_jigging` / `gt_popping` / `big_game`)。標準型は現行ID(`reel_wood` 等)を維持し、既存のワールドを壊さない
+- 型はランク専用(木のパーツには木の3型だけ)。パーツ数: 現行28種 + 型付き(9型 × 7パーツ) = 91種
 - 竿のNBT `Tackle` に、ランクと同じ形で型を保存(`reel_type`)。無ければ標準 → 旧竿はそのまま動く
 - 型の補正は、そのパーツ自身の主数値と重さにだけ効く(他パーツの数値には波及しない)。`RodSetup` のランク表に対する倍率/加算で表し、既存の数値の範囲内で完結する
 
@@ -32,6 +32,7 @@
 | 型 | 性格 | 得意 | 不得意 |
 |---|---|---|---|
 | 木 / 入門スピニング | 扱いやすい万能 | 軽い(重さ -1…標準の重さの範囲で) | 主数値が控えめ |
+| 木 / スピニング | 定番のバランス型 | 巻き取りとアタリ | 耐久がやや低い |
 | 木 / 振出竿 | 軽量コンパクト | 軽い、アタリが良い | 耐久が低い |
 | 鉄 / バス・スピニング | 繊細 | アタリ短縮 | テンションに弱い |
 | 鉄 / バス・ベイト | パワー寄りの巻き | 巻き取り | アタリが鈍い、やや重い |
@@ -77,15 +78,15 @@
 - パーツのツールチップ: 型名、補正の説明(例: 巻き取り +15% / テンション +5%)
 
 ## アート
-- 受け取り済み: `C:/Users/4jskk/Downloads/tackle/tackle/` に 45 枚(32×32 PNG)。8型 × 5パーツ(ロッド/リール/ライン/リーダー/ルアー) = 40 枚 + 木の標準型の差し替え用 5 枚
+- 受け取り済み: `C:/Users/4jskk/Downloads/tackle/tackle/` に 45 枚(32×32 PNG)。9型 × 5パーツ(ロッド/リール/ライン/リーダー/ルアー) = 45 枚すべて
 - ファイル名と型IDの対応(ファイル名 → 型ID):
   - `wood_starter_combo_*` → `beginner_spinning`、`wood_telescopic_*` → `telescopic`
   - `iron_bass_spinning_*` → `bass_spinning`、`iron_bass_baitcast_*` → `bass_bait`
   - `diamond_eging_*` → `eging`、`diamond_jigging_*` → `offshore_jigging`
   - `netherite_gt_popping_*` → `gt_popping`、`netherite_biggame_*` → `big_game`
   - パーツ名: `rod` → `rod_blank`、`reel`、`line`、`leader`、`lure`
-- 残りの 5 枚(`spinning_rod` / `spinning_reel` / `pe_line` / `fluorocarbon_leader` / `minnow_lure`)は、木で作れる標準型(現行の木のパーツ)の絵の差し替え。`rod_blank_wood` / `reel_wood` / `line_wood` / `leader_wood` / `lure_wood` に取り込む(木のランクだけ。鉄以上の標準型は今の絵のまま)
-- 未提供: フック、フロート(8型 × 2 = 16枚)。届くまでは標準型の絵で代用する
+- 残りの 5 枚(`spinning_rod` / `spinning_reel` / `pe_line` / `fluorocarbon_leader` / `minnow_lure`)は、木の3つ目の型 `spinning` の絵(`rod_blank_spinning_wood` など)。現行の木の標準型のパーツは作り直さず、そのまま残す
+- 未提供: フック、フロート(9型 × 2 = 18枚)。届くまでは標準型の絵で代用する
 - 取り込み先: `textures/item/<part>_<type>_<rank>.png`。既存の絵は 64×64、今回は 32×32 だが、アイテム表示では同じ大きさになる
 - 絵が届いたら、`models/item/*.json` の参照を切り替えるだけで差し替える
 
