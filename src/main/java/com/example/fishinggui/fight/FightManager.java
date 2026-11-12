@@ -108,22 +108,24 @@ public final class FightManager {
     private static void end(ServerPlayer player, ActiveFight fight, FightSession.Phase phase, boolean lineBroke) {
         FIGHTS.remove(player.getUUID());
         sendState(player, fight.session(), phase);
+        consumeBait(player, fight);
         if (phase == FightSession.Phase.SUCCESS) {
             CatchResolver.success(player, fight.hook(), fight.hand(), fight.loot(), fight.info(),
                     fight.weight());
         } else {
             CatchResolver.failure(player, fight.hook(), fight.hand(), lineBroke);
         }
-        consumeBait(player, fight.bait());
     }
 
-    private static void consumeBait(ServerPlayer player, Item bait) {
-        if (bait == null || player.getAbilities().instabuild) {
+    /** The bait fitted to the hook is used up by the fight, win or lose. */
+    private static void consumeBait(ServerPlayer player, ActiveFight fight) {
+        if (fight.bait() == null || player.getAbilities().instabuild) {
             return;
         }
-        ItemStack offhand = player.getOffhandItem();
-        if (offhand.is(bait)) {
-            offhand.shrink(1);
+        ItemStack rod = player.getItemInHand(fight.hand());
+        if (rod.getItem() instanceof com.example.fishinggui.item.TackleRodItem
+                && com.example.fishinggui.item.TackleRodItem.baitOf(rod) == fight.bait()) {
+            com.example.fishinggui.item.TackleRodItem.setBait(rod, null);
         }
     }
 

@@ -49,10 +49,17 @@ public final class FishingHookHandler {
         RodSetup setup = TackleRodItem.setupOf(rodStack);
         FishingHook hook = player.fishing;
         int fishingLevel = FishingData.get(player).level();
-        ItemStack offhand = event.getHand() == InteractionHand.MAIN_HAND ? player.getOffhandItem() : ItemStack.EMPTY;
-        int baitLevel = tackle ? FishProfileLoader.baitLevelOf(offhand) : 0;
+        if (tackle && hook == null && player.isShiftKeyDown() && event.getHand() == InteractionHand.MAIN_HAND
+                && FishProfileLoader.baitLevelOf(player.getOffhandItem()) > 0) {
+            // an uncast rod, sneaking, a fish in the off hand: fit it to the hook
+            attachBait(player, rodStack);
+            consume(event);
+            return;
+        }
+        Item bait = tackle ? TackleRodItem.baitOf(rodStack) : null;
+        int baitLevel = bait == null ? 0 : FishProfileLoader.baitLevelOf(new ItemStack(bait));
         if (hook == null) {
-            // Casting: a bait the player can use must be held in the off hand.
+            // Casting: the bait fitted to the hook must be one the player can use.
             if (tackle && !baitUsable(player, baitLevel, fishingLevel, setup.levelCap())) {
                 consume(event);
             }
@@ -66,7 +73,6 @@ public final class FishingHookHandler {
             hook.discard();
             return;
         }
-        Item bait = tackle ? offhand.getItem() : null;
         List<ItemStack> loot = CatchResolver.roll(player, event.getItemStack(), baitLevel, bait);
         FishInfo info = FishProfileLoader.infoFor(loot);
         float weight = info.rollWeight(new Random());
@@ -79,6 +85,26 @@ public final class FishingHookHandler {
             profile = setup.apply(profile);
         }
         FightManager.start(player, hook, event.getHand(), profile, bait, loot, info, weight);
+    }
+
+    private static void attachBait(ServerPlayer player, ItemStack rod) {
+        ItemStack offhand = player.getOffhandItem();
+        Item old = TackleRodItem.baitOf(rod);
+        Item bait = offhand.getItem();
+        TackleRodItem.setBait(rod, bait);
+        if (!player.getAbilities().instabuild) {
+            offhand.shrink(1);
+        }
+        if (old != null) {
+            ItemStack back = new ItemStack(old);
+            if (!player.getInventory().add(back)) {
+                player.drop(back, false);
+            }
+        }
+        player.level().playSound(null, player.blockPosition(), net.minecraft.sounds.SoundEvents.FISHING_BOBBER_RETRIEVE,
+                net.minecraft.sounds.SoundSource.PLAYERS, 0.6f, 1.2f);
+        player.displayClientMessage(Component.translatable("gui.fishinggui.bait.attached", bait.getDescription()),
+                true);
     }
 
     /** True if the bait is usable; otherwise tells the player why (chat as well as the action bar, since the GUI can cover it). */

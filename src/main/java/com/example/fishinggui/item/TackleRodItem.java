@@ -37,6 +37,31 @@ public class TackleRodItem extends FishingRodItem {
         return tag.contains("LureSpecies") ? setup.withLureSpecies(tag.getString("LureSpecies")) : setup;
     }
 
+    private static final String BAIT = "Bait";
+
+    /** The bait fitted to the hook (one item), or null. */
+    @Nullable
+    public static net.minecraft.world.item.Item baitOf(ItemStack rod) {
+        if (!rod.hasTag() || !rod.getTag().contains(BAIT)) {
+            return null;
+        }
+        net.minecraft.world.item.Item item = net.minecraftforge.registries.ForgeRegistries.ITEMS.getValue(
+                new net.minecraft.resources.ResourceLocation(rod.getTag().getString(BAIT)));
+        return item == null || item == net.minecraft.world.item.Items.AIR ? null : item;
+    }
+
+    /** Fits {@code bait} to the hook; null takes the bait off. */
+    public static void setBait(ItemStack rod, @Nullable net.minecraft.world.item.Item bait) {
+        if (bait == null) {
+            if (rod.hasTag()) {
+                rod.getTag().remove(BAIT);
+            }
+            return;
+        }
+        rod.getOrCreateTag().putString(BAIT, String.valueOf(
+                net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(bait)));
+    }
+
     /** Builds the rod item for a setup; {@code damage} carries the wear of the fitted rod blank. */
     public static ItemStack assemble(RodSetup setup, int damage) {
         ItemStack stack = new ItemStack(ModItems.TACKLE_ROD.get());
@@ -105,6 +130,11 @@ public class TackleRodItem extends FishingRodItem {
             }
         }
         tooltip.add(Component.empty());
+        net.minecraft.world.item.Item bait = baitOf(stack);
+        tooltip.add(bait == null
+                ? Component.translatable("tooltip.fishinggui.rod.bait_none").withStyle(ChatFormatting.DARK_GRAY)
+                : Component.translatable("tooltip.fishinggui.rod.bait", bait.getDescription())
+                        .withStyle(ChatFormatting.GOLD));
         boolean over = setup.overweight() > 0;
         tooltip.add(Component.translatable("tooltip.fishinggui.rod.load", setup.weight(), setup.capacity())
                 .withStyle(over ? ChatFormatting.RED : ChatFormatting.GRAY));
