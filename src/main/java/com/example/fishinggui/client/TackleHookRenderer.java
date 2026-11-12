@@ -21,6 +21,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 /**
@@ -68,6 +69,13 @@ public final class TackleHookRenderer extends FishingHookRenderer {
         pose.mulPose(Axis.YP.rotationDegrees(180.0F));
         PoseStack.Pose last = pose.last();
         // from the bottom up: the hook under the water, the lure at the surface, the float sticking out above it
+        Item bait = TackleRodItem.baitOf(rod);
+        if (bait != null) {
+            // the bait hangs on the hook, a little below it and drawn behind it
+            TextureAtlasSprite sprite = Minecraft.getInstance().getItemRenderer().getItemModelShaper()
+                    .getItemModel(bait).getParticleIcon();
+            quad(consumer, last, sprite, 0.05f, -0.36f, 0.26f, light);
+        }
         draw(consumer, last, atlas, setup, Part.HOOK, 0.0f, -0.26f, 0.22f, light);
         draw(consumer, last, atlas, setup, Part.LURE, 0.0f, -0.05f, 0.34f, light);
         draw(consumer, last, atlas, setup, Part.FLOAT, 0.0f, 0.15f, 0.30f, light);
@@ -81,6 +89,11 @@ public final class TackleHookRenderer extends FishingHookRenderer {
             return;
         }
         TextureAtlasSprite sprite = atlas.getSprite(texture(part, rank, setup));
+        quad(consumer, pose, sprite, cx, cy, size, light);
+    }
+
+    private static void quad(VertexConsumer consumer, PoseStack.Pose pose, TextureAtlasSprite sprite, float cx,
+            float cy, float size, int light) {
         float h = size / 2.0f;
         vertex(consumer, pose, cx - h, cy - h, sprite.getU0(), sprite.getV1(), light);
         vertex(consumer, pose, cx + h, cy - h, sprite.getU1(), sprite.getV1(), light);
