@@ -233,7 +233,7 @@
   "gui.fishinggui.rod.incomplete": "The rod needs a rod blank, a line and a hook (fit them at a tackle bench)",
   "tooltip.fishinggui.rod.line_life": "Line life: %s / %s catches left",
   "gui.fishinggui.bait.detached": "Took %s off the hook",
-  "tooltip.fishinggui.rod.bait": "Bait: %s (sneak + right-click with an empty off hand to take it off)",
+  "tooltip.fishinggui.rod.bait": "Bait: %s (sneak + right-click with an empty off hand, or the same fish, to take it off)",
   "tooltip.fishinggui.rod.bait_none": "Bait: none (hold a fish in your off hand and sneak + right-click to fit it)",
   "block.fishinggui.takoyaki_pan": "Takoyaki Pan",
   "item.fishinggui.octopus": "Octopus",

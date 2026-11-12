@@ -233,7 +233,7 @@
   "gui.fishinggui.rod.incomplete": "ロッド・ライン・フックが揃っていません（整備台で取り付けてください）",
   "tooltip.fishinggui.rod.line_life": "ラインの寿命: 残り %s / %s 回",
   "gui.fishinggui.bait.detached": "%s をフックから外した",
-  "tooltip.fishinggui.rod.bait": "餌: %s（何も持たずシフト+右クリックで外す）",
+  "tooltip.fishinggui.rod.bait": "餌: %s（何も持たない、または同じ魚を持ってシフト+右クリックで外す）",
   "tooltip.fishinggui.rod.bait_none": "餌: なし（オフハンドに魚を持ってシフト+右クリックで付ける）",
   "block.fishinggui.takoyaki_pan": "たこ焼き器",
   "item.fishinggui.octopus": "タコ",

@@ -56,15 +56,17 @@ public final class FishingHookHandler {
             return;
         }
         if (tackle && hook == null && player.isShiftKeyDown() && event.getHand() == InteractionHand.MAIN_HAND
-                && FishProfileLoader.baitLevelOf(player.getOffhandItem()) > 0) {
+                && FishProfileLoader.baitLevelOf(player.getOffhandItem()) > 0
+                && player.getOffhandItem().getItem() != TackleRodItem.baitOf(rodStack)) {
             // an uncast rod, sneaking, a fish in the off hand: fit it to the hook
             attachBait(player, rodStack);
             consume(event);
             return;
         }
         if (tackle && hook == null && player.isShiftKeyDown() && event.getHand() == InteractionHand.MAIN_HAND
-                && player.getOffhandItem().isEmpty() && TackleRodItem.baitOf(rodStack) != null) {
-            // an uncast rod, sneaking, nothing in the off hand: take the bait off the hook
+                && (player.getOffhandItem().isEmpty() || player.getOffhandItem().getItem() == TackleRodItem.baitOf(rodStack))
+                && TackleRodItem.baitOf(rodStack) != null) {
+            // an uncast rod, sneaking, and the off hand empty or holding the same fish as the bait: take it off
             detachBait(player, rodStack);
             consume(event);
             return;
