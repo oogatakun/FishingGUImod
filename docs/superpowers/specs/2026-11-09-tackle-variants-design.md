@@ -77,9 +77,16 @@
 - パーツのツールチップ: 型名、補正の説明(例: 巻き取り +15% / テンション +5%)
 
 ## アート
-- ユーザーから、8型 × 5パーツ(ロッド/リール/ライン/リーダー/ルアー)の絵のプレビュー画像を受け取り済み。取り込みには、PNG のファイル(パーツごと)が要る
+- 受け取り済み: `C:/Users/4jskk/Downloads/tackle/tackle/` に 45 枚(32×32 PNG)。8型 × 5パーツ(ロッド/リール/ライン/リーダー/ルアー) = 40 枚 + 用途未定の 5 枚
+- ファイル名と型IDの対応(ファイル名 → 型ID):
+  - `wood_starter_combo_*` → `beginner_spinning`、`wood_telescopic_*` → `telescopic`
+  - `iron_bass_spinning_*` → `bass_spinning`、`iron_bass_baitcast_*` → `bass_bait`
+  - `diamond_eging_*` → `eging`、`diamond_jigging_*` → `offshore_jigging`
+  - `netherite_gt_popping_*` → `gt_popping`、`netherite_biggame_*` → `big_game`
+  - パーツ名: `rod` → `rod_blank`、`reel`、`line`、`leader`、`lure`
+- 用途未定の 5 枚: `fluorocarbon_leader` / `pe_line` / `spinning_reel` / `spinning_rod` / `minnow_lure`(標準型の絵の差し替え案か別用途かを要確認)
 - 未提供: フック、フロート(8型 × 2 = 16枚)。届くまでは標準型の絵で代用する
-- ファイル名: `<part>_<type>_<rank>.png`(型IDは上の英名)。サイズは既存のパーツに合わせる
+- 取り込み先: `textures/item/<part>_<type>_<rank>.png`。既存の絵は 64×64、今回は 32×32 だが、アイテム表示では同じ大きさになる
 - 絵が届いたら、`models/item/*.json` の参照を切り替えるだけで差し替える
 
 ## 実装の段階
@@ -91,5 +98,5 @@
 ## 要確認
 - 積載量と重さの数値(上の案は仮)、型による重さの増減 ±1 でよいか
 - 各型の得意・不得意の方向(上の表は仮)
-- ロッド絵の PNG ファイルの場所、フックとフロートの絵の予定
+- 用途未定の 5 枚の扱い、フックとフロートの絵の予定
 - 素材の組み合わせ(金+レッドストーン / 銅+ラピス)でよいか
