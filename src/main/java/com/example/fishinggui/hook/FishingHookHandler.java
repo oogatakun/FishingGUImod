@@ -56,6 +56,13 @@ public final class FishingHookHandler {
             consume(event);
             return;
         }
+        if (tackle && hook == null && player.isShiftKeyDown() && event.getHand() == InteractionHand.MAIN_HAND
+                && player.getOffhandItem().isEmpty() && TackleRodItem.baitOf(rodStack) != null) {
+            // an uncast rod, sneaking, nothing in the off hand: take the bait off the hook
+            detachBait(player, rodStack);
+            consume(event);
+            return;
+        }
         Item bait = tackle ? TackleRodItem.baitOf(rodStack) : null;
         int baitLevel = bait == null ? 0 : FishProfileLoader.baitLevelOf(new ItemStack(bait));
         if (hook == null) {
@@ -85,6 +92,15 @@ public final class FishingHookHandler {
             profile = setup.apply(profile);
         }
         FightManager.start(player, hook, event.getHand(), profile, bait, loot, info, weight);
+    }
+
+    private static void detachBait(ServerPlayer player, ItemStack rod) {
+        ItemStack back = new ItemStack(TackleRodItem.baitOf(rod));
+        TackleRodItem.setBait(rod, null);
+        if (!player.getInventory().add(back)) {
+            player.drop(back, false);
+        }
+        player.displayClientMessage(Component.translatable("gui.fishinggui.bait.detached", back.getHoverName()), true);
     }
 
     private static void attachBait(ServerPlayer player, ItemStack rod) {
