@@ -77,14 +77,14 @@
 - パーツのツールチップ: 型名、補正の説明(例: 巻き取り +15% / テンション +5%)
 
 ## アート
-- 受け取り済み: `C:/Users/4jskk/Downloads/tackle/tackle/` に 45 枚(32×32 PNG)。8型 × 5パーツ(ロッド/リール/ライン/リーダー/ルアー) = 40 枚 + 用途未定の 5 枚
+- 受け取り済み: `C:/Users/4jskk/Downloads/tackle/tackle/` に 45 枚(32×32 PNG)。8型 × 5パーツ(ロッド/リール/ライン/リーダー/ルアー) = 40 枚 + 木の標準型の差し替え用 5 枚
 - ファイル名と型IDの対応(ファイル名 → 型ID):
   - `wood_starter_combo_*` → `beginner_spinning`、`wood_telescopic_*` → `telescopic`
   - `iron_bass_spinning_*` → `bass_spinning`、`iron_bass_baitcast_*` → `bass_bait`
   - `diamond_eging_*` → `eging`、`diamond_jigging_*` → `offshore_jigging`
   - `netherite_gt_popping_*` → `gt_popping`、`netherite_biggame_*` → `big_game`
   - パーツ名: `rod` → `rod_blank`、`reel`、`line`、`leader`、`lure`
-- 用途未定の 5 枚: `fluorocarbon_leader` / `pe_line` / `spinning_reel` / `spinning_rod` / `minnow_lure`(標準型の絵の差し替え案か別用途かを要確認)
+- 残りの 5 枚(`spinning_rod` / `spinning_reel` / `pe_line` / `fluorocarbon_leader` / `minnow_lure`)は、木で作れる標準型(現行の木のパーツ)の絵の差し替え。`rod_blank_wood` / `reel_wood` / `line_wood` / `leader_wood` / `lure_wood` に取り込む(木のランクだけ。鉄以上の標準型は今の絵のまま)
 - 未提供: フック、フロート(8型 × 2 = 16枚)。届くまでは標準型の絵で代用する
 - 取り込み先: `textures/item/<part>_<type>_<rank>.png`。既存の絵は 64×64、今回は 32×32 だが、アイテム表示では同じ大きさになる
 - 絵が届いたら、`models/item/*.json` の参照を切り替えるだけで差し替える
@@ -98,5 +98,5 @@
 ## 要確認
 - 積載量と重さの数値(上の案は仮)、型による重さの増減 ±1 でよいか
 - 各型の得意・不得意の方向(上の表は仮)
-- 用途未定の 5 枚の扱い、フックとフロートの絵の予定
+- フックとフロートの絵の予定
 - 素材の組み合わせ(金+レッドストーン / 銅+ラピス)でよいか
