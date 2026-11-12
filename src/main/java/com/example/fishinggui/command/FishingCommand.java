@@ -26,7 +26,7 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-/** /fishinggui level|xp set|add and /fishinggui query (operators only). */
+/** /fishinggui level|xp set|add, rod and /fishinggui query (operators only). */
 @Mod.EventBusSubscriber(modid = FishingGuiMod.MOD_ID)
 public final class FishingCommand {
     private FishingCommand() {
@@ -50,6 +50,7 @@ public final class FishingCommand {
                 .then(Commands.literal("points")
                         .then(pointsChange("set", IntegerArgumentType.integer(0), (s, v) -> s.withPoints(v)))
                         .then(pointsChange("add", IntegerArgumentType.integer(), (s, v) -> s.addPoints(v))))
+                .then(TackleCommand.build())
                 .then(Commands.literal("query").then(Commands.argument("target", EntityArgument.player())
                         .executes(FishingCommand::query))));
     }

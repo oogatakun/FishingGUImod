@@ -123,7 +123,7 @@ public final class FishingHookHandler {
                 true);
     }
 
-    /** True if the bait is usable; otherwise tells the player why (chat as well as the action bar, since the GUI can cover it). */
+    /** True if the bait is usable; otherwise tells the player why (on the action bar only). */
     private static boolean baitUsable(ServerPlayer player, int baitLevel, int fishingLevel, int rodCap) {
         if (baitLevel > 0 && baitLevel <= fishingLevel && baitLevel <= rodCap) {
             return true;
@@ -131,13 +131,11 @@ public final class FishingHookHandler {
         Component msg = baitLevel > fishingLevel || baitLevel == 0 ? null : Component.translatable(
                 "gui.fishinggui.bait.rod_cap", rodCap);
         if (msg != null) {
-            player.displayClientMessage(msg, false);
             player.displayClientMessage(msg, true);
             return false;
         }
         msg = baitLevel > 0 ? Component.translatable("gui.fishinggui.bait.locked", baitLevel)
                 : Component.translatable("gui.fishinggui.bait.required");
-        player.displayClientMessage(msg, false);
         player.displayClientMessage(msg, true);
         return false;
     }

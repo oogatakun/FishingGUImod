@@ -82,6 +82,8 @@
   "gui.fishinggui.levelup.title": "LEVEL UP!",
   "gui.fishinggui.levelup.level": "Fishing Lv.%s",
   "commands.fishinggui.updated": "Updated fishing progress of %s player(s)",
+  "commands.fishinggui.rod.given": "Gave a rod to %s player(s)",
+  "commands.fishinggui.rod.bad": "Unknown part: %s",
   "commands.fishinggui.query": "%s: Fishing Lv.%s (%s/%s XP) Points %s",
   "skill.fishinggui.bite_speed": "Quick Bite",
   "skill.fishinggui.bite_speed.desc": "Shortens the wait for a bite (15%% per level, up to 75%%)",
