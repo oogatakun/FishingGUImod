@@ -27,17 +27,33 @@ public final class ClientEvents {
             // the casting sprite, the same rule as the vanilla rod
             net.minecraft.client.renderer.item.ItemProperties.register(
                     com.example.fishinggui.item.ModItems.TACKLE_ROD.get(),
-                    new net.minecraft.resources.ResourceLocation("cast"), (stack, level, entity, seed) -> {
-                        if (!(entity instanceof net.minecraft.world.entity.player.Player player)) {
-                            return 0.0f;
-                        }
-                        boolean main = player.getMainHandItem() == stack;
-                        boolean off = player.getOffhandItem() == stack
-                                && !(player.getMainHandItem().getItem()
-                                        instanceof net.minecraft.world.item.FishingRodItem);
-                        return (main || off) && player.fishing != null ? 1.0f : 0.0f;
-                    });
+                    new net.minecraft.resources.ResourceLocation("cast"),
+                    (stack, level, entity, seed) -> isCast(stack, entity) ? 1.0f : 0.0f);
         });
+    }
+
+    /** True while the player holds this rod with the line out; the same rule as the vanilla rod's cast sprite. */
+    public static boolean isCast(net.minecraft.world.item.ItemStack stack,
+            @org.jetbrains.annotations.Nullable net.minecraft.world.entity.LivingEntity entity) {
+        if (!(entity instanceof net.minecraft.world.entity.player.Player player)) {
+            return false;
+        }
+        boolean main = player.getMainHandItem() == stack;
+        boolean off = player.getOffhandItem() == stack
+                && !(player.getMainHandItem().getItem() instanceof net.minecraft.world.item.FishingRodItem);
+        return (main || off) && player.fishing != null;
+    }
+
+    /** Swaps the tackle rod's model for one that is put together from its parts. */
+    @SubscribeEvent
+    public static void onModifyBaking(net.minecraftforge.client.event.ModelEvent.ModifyBakingResult event) {
+        net.minecraft.client.resources.model.ModelResourceLocation location =
+                new net.minecraft.client.resources.model.ModelResourceLocation(
+                        new net.minecraft.resources.ResourceLocation(FishingGuiMod.MOD_ID, "tackle_rod"), "inventory");
+        net.minecraft.client.resources.model.BakedModel base = event.getModels().get(location);
+        if (base != null) {
+            event.getModels().put(location, new TackleRodModel(base));
+        }
     }
 
     @SubscribeEvent
