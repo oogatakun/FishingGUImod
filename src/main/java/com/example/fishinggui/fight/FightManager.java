@@ -58,7 +58,7 @@ public final class FightManager {
         switch (action) {
             case ReelInputPacket.REEL -> fight.session().setReeling(true);
             case ReelInputPacket.RELEASE -> fight.session().setReeling(false);
-            case ReelInputPacket.ABORT -> end(player, fight, FightSession.Phase.FAILED, false);
+            case ReelInputPacket.ABORT -> end(player, fight, FightSession.Phase.FAILED, false, true);
             default -> {
             }
         }
@@ -74,7 +74,7 @@ public final class FightManager {
             return;
         }
         if (!stillValid(player, fight)) {
-            end(player, fight, FightSession.Phase.FAILED, false);
+            end(player, fight, FightSession.Phase.FAILED, false, false);
             return;
         }
         // Pin the bite state so vanilla does not start a new lure/bite cycle during a fight.
@@ -82,7 +82,7 @@ public final class FightManager {
         FightSession session = fight.session();
         session.tick();
         if (session.phase() != FightSession.Phase.ACTIVE) {
-            end(player, fight, session.phase(), session.lineBroke());
+            end(player, fight, session.phase(), session.lineBroke(), false);
             return;
         }
         sendState(player, session, FightSession.Phase.ACTIVE);
@@ -105,15 +105,45 @@ public final class FightManager {
                 && player.getItemInHand(fight.hand()).getItem() instanceof FishingRodItem;
     }
 
-    private static void end(ServerPlayer player, ActiveFight fight, FightSession.Phase phase, boolean lineBroke) {
+    private static void end(ServerPlayer player, ActiveFight fight, FightSession.Phase phase, boolean lineBroke,
+            boolean aborted) {
         FIGHTS.remove(player.getUUID());
         sendState(player, fight.session(), phase);
         consumeBait(player, fight);
+        wearLine(player, fight, phase, aborted);
         if (phase == FightSession.Phase.SUCCESS) {
             CatchResolver.success(player, fight.hook(), fight.hand(), fight.loot(), fight.info(),
                     fight.weight());
         } else {
             CatchResolver.failure(player, fight.hook(), fight.hand(), lineBroke);
+        }
+    }
+
+    /** A line wears with every catch and snaps when used up; it also snaps when a fight is lost (not when given up). */
+    private static void wearLine(ServerPlayer player, ActiveFight fight, FightSession.Phase phase, boolean aborted) {
+        ItemStack rod = player.getItemInHand(fight.hand());
+        if (!(rod.getItem() instanceof com.example.fishinggui.item.TackleRodItem)) {
+            return;
+        }
+        com.example.fishinggui.tackle.RodSetup setup = com.example.fishinggui.item.TackleRodItem.setupOf(rod);
+        int rank = setup.rank(com.example.fishinggui.tackle.Part.LINE);
+        if (rank == 0 || player.getAbilities().instabuild) {
+            return;
+        }
+        boolean snaps;
+        if (phase == FightSession.Phase.SUCCESS) {
+            int damage = com.example.fishinggui.item.TackleRodItem.lineDamage(rod) + 1;
+            com.example.fishinggui.item.TackleRodItem.setLineDamage(rod, damage);
+            snaps = damage >= com.example.fishinggui.tackle.RodSetup.lineLife(rank);
+        } else {
+            snaps = !aborted;
+        }
+        if (snaps) {
+            com.example.fishinggui.item.TackleRodItem.breakLine(rod);
+            player.serverLevel().playSound(null, player.blockPosition(), net.minecraft.sounds.SoundEvents.ITEM_BREAK,
+                    net.minecraft.sounds.SoundSource.PLAYERS, 0.8f, 1.0f);
+            player.displayClientMessage(net.minecraft.network.chat.Component.translatable("gui.fishinggui.line.broke"),
+                    true);
         }
     }
 

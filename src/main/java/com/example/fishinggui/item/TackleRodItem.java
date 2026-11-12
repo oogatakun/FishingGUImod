@@ -38,6 +38,28 @@ public class TackleRodItem extends FishingRodItem {
     }
 
     private static final String BAIT = "Bait";
+    private static final String LINE_DAMAGE = "LineDamage";
+
+    /** How many catches the fitted line has been through. */
+    public static int lineDamage(ItemStack rod) {
+        return rod.hasTag() ? rod.getTag().getInt(LINE_DAMAGE) : 0;
+    }
+
+    public static void setLineDamage(ItemStack rod, int damage) {
+        rod.getOrCreateTag().putInt(LINE_DAMAGE, Math.max(0, damage));
+    }
+
+    /** The line snaps: it is gone from the rod, which has to be refitted at a tackle bench. */
+    public static void breakLine(ItemStack rod) {
+        CompoundTag tag = rod.getTagElement(TAG);
+        if (tag != null) {
+            tag.remove(Part.LINE.id());
+            tag.remove(Part.LINE.id() + "_style");
+        }
+        if (rod.hasTag()) {
+            rod.getTag().remove(LINE_DAMAGE);
+        }
+    }
 
     /** The bait fitted to the hook (one item), or null. */
     @Nullable
@@ -64,6 +86,11 @@ public class TackleRodItem extends FishingRodItem {
 
     /** Builds the rod item for a setup; {@code damage} carries the wear of the fitted rod blank. */
     public static ItemStack assemble(RodSetup setup, int damage) {
+        return assemble(setup, damage, 0);
+    }
+
+    /** As above, with the wear of the fitted line. */
+    public static ItemStack assemble(RodSetup setup, int damage, int lineDamage) {
         ItemStack stack = new ItemStack(ModItems.TACKLE_ROD.get());
         CompoundTag tag = new CompoundTag();
         for (Part part : Part.values()) {
@@ -78,6 +105,9 @@ public class TackleRodItem extends FishingRodItem {
             tag.putString("LureSpecies", setup.lureSpecies());
         }
         stack.getOrCreateTag().put(TAG, tag);
+        if (lineDamage > 0) {
+            setLineDamage(stack, lineDamage);
+        }
         stack.getOrCreateTag().putInt("CustomModelData", Math.max(1, setup.rank(Part.ROD_BLANK)));
         stack.setDamageValue(Math.max(0, Math.min(setup.durability() - 1, damage)));
         return stack;
@@ -130,6 +160,11 @@ public class TackleRodItem extends FishingRodItem {
             }
         }
         tooltip.add(Component.empty());
+        if (setup.rank(Part.LINE) > 0) {
+            int life = RodSetup.lineLife(setup.rank(Part.LINE));
+            tooltip.add(Component.translatable("tooltip.fishinggui.rod.line_life",
+                    Math.max(0, life - lineDamage(stack)), life).withStyle(ChatFormatting.GRAY));
+        }
         net.minecraft.world.item.Item bait = baitOf(stack);
         tooltip.add(bait == null
                 ? Component.translatable("tooltip.fishinggui.rod.bait_none").withStyle(ChatFormatting.DARK_GRAY)

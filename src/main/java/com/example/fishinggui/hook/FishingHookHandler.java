@@ -49,6 +49,12 @@ public final class FishingHookHandler {
         RodSetup setup = TackleRodItem.setupOf(rodStack);
         FishingHook hook = player.fishing;
         int fishingLevel = FishingData.get(player).level();
+        if (tackle && hook == null && !setup.complete()) {
+            // no line, rod or hook: nothing to cast with
+            player.displayClientMessage(Component.translatable("gui.fishinggui.rod.incomplete"), true);
+            consume(event);
+            return;
+        }
         if (tackle && hook == null && player.isShiftKeyDown() && event.getHand() == InteractionHand.MAIN_HAND
                 && FishProfileLoader.baitLevelOf(player.getOffhandItem()) > 0) {
             // an uncast rod, sneaking, a fish in the off hand: fit it to the hook

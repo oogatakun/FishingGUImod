@@ -131,10 +131,15 @@ public final class ModItems {
         if (part == com.example.fishinggui.tackle.Part.LURE) {
             return new LureItem(rank, style, new Item.Properties().stacksTo(16));
         }
-        return new TacklePartItem(part, rank, style, part == com.example.fishinggui.tackle.Part.ROD_BLANK
+        Item.Properties properties = part == com.example.fishinggui.tackle.Part.ROD_BLANK
                 ? new Item.Properties().stacksTo(1).durability(
                         com.example.fishinggui.tackle.RodSetup.durabilityOf(rank, style))
-                : new Item.Properties().stacksTo(16));
+                : new Item.Properties().stacksTo(16);
+        if (part == com.example.fishinggui.tackle.Part.LINE) {
+            // a line wears with every catch and snaps when it is used up
+            properties.durability(com.example.fishinggui.tackle.RodSetup.lineLife(rank));
+        }
+        return new TacklePartItem(part, rank, style, properties);
     }
 
     /** The parts in a fishing style, by part and style. */

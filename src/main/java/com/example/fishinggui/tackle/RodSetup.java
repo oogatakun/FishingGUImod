@@ -30,6 +30,13 @@ public final class RodSetup {
     /** A style's weight change counts this many times over for the rod blank's capacity. */
     private static final int CAPACITY_PER_WEIGHT = 2;
 
+    /** How many catches a line of rank 1..4 lasts before it snaps. */
+    private static final int[] LINE_LIFE = {0, 12, 20, 32, 50};
+
+    public static int lineLife(int rank) {
+        return LINE_LIFE[Math.max(0, Math.min(Part.MAX_RANK, rank))];
+    }
+
     /** Chance per catch that a fitted lure calls its species. */
     public static final double LURE_CHANCE = 0.10;
     /** A style's power counts this many times over for the lure's chance. */
@@ -106,6 +113,16 @@ public final class RodSetup {
 
     public int rank(Part part) {
         return ranks[part.ordinal()];
+    }
+
+    /** True if anything at all is fitted. */
+    public boolean hasParts() {
+        for (int r : ranks) {
+            if (r > 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** True when every required part is fitted. */

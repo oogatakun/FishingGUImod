@@ -169,6 +169,16 @@ class RodSetupTest {
     }
 
     @Test
+    void aBetterLineLastsLonger() {
+        for (int r = 1; r < Part.MAX_RANK; r++) {
+            assertTrue(RodSetup.lineLife(r + 1) > RodSetup.lineLife(r));
+        }
+        assertEquals(0, RodSetup.lineLife(0));
+        assertTrue(new RodSetup().with(Part.LINE, 1).hasParts());
+        assertFalse(new RodSetup().hasParts());
+    }
+
+    @Test
     void ranksAreClamped() {
         RodSetup s = new RodSetup(new int[] {9, -3});
         assertEquals(Part.MAX_RANK, s.rank(Part.ROD_BLANK));

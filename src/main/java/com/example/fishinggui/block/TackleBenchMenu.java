@@ -101,7 +101,8 @@ public class TackleBenchMenu extends AbstractContainerMenu {
         addSlot(new Slot(parts, disassembleSlot, disassembleX(), toolsY()) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                return stack.getItem() instanceof TackleRodItem && TackleRodItem.setupOf(stack).complete()
+                // a rod that has lost its line can be taken apart too
+                return stack.getItem() instanceof TackleRodItem && TackleRodItem.setupOf(stack).hasParts()
                         && isPartsEmpty();
             }
 
@@ -175,7 +176,8 @@ public class TackleBenchMenu extends AbstractContainerMenu {
         RodSetup setup = setup();
         ItemStack out = ItemStack.EMPTY;
         if (setup.complete() && parts.getItem(disassembleSlot).isEmpty()) {
-            out = TackleRodItem.assemble(setup, parts.getItem(0).getDamageValue());
+            out = TackleRodItem.assemble(setup, parts.getItem(0).getDamageValue(),
+                    parts.getItem(PARTS.indexOf(Part.LINE)).getDamageValue());
         }
         result.setItem(0, out);
         broadcastChanges();
@@ -222,6 +224,9 @@ public class TackleBenchMenu extends AbstractContainerMenu {
                 ItemStack stack = new ItemStack(ModItems.part(part, rank, setup.style(part)));
                 if (part == Part.ROD_BLANK) {
                     stack.setDamageValue(rod.getDamageValue());
+                }
+                if (part == Part.LINE) {
+                    stack.setDamageValue(Math.min(TackleRodItem.lineDamage(rod), stack.getMaxDamage() - 1));
                 }
                 if (part == Part.LURE && setup.lureSpecies() != null) {
                     LureItem.setSpecies(stack, setup.lureSpecies());
