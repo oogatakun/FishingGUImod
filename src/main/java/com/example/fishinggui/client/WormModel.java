@@ -1,6 +1,7 @@
 package com.example.fishinggui.client;
 
 import com.example.fishinggui.FishingGuiMod;
+import com.example.fishinggui.entity.WormEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.EntityModel;
@@ -153,15 +154,30 @@ public class WormModel<T extends Entity> extends EntityModel<T> {
         return LayerDefinition.create(mesh, 56, 56);
     }
 
+    private static final float CURL_BEND = (float) Math.toRadians(20.0);
+
+    /** The kit's curl: coils in over 0.3 s, holds until 0.8 s, relaxes by 1.4 s. */
+    private static float curlAmount(float t) {
+        if (t <= 0.0F || t >= 1.4F) {
+            return 0.0F;
+        }
+        if (t < 0.3F) {
+            return t / 0.3F;
+        }
+        return t < 0.8F ? 1.0F : (1.4F - t) / 0.6F;
+    }
+
     @Override
     public void setupAnim(T entity, float limbSwing, float limbSwingAmount,
                           float ageInTicks, float netHeadYaw, float headPitch) {
         // a wave runs down the body while it crawls; at rest the head probes slowly about
         float moving = Math.min(1.0F, limbSwingAmount * 6.0F);
+        float curl = entity instanceof WormEntity worm ? curlAmount(worm.curlSeconds(ageInTicks)) : 0.0F;
         for (int i = 0; i < SEGMENTS; i++) {
             float crawl = Mth.sin(limbSwing * 3.0F - i * 0.55F) * 0.38F * moving;
             float idle = Mth.sin(ageInTicks * 0.07F - i * 0.4F) * (0.04F + i * 0.004F) * (1.0F - moving);
-            segs[i].yRot = baseYaw[i] + crawl + idle;
+            // the curl: every segment past the head bends 20 degrees, so the body coils up tight
+            segs[i].yRot = baseYaw[i] + crawl + idle - (i == 0 ? 0.0F : curl * CURL_BEND);
         }
     }
 

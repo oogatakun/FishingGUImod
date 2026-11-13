@@ -30,7 +30,13 @@ import net.minecraft.world.level.Level;
 public class WormEntity extends PathfinderMob {
     private static final String COOLDOWN_TAG = "BreedCooldown";
 
+    /** Entity event: the worm coils up for a moment. */
+    private static final byte CURL_EVENT = 100;
+    /** Chance per tick that a still worm curls up (about once in half a minute). */
+    private static final int CURL_ONE_IN = 600;
+
     private int breedCooldown = WormBreeding.SETTLE;
+    private int curlStart = -1000;
 
     public WormEntity(EntityType<? extends WormEntity> type, Level level) {
         super(type, level);
@@ -92,9 +98,26 @@ public class WormEntity extends PathfinderMob {
         return InteractionResult.sidedSuccess(level().isClientSide);
     }
 
+    /** How far into its curl the worm is, in seconds at {@code ageInTicks}; negative or past the end when not curling. */
+    public float curlSeconds(float ageInTicks) {
+        return (ageInTicks - curlStart) / 20.0F;
+    }
+
+    @Override
+    public void handleEntityEvent(byte id) {
+        if (id == CURL_EVENT) {
+            curlStart = tickCount;
+        } else {
+            super.handleEntityEvent(id);
+        }
+    }
+
     @Override
     protected void customServerAiStep() {
         super.customServerAiStep();
+        if (random.nextInt(CURL_ONE_IN) == 0 && getNavigation().isDone()) {
+            level().broadcastEntityEvent(this, CURL_EVENT);
+        }
         if (breedCooldown > 0) {
             breedCooldown--;
         } else if (tickCount % 40 == 0) {
