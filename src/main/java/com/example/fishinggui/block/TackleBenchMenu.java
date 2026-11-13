@@ -95,6 +95,13 @@ public class TackleBenchMenu extends AbstractContainerMenu {
                 }
 
                 @Override
+                public void onTake(Player player, ItemStack stack) {
+                    // taking a part from a rod that is laid out takes that rod apart for good
+                    resolvePreview();
+                    super.onTake(player, stack);
+                }
+
+                @Override
                 public int getMaxStackSize() {
                     return part == Part.ROD_BLANK ? 1 : 16;
                 }
@@ -106,6 +113,12 @@ public class TackleBenchMenu extends AbstractContainerMenu {
                 // a rod that has lost its line can be taken apart too
                 return stack.getItem() instanceof TackleRodItem && TackleRodItem.setupOf(stack).hasParts()
                         && isPartsEmpty();
+            }
+
+            @Override
+            public boolean mayPickup(Player player) {
+                // the rod comes out only while it is whole: every laid-out part still exactly as it was laid out
+                return !serverSide || (preview != null && previewIntact());
             }
 
             @Override
