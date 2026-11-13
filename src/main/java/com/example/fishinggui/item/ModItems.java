@@ -90,6 +90,9 @@ public final class ModItems {
     public static final RegistryObject<Item> ICE_PICK =
             ITEMS.register("ice_pick", () -> new Item(new Item.Properties().stacksTo(1).durability(256)));
 
+    public static final RegistryObject<Item> BUG_NET =
+            ITEMS.register("bug_net", () -> new Item(new Item.Properties().stacksTo(1).durability(128)));
+
     public static final RegistryObject<Item> MAYONNAISE =
             ITEMS.register("mayonnaise", () -> new Item(new Item.Properties().durability(6)));
 
@@ -222,6 +225,7 @@ public final class ModItems {
                         output.accept(CUT_OCTOPUS.get());
                         output.accept(TAKOYAKI_BATTER.get());
                         output.accept(ICE_PICK.get());
+                        output.accept(BUG_NET.get());
                         output.accept(MAYONNAISE.get());
                         output.accept(AONORI.get());
                         output.accept(TAKOYAKI.get());

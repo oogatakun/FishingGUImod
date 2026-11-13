@@ -1,6 +1,7 @@
 {
   "itemGroup.fishinggui": "Fishing",
   "item.fishinggui.worm": "Worm",
+  "item.fishinggui.bug_net": "Bug Net",
   "entity.fishinggui.worm": "Earthworm",
   "message.fishinggui.worm.dirt_only": "Worms can only be put down on dirt",
   "item.fishinggui.haze": "Goby",

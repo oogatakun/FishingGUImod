@@ -24,7 +24,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 /**
- * An earthworm on the ground. It crawls about, is picked up again by right-clicking it with a fishing rod, and two of
+ * An earthworm on the ground. It crawls about, is picked up again by right-clicking it with a fishing rod or a bug net, and two of
  * them close together on dirt breed now and then. It never spawns by itself and never despawns.
  */
 public class WormEntity extends PathfinderMob {
@@ -67,7 +67,8 @@ public class WormEntity extends PathfinderMob {
     @Override
     protected InteractionResult mobInteract(Player player, InteractionHand hand) {
         ItemStack held = player.getItemInHand(hand);
-        if (!(held.getItem() instanceof FishingRodItem)) {
+        boolean net = held.is(ModItems.BUG_NET.get());
+        if (!(held.getItem() instanceof FishingRodItem) && !net) {
             return super.mobInteract(player, hand);
         }
         if (!level().isClientSide) {
@@ -76,6 +77,9 @@ public class WormEntity extends PathfinderMob {
                 player.drop(worm, false);
             }
             level().playSound(null, blockPosition(), SoundEvents.SLIME_SQUISH_SMALL, SoundSource.NEUTRAL, 0.6F, 1.4F);
+            if (net) {
+                held.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(hand));
+            }
             discard();
         }
         return InteractionResult.sidedSuccess(level().isClientSide);
