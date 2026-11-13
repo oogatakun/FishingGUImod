@@ -88,8 +88,8 @@ public class TackleBenchMenu extends AbstractContainerMenu {
             addSlot(new Slot(parts, i, partX(i), partY(i)) {
                 @Override
                 public boolean mayPlace(ItemStack stack) {
-                    return parts.getItem(disassembleSlot).isEmpty()
-                            && stack.getItem() instanceof TacklePartItem p && p.part() == part;
+                    // also with a rod laid out in the disassemble slot: putting a part in swaps it in
+                    return stack.getItem() instanceof TacklePartItem p && p.part() == part;
                 }
 
                 @Override
