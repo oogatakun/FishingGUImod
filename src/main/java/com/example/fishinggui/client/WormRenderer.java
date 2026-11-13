@@ -12,6 +12,8 @@ public class WormRenderer extends MobRenderer<WormEntity, WormModel<WormEntity>>
     private static final ResourceLocation TEXTURE =
             new ResourceLocation(FishingGuiMod.MOD_ID, "textures/entity/earthworm.png");
     private static final float SCALE = 0.23F;
+    /** A young worm is drawn this much smaller. */
+    private static final float BABY = 0.5F;
 
     public WormRenderer(EntityRendererProvider.Context context) {
         super(context, new WormModel<>(context.bakeLayer(WormModel.LAYER)), 0.08F);
@@ -19,7 +21,8 @@ public class WormRenderer extends MobRenderer<WormEntity, WormModel<WormEntity>>
 
     @Override
     protected void scale(WormEntity entity, PoseStack pose, float partialTick) {
-        pose.scale(SCALE, SCALE, SCALE);
+        float size = entity.isBaby() ? SCALE * BABY : SCALE;
+        pose.scale(size, size, size);
     }
 
     @Override

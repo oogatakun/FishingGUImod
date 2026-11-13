@@ -1,41 +1,42 @@
 package com.example.fishinggui.entity;
 
 import com.example.fishinggui.item.ModItems;
-import java.util.List;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.BreedGoal;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.FollowParentGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.TemptGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
+import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.FishingRodItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 
 /**
- * An earthworm on the ground. It crawls about, is picked up again by right-clicking it with a fishing rod or a bug net, and two of
- * them close together on dirt breed now and then. It never spawns by itself and never despawns.
+ * An earthworm on the ground, an animal like a chicken: fed rotten flesh it falls in love, two in love on dirt breed
+ * (two young at a time, which grow up in time), and the parents wait five minutes before the next. It is picked up
+ * again by right-clicking it with a fishing rod or a bug net. It never spawns by itself and never despawns.
  */
-public class WormEntity extends PathfinderMob {
-    private static final String COOLDOWN_TAG = "BreedCooldown";
-
+public class WormEntity extends Animal {
     /** Entity event: the worm coils up for a moment. */
     private static final byte CURL_EVENT = 100;
     /** Chance per tick that a still worm curls up (about once in half a minute). */
     private static final int CURL_ONE_IN = 600;
 
-    private int breedCooldown = WormBreeding.SETTLE;
     private int curlStart = -1000;
 
     public WormEntity(EntityType<? extends WormEntity> type, Level level) {
@@ -56,8 +57,11 @@ public class WormEntity extends PathfinderMob {
     @Override
     protected void registerGoals() {
         goalSelector.addGoal(0, new FloatGoal(this));
-        goalSelector.addGoal(1, new WaterAvoidingRandomStrollGoal(this, 1.0, 0.002F));
-        goalSelector.addGoal(2, new RandomLookAroundGoal(this));
+        goalSelector.addGoal(1, new BreedGoal(this, 1.0));
+        goalSelector.addGoal(2, new TemptGoal(this, 1.1, Ingredient.of(Items.ROTTEN_FLESH), false));
+        goalSelector.addGoal(3, new FollowParentGoal(this, 1.1));
+        goalSelector.addGoal(4, new WaterAvoidingRandomStrollGoal(this, 1.0, 0.002F));
+        goalSelector.addGoal(5, new RandomLookAroundGoal(this));
     }
 
     @Override
@@ -65,20 +69,42 @@ public class WormEntity extends PathfinderMob {
         return false;
     }
 
-    public void setBreedCooldown(int ticks) {
-        breedCooldown = Math.max(0, ticks);
+    @Override
+    public boolean isFood(ItemStack stack) {
+        return stack.is(Items.ROTTEN_FLESH);
     }
 
     private boolean onDirt() {
         return level().getBlockState(blockPosition().below()).is(BlockTags.DIRT);
     }
 
-    private boolean readyToBreed() {
-        return isAlive() && breedCooldown <= 0 && onDirt();
+    /** Two worms in love breed only when both are on dirt. */
+    @Override
+    public boolean canMate(Animal other) {
+        return super.canMate(other) && onDirt() && other instanceof WormEntity worm && worm.onDirt();
     }
 
     @Override
-    protected InteractionResult mobInteract(Player player, InteractionHand hand) {
+    public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob partner) {
+        return ModEntities.WORM.get().create(level);
+    }
+
+    /** As for any animal, plus the rest of the brood. */
+    @Override
+    public void spawnChildFromBreeding(ServerLevel level, Animal mate) {
+        super.spawnChildFromBreeding(level, mate);
+        for (int i = 1; i < WormBreeding.OFFSPRING; i++) {
+            AgeableMob young = getBreedOffspring(level, mate);
+            if (young != null) {
+                young.setBaby(true);
+                young.moveTo(getX(), getY(), getZ(), 0.0F, 0.0F);
+                level.addFreshEntityWithPassengers(young);
+            }
+        }
+    }
+
+    @Override
+    public InteractionResult mobInteract(Player player, InteractionHand hand) {
         ItemStack held = player.getItemInHand(hand);
         boolean net = held.is(ModItems.BUG_NET.get());
         if (!(held.getItem() instanceof FishingRodItem) && !net) {
@@ -117,53 +143,6 @@ public class WormEntity extends PathfinderMob {
         super.customServerAiStep();
         if (random.nextInt(CURL_ONE_IN) == 0 && getNavigation().isDone()) {
             level().broadcastEntityEvent(this, CURL_EVENT);
-        }
-        if (breedCooldown > 0) {
-            breedCooldown--;
-        } else if (tickCount % 40 == 0) {
-            tryBreed();
-        }
-    }
-
-    private void tryBreed() {
-        if (!(level() instanceof ServerLevel server) || !readyToBreed()) {
-            return;
-        }
-        List<WormEntity> partners = server.getEntitiesOfClass(WormEntity.class,
-                getBoundingBox().inflate(WormBreeding.PARTNER_RANGE, 2.0, WormBreeding.PARTNER_RANGE),
-                w -> w != this && w.readyToBreed());
-        if (partners.isEmpty()) {
-            return;
-        }
-        WormEntity partner = partners.get(0);
-        breedCooldown = WormBreeding.COOLDOWN;
-        partner.breedCooldown = WormBreeding.COOLDOWN;
-        double x = (getX() + partner.getX()) / 2.0;
-        double y = Math.max(getY(), partner.getY());
-        double z = (getZ() + partner.getZ()) / 2.0;
-        for (int i = 0; i < WormBreeding.OFFSPRING; i++) {
-            WormEntity young = ModEntities.WORM.get().create(server);
-            if (young != null) {
-                young.moveTo(x + (random.nextDouble() - 0.5) * 0.4, y, z + (random.nextDouble() - 0.5) * 0.4,
-                        random.nextFloat() * 360.0F, 0.0F);
-                young.setBreedCooldown(WormBreeding.SETTLE);
-                server.addFreshEntity(young);
-            }
-        }
-        server.sendParticles(ParticleTypes.HEART, x, y + 0.2, z, 5, 0.2, 0.1, 0.2, 0.0);
-    }
-
-    @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tag.putInt(COOLDOWN_TAG, breedCooldown);
-    }
-
-    @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        if (tag.contains(COOLDOWN_TAG)) {
-            breedCooldown = tag.getInt(COOLDOWN_TAG);
         }
     }
 }

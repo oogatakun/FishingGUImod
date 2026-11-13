@@ -1,7 +1,6 @@
 package com.example.fishinggui.item;
 
 import com.example.fishinggui.entity.ModEntities;
-import com.example.fishinggui.entity.WormBreeding;
 import com.example.fishinggui.entity.WormEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -43,7 +42,6 @@ public class WormItem extends Item {
             if (!level.noCollision(worm)) {
                 return InteractionResult.FAIL;
             }
-            worm.setBreedCooldown(WormBreeding.SETTLE);
             level.addFreshEntity(worm);
             level.playSound(null, pos, SoundEvents.SLIME_SQUISH_SMALL, SoundSource.NEUTRAL, 0.6F, 1.0F);
             if (player == null || !player.getAbilities().instabuild) {
