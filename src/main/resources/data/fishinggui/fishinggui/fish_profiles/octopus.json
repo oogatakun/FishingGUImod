@@ -9,5 +9,6 @@
   "weight_max": 3.0,
   "xp": 10,
   "level": 5,
-  "catch_weight": 100
+  "catch_weight": 100,
+  "bait_level": 5
 }

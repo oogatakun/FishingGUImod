@@ -10,7 +10,7 @@ public final class FishLevels {
     public static final Map<String, Integer> BY_ID = Map.ofEntries(
             Map.entry("minecraft:cod", 1), Map.entry("minecraft:salmon", 2),
             Map.entry("minecraft:tropical_fish", 3), Map.entry("minecraft:pufferfish", 4),
-            Map.entry("fishinggui:worm", 1),
+            Map.entry("fishinggui:worm", 1), Map.entry("fishinggui:octopus", 5),
             Map.entry("fishinggui:haze", 1), Map.entry("fishinggui:funa", 1),
             Map.entry("fishinggui:wakasagi", 2), Map.entry("fishinggui:ugui", 2),
             Map.entry("fishinggui:kisu", 3), Map.entry("fishinggui:aji", 3),
