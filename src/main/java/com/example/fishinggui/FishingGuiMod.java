@@ -14,6 +14,7 @@ public class FishingGuiMod {
         var modBus = FMLJavaModLoadingContext.get().getModEventBus();
         modBus.addListener(this::commonSetup);
         ModItems.register(modBus);
+        com.example.fishinggui.entity.ModEntities.register(modBus);
         com.example.fishinggui.block.ModBlocks.register(modBus);
         com.example.fishinggui.block.ModMenus.register(modBus);
     }

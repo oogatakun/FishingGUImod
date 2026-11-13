@@ -25,7 +25,7 @@ public final class ModItems {
     private static final DeferredRegister<CreativeModeTab> TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, FishingGuiMod.MOD_ID);
 
-    public static final RegistryObject<Item> WORM = ITEMS.register("worm", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> WORM = ITEMS.register("worm", () -> new WormItem(new Item.Properties()));
 
     public static final RegistryObject<Item> RESET_DROP =
             ITEMS.register("reset_drop", () -> new Item(new Item.Properties()));

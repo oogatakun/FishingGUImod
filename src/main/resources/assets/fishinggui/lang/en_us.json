@@ -1,6 +1,8 @@
 {
   "itemGroup.fishinggui": "Fishing",
   "item.fishinggui.worm": "Worm",
+  "entity.fishinggui.worm": "Earthworm",
+  "message.fishinggui.worm.dirt_only": "Worms can only be put down on dirt",
   "item.fishinggui.haze": "Goby",
   "item.fishinggui.funa": "Crucian Carp",
   "item.fishinggui.wakasagi": "Pond Smelt",

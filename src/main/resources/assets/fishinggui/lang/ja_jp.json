@@ -1,6 +1,8 @@
 {
   "itemGroup.fishinggui": "釣り",
   "item.fishinggui.worm": "ミミズ",
+  "entity.fishinggui.worm": "ミミズ",
+  "message.fishinggui.worm.dirt_only": "ミミズは土の上にしか置けない",
   "item.fishinggui.haze": "ハゼ",
   "item.fishinggui.funa": "フナ",
   "item.fishinggui.wakasagi": "ワカサギ",
