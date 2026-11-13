@@ -37,6 +37,7 @@ public class TackleBenchMenu extends AbstractContainerMenu {
     /** The parts laid out from the rod in the disassemble slot, as they were; null when nothing is laid out. */
     private List<ItemStack> preview;
     private boolean busy;
+    private Player carriedOwner;
     private final Container parts = new SimpleContainer(PARTS.size() + 1) {
         @Override
         public void setChanged() {
@@ -83,6 +84,7 @@ public class TackleBenchMenu extends AbstractContainerMenu {
         super(ModMenus.TACKLE_BENCH.get(), id);
         this.access = access;
         this.serverSide = !inventory.player.level().isClientSide;
+        this.carriedOwner = inventory.player;
         for (int i = 0; i < PARTS.size(); i++) {
             Part part = PARTS.get(i);
             addSlot(new Slot(parts, i, partX(i), partY(i)) {
@@ -156,23 +158,7 @@ public class TackleBenchMenu extends AbstractContainerMenu {
         if (changed != parts || busy) {
             return;
         }
-        ItemStack rod = parts.getItem(disassembleSlot);
-        if (!serverSide) {
-            // the server alone decides what the disassembly does; the client only mirrors its slots
-        } else if (preview != null) {
-            if (rod.isEmpty()) {
-                // the rod was taken back out untouched: the laid-out parts vanish again
-                clearPartSlots();
-            } else if (!previewIntact()) {
-                // a part was taken: the rod is now taken apart for good
-                busy = true;
-                parts.setItem(disassembleSlot, ItemStack.EMPTY);
-                busy = false;
-                preview = null;
-            }
-        } else if (!rod.isEmpty() && isPartsEmpty()) {
-            layOut(rod);
-        }
+        resolvePreview();
         RodSetup setup = setup();
         ItemStack out = ItemStack.EMPTY;
         if (setup.complete() && parts.getItem(disassembleSlot).isEmpty()) {
@@ -181,6 +167,56 @@ public class TackleBenchMenu extends AbstractContainerMenu {
         }
         result.setItem(0, out);
         broadcastChanges();
+    }
+
+    /**
+     * Keeps the rod and the parts laid out from it from ever existing side by side once a part has been touched:
+     * the rod in the disassemble slot is whole only while every laid-out part is still exactly as it was laid out.
+     */
+    private void resolvePreview() {
+        if (!serverSide) {
+            // the server alone decides what the disassembly does; the client only mirrors its slots
+            return;
+        }
+        busy = true;
+        try {
+            ItemStack rod = parts.getItem(disassembleSlot);
+            if (preview != null) {
+                if (rod.isEmpty()) {
+                    // the rod was taken back out untouched: the laid-out parts vanish again
+                    clearPartSlots();
+                } else if (!previewIntact()) {
+                    // a part was taken or changed: the rod is now taken apart for good
+                    parts.setItem(disassembleSlot, ItemStack.EMPTY);
+                    preview = null;
+                }
+            } else if (!rod.isEmpty()) {
+                if (isPartsEmpty()) {
+                    layOut(rod);
+                } else {
+                    // a rod beside loose parts can only be a leftover of a missed update: never let both stand
+                    parts.setItem(disassembleSlot, ItemStack.EMPTY);
+                    giveBack(rod);
+                }
+            }
+        } finally {
+            busy = false;
+        }
+    }
+
+    private void giveBack(ItemStack stack) {
+        if (carriedOwner != null && !stack.isEmpty()) {
+            if (!carriedOwner.getInventory().add(stack)) {
+                carriedOwner.drop(stack, false);
+            }
+        }
+    }
+
+    @Override
+    public void clicked(int slotId, int button, net.minecraft.world.inventory.ClickType type, Player player) {
+        resolvePreview();
+        super.clicked(slotId, button, type, player);
+        resolvePreview();
     }
 
     private boolean isPartsEmpty() {
@@ -193,11 +229,9 @@ public class TackleBenchMenu extends AbstractContainerMenu {
     }
 
     private void clearPartSlots() {
-        busy = true;
         for (int i = 0; i < PARTS.size(); i++) {
             parts.setItem(i, ItemStack.EMPTY);
         }
-        busy = false;
         preview = null;
     }
 
@@ -216,7 +250,6 @@ public class TackleBenchMenu extends AbstractContainerMenu {
      */
     private void layOut(ItemStack rod) {
         RodSetup setup = TackleRodItem.setupOf(rod);
-        busy = true;
         for (int i = 0; i < PARTS.size(); i++) {
             Part part = PARTS.get(i);
             int rank = setup.rank(part);
@@ -234,7 +267,6 @@ public class TackleBenchMenu extends AbstractContainerMenu {
                 parts.setItem(i, stack);
             }
         }
-        busy = false;
         preview = new ArrayList<>();
         for (int i = 0; i < PARTS.size(); i++) {
             preview.add(parts.getItem(i).copy());
@@ -289,9 +321,15 @@ public class TackleBenchMenu extends AbstractContainerMenu {
     @Override
     public void removed(Player player) {
         super.removed(player);
+        resolvePreview();
         if (preview != null) {
             // the rod is still whole in its slot: hand back the rod, not the parts laid out beside it
-            clearPartSlots();
+            busy = true;
+            try {
+                clearPartSlots();
+            } finally {
+                busy = false;
+            }
         }
         access.execute((level, pos) -> clearContainer(player, parts));
     }

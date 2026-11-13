@@ -1,12 +1,12 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "I",
+    "N",
     "S"
   ],
   "key": {
-    "I": {
-      "item": "minecraft:iron_ingot"
+    "N": {
+      "item": "minecraft:iron_nugget"
     },
     "S": {
       "item": "minecraft:stick"
