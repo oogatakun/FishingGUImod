@@ -34,6 +34,13 @@ public class WormEntity extends PathfinderMob {
 
     public WormEntity(EntityType<? extends WormEntity> type, Level level) {
         super(type, level);
+        setMaxUpStep(WormBreeding.JUMP_HEIGHT);
+    }
+
+    /** Takes off fast enough to rise about half a block (the vanilla 0.42 reaches a block and a quarter). */
+    @Override
+    protected float getJumpPower() {
+        return 0.27F * getBlockJumpFactor();
     }
 
     public static AttributeSupplier.Builder attributes() {
