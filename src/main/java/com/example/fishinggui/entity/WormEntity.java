@@ -37,7 +37,11 @@ public class WormEntity extends Animal {
     /** Chance per tick that a still worm curls up (about once in half a minute). */
     private static final int CURL_ONE_IN = 600;
 
+    /** Entity event: the worm and its mate twine about each other as the young are born. */
+    private static final byte BREED_EVENT = 101;
+
     private int curlStart = -1000;
+    private int breedStart = -1000;
 
     public WormEntity(EntityType<? extends WormEntity> type, Level level) {
         super(type, level);
@@ -93,6 +97,10 @@ public class WormEntity extends Animal {
     @Override
     public void spawnChildFromBreeding(ServerLevel level, Animal mate) {
         super.spawnChildFromBreeding(level, mate);
+        getNavigation().stop();
+        mate.getNavigation().stop();
+        level.broadcastEntityEvent(this, BREED_EVENT);
+        level.broadcastEntityEvent(mate, BREED_EVENT);
         for (int i = 1; i < WormBreeding.OFFSPRING; i++) {
             AgeableMob young = getBreedOffspring(level, mate);
             if (young != null) {
@@ -129,9 +137,16 @@ public class WormEntity extends Animal {
         return (ageInTicks - curlStart) / 20.0F;
     }
 
+    /** How far into its breeding dance the worm is, in seconds at {@code ageInTicks}. */
+    public float breedSeconds(float ageInTicks) {
+        return (ageInTicks - breedStart) / 20.0F;
+    }
+
     @Override
     public void handleEntityEvent(byte id) {
-        if (id == CURL_EVENT) {
+        if (id == BREED_EVENT) {
+            breedStart = tickCount;
+        } else if (id == CURL_EVENT) {
             curlStart = tickCount;
         } else {
             super.handleEntityEvent(id);

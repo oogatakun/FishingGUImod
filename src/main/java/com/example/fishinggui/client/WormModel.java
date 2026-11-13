@@ -167,17 +167,33 @@ public class WormModel<T extends Entity> extends EntityModel<T> {
         return t < 0.8F ? 1.0F : (1.4F - t) / 0.6F;
     }
 
+    /** The breeding dance lasts two seconds: in over 0.3, held, out over the last 0.5. */
+    private static float breedAmount(float t) {
+        if (t <= 0.0F || t >= 2.0F) {
+            return 0.0F;
+        }
+        if (t < 0.3F) {
+            return t / 0.3F;
+        }
+        return t < 1.5F ? 1.0F : (2.0F - t) / 0.5F;
+    }
+
     @Override
     public void setupAnim(T entity, float limbSwing, float limbSwingAmount,
                           float ageInTicks, float netHeadYaw, float headPitch) {
         // a wave runs down the body while it crawls; at rest the head probes slowly about
         float moving = Math.min(1.0F, limbSwingAmount * 6.0F);
         float curl = entity instanceof WormEntity worm ? curlAmount(worm.curlSeconds(ageInTicks)) : 0.0F;
+        float breed = entity instanceof WormEntity worm ? breedAmount(worm.breedSeconds(ageInTicks)) : 0.0F;
+        float breedTime = entity instanceof WormEntity worm ? worm.breedSeconds(ageInTicks) : 0.0F;
         for (int i = 0; i < SEGMENTS; i++) {
             float crawl = Mth.sin(limbSwing * 3.0F - i * 0.55F) * 0.38F * moving;
             float idle = Mth.sin(ageInTicks * 0.07F - i * 0.4F) * (0.04F + i * 0.004F) * (1.0F - moving);
             // the curl: every segment past the head bends 20 degrees, so the body coils up tight
-            segs[i].yRot = baseYaw[i] + crawl + idle - (i == 0 ? 0.0F : curl * CURL_BEND);
+            // breeding: the front of the body rears up and the whole body writhes
+            float writhe = Mth.sin(breedTime * 12.0F - i * 0.7F) * 0.45F * breed;
+            segs[i].xRot = i >= 1 && i <= 5 ? -0.22F * breed : 0.0F;
+            segs[i].yRot = baseYaw[i] + crawl + idle + writhe - (i == 0 ? 0.0F : curl * CURL_BEND);
         }
     }
 
