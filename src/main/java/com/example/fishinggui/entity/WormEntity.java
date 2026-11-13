@@ -42,6 +42,9 @@ public class WormEntity extends Animal {
 
     private int curlStart = -1000;
     private int breedStart = -1000;
+    /** Ticks left that the worm keeps still for the breeding animation (the kit's breed lasts 3.2 s). */
+    private int holdStill;
+    private static final int BREED_TICKS = 64;
 
     public WormEntity(EntityType<? extends WormEntity> type, Level level) {
         super(type, level);
@@ -97,8 +100,10 @@ public class WormEntity extends Animal {
     @Override
     public void spawnChildFromBreeding(ServerLevel level, Animal mate) {
         super.spawnChildFromBreeding(level, mate);
-        getNavigation().stop();
-        mate.getNavigation().stop();
+        holdStill = BREED_TICKS;
+        if (mate instanceof WormEntity other) {
+            other.holdStill = BREED_TICKS;
+        }
         level.broadcastEntityEvent(this, BREED_EVENT);
         level.broadcastEntityEvent(mate, BREED_EVENT);
         for (int i = 1; i < WormBreeding.OFFSPRING; i++) {
@@ -156,6 +161,10 @@ public class WormEntity extends Animal {
     @Override
     protected void customServerAiStep() {
         super.customServerAiStep();
+        if (holdStill > 0) {
+            holdStill--;
+            getNavigation().stop();
+        }
         if (random.nextInt(CURL_ONE_IN) == 0 && getNavigation().isDone()) {
             level().broadcastEntityEvent(this, CURL_EVENT);
         }

@@ -25,6 +25,9 @@ public class WormModel<T extends Entity> extends EntityModel<T> {
     private final ModelPart root;
     private final ModelPart[] segs = new ModelPart[SEGMENTS];
     private final float[] baseYaw = new float[SEGMENTS];
+    private final float[] baseX = new float[SEGMENTS];
+    private final float[] baseY = new float[SEGMENTS];
+    private final float[] baseZ = new float[SEGMENTS];
 
     public WormModel(ModelPart root) {
         this.root = root;
@@ -33,6 +36,9 @@ public class WormModel<T extends Entity> extends EntityModel<T> {
             parent = parent.getChild("seg" + i);
             segs[i] = parent;
             baseYaw[i] = parent.yRot;
+            baseX[i] = parent.x;
+            baseY[i] = parent.y;
+            baseZ[i] = parent.z;
         }
     }
 
@@ -167,33 +173,41 @@ public class WormModel<T extends Entity> extends EntityModel<T> {
         return t < 0.8F ? 1.0F : (1.4F - t) / 0.6F;
     }
 
-    /** The breeding dance lasts two seconds: in over 0.3, held, out over the last 0.5. */
-    private static float breedAmount(float t) {
-        if (t <= 0.0F || t >= 2.0F) {
-            return 0.0F;
-        }
-        if (t < 0.3F) {
-            return t / 0.3F;
-        }
-        return t < 1.5F ? 1.0F : (2.0F - t) / 0.5F;
-    }
-
     @Override
     public void setupAnim(T entity, float limbSwing, float limbSwingAmount,
                           float ageInTicks, float netHeadYaw, float headPitch) {
         // a wave runs down the body while it crawls; at rest the head probes slowly about
         float moving = Math.min(1.0F, limbSwingAmount * 6.0F);
         float curl = entity instanceof WormEntity worm ? curlAmount(worm.curlSeconds(ageInTicks)) : 0.0F;
-        float breed = entity instanceof WormEntity worm ? breedAmount(worm.breedSeconds(ageInTicks)) : 0.0F;
-        float breedTime = entity instanceof WormEntity worm ? worm.breedSeconds(ageInTicks) : 0.0F;
+        float breedTime = entity instanceof WormEntity worm ? worm.breedSeconds(ageInTicks) : -1.0F;
+        boolean breeding = breedTime > 0.0F && breedTime < WormBreedAnimation.LENGTH;
+        float[] v = new float[3];
         for (int i = 0; i < SEGMENTS; i++) {
             float crawl = Mth.sin(limbSwing * 3.0F - i * 0.55F) * 0.38F * moving;
             float idle = Mth.sin(ageInTicks * 0.07F - i * 0.4F) * (0.04F + i * 0.004F) * (1.0F - moving);
             // the curl: every segment past the head bends 20 degrees, so the body coils up tight
-            // breeding: the front of the body rears up and the whole body writhes
-            float writhe = Mth.sin(breedTime * 12.0F - i * 0.7F) * 0.45F * breed;
-            segs[i].xRot = i >= 1 && i <= 5 ? -0.22F * breed : 0.0F;
-            segs[i].yRot = baseYaw[i] + crawl + idle + writhe - (i == 0 ? 0.0F : curl * CURL_BEND);
+            segs[i].xRot = 0.0F;
+            segs[i].zRot = 0.0F;
+            segs[i].x = baseX[i];
+            segs[i].y = baseY[i];
+            segs[i].z = baseZ[i];
+            segs[i].yRot = baseYaw[i] + crawl + idle - (i == 0 ? 0.0F : curl * CURL_BEND);
+            if (breeding) {
+                // the kit's breed animation, added to the pose; its axes become the model's as the kit's exporter has
+                // them: xRot = -rx, yRot = -ry, zRot = +rz, and a move of (dx, dy, dz) is (-dx, -dy, +dz)
+                if (WormBreedAnimation.sample(WormBreedAnimation.ROT_TIMES[i], WormBreedAnimation.ROT_VALUES[i],
+                        breedTime, v)) {
+                    segs[i].xRot += (float) Math.toRadians(-v[0]);
+                    segs[i].yRot += (float) Math.toRadians(-v[1]);
+                    segs[i].zRot += (float) Math.toRadians(v[2]);
+                }
+                if (WormBreedAnimation.sample(WormBreedAnimation.POS_TIMES[i], WormBreedAnimation.POS_VALUES[i],
+                        breedTime, v)) {
+                    segs[i].x += -v[0];
+                    segs[i].y += -v[1];
+                    segs[i].z += v[2];
+                }
+            }
         }
     }
 
