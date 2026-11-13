@@ -105,11 +105,6 @@ public class WormEntity extends PathfinderMob {
         if (partners.isEmpty()) {
             return;
         }
-        int crowd = server.getEntitiesOfClass(WormEntity.class,
-                getBoundingBox().inflate(WormBreeding.CROWD_RANGE, 3.0, WormBreeding.CROWD_RANGE)).size();
-        if (!WormBreeding.roomFor(crowd)) {
-            return;
-        }
         WormEntity partner = partners.get(0);
         breedCooldown = WormBreeding.COOLDOWN;
         partner.breedCooldown = WormBreeding.COOLDOWN;
