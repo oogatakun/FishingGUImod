@@ -1,0 +1,4 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": { "layer0": "fishinggui:item/emerald_ore_bit" }
+}

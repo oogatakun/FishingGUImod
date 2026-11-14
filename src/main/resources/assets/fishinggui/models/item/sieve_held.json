@@ -1,0 +1,38 @@
+{
+  "textures": {
+    "frame": "fishinggui:item/sieve_frame",
+    "mesh": "fishinggui:item/sieve_mesh",
+    "particle": "fishinggui:item/sieve_frame"
+  },
+  "elements": [
+    { "name": "rim_north", "from": [1, 0, 1], "to": [15, 3, 2.5],
+      "faces": { "north": { "texture": "#frame" }, "south": { "texture": "#frame" }, "east": { "texture": "#frame" },
+                 "west": { "texture": "#frame" }, "up": { "texture": "#frame" }, "down": { "texture": "#frame" } } },
+    { "name": "rim_south", "from": [1, 0, 13.5], "to": [15, 3, 15],
+      "faces": { "north": { "texture": "#frame" }, "south": { "texture": "#frame" }, "east": { "texture": "#frame" },
+                 "west": { "texture": "#frame" }, "up": { "texture": "#frame" }, "down": { "texture": "#frame" } } },
+    { "name": "rim_west", "from": [1, 0, 2.5], "to": [2.5, 3, 13.5],
+      "faces": { "east": { "texture": "#frame" }, "west": { "texture": "#frame" },
+                 "up": { "texture": "#frame" }, "down": { "texture": "#frame" } } },
+    { "name": "rim_east", "from": [13.5, 0, 2.5], "to": [15, 3, 13.5],
+      "faces": { "east": { "texture": "#frame" }, "west": { "texture": "#frame" },
+                 "up": { "texture": "#frame" }, "down": { "texture": "#frame" } } },
+    { "name": "mesh", "from": [2.5, 0.75, 2.5], "to": [13.5, 0.75, 13.5],
+      "faces": { "up": { "uv": [2.5, 2.5, 13.5, 13.5], "texture": "#mesh" },
+                 "down": { "uv": [2.5, 2.5, 13.5, 13.5], "texture": "#mesh" } } },
+    { "name": "grip_west", "from": [-1, 1, 6.5], "to": [1, 2, 9.5],
+      "faces": { "north": { "texture": "#frame" }, "south": { "texture": "#frame" }, "west": { "texture": "#frame" },
+                 "up": { "texture": "#frame" }, "down": { "texture": "#frame" } } },
+    { "name": "grip_east", "from": [15, 1, 6.5], "to": [17, 2, 9.5],
+      "faces": { "north": { "texture": "#frame" }, "south": { "texture": "#frame" }, "east": { "texture": "#frame" },
+                 "up": { "texture": "#frame" }, "down": { "texture": "#frame" } } }
+  ],
+  "display": {
+    "thirdperson_righthand": { "rotation": [36, 0, 0], "translation": [-3, 2, -2], "scale": [0.6, 0.6, 0.6] },
+    "thirdperson_lefthand": { "rotation": [36, 0, 0], "translation": [3, 2, -2], "scale": [0.6, 0.6, 0.6] },
+    "firstperson_righthand": { "rotation": [35, 0, 0], "translation": [0, 4, 0], "scale": [0.55, 0.55, 0.55] },
+    "firstperson_lefthand": { "rotation": [35, 0, 0], "translation": [0, 4, 0], "scale": [0.55, 0.55, 0.55] },
+    "ground": { "translation": [0, 3, 0], "scale": [0.5, 0.5, 0.5] },
+    "head": { "rotation": [0, 0, 0], "translation": [0, 13, 0], "scale": [1, 1, 1] }
+  }
+}

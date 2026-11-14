@@ -1,0 +1,95 @@
+{
+  "loader": "forge:separate_transforms",
+  "gui_light": "front",
+  "base": {
+    "parent": "fishinggui:item/sieve_held"
+  },
+  "perspectives": {
+    "gui": {
+      "parent": "minecraft:item/generated",
+      "textures": {
+        "layer0": "fishinggui:item/sieve"
+      }
+    },
+    "fixed": {
+      "parent": "minecraft:item/generated",
+      "textures": {
+        "layer0": "fishinggui:item/sieve"
+      }
+    }
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "fishinggui:load": 11
+      },
+      "model": "fishinggui:item/sieve_dirt_1"
+    },
+    {
+      "predicate": {
+        "fishinggui:load": 12
+      },
+      "model": "fishinggui:item/sieve_dirt_2"
+    },
+    {
+      "predicate": {
+        "fishinggui:load": 13
+      },
+      "model": "fishinggui:item/sieve_dirt_3"
+    },
+    {
+      "predicate": {
+        "fishinggui:load": 21
+      },
+      "model": "fishinggui:item/sieve_gravel_1"
+    },
+    {
+      "predicate": {
+        "fishinggui:load": 22
+      },
+      "model": "fishinggui:item/sieve_gravel_2"
+    },
+    {
+      "predicate": {
+        "fishinggui:load": 23
+      },
+      "model": "fishinggui:item/sieve_gravel_3"
+    },
+    {
+      "predicate": {
+        "fishinggui:load": 31
+      },
+      "model": "fishinggui:item/sieve_sand_1"
+    },
+    {
+      "predicate": {
+        "fishinggui:load": 32
+      },
+      "model": "fishinggui:item/sieve_sand_2"
+    },
+    {
+      "predicate": {
+        "fishinggui:load": 33
+      },
+      "model": "fishinggui:item/sieve_sand_3"
+    },
+    {
+      "predicate": {
+        "fishinggui:load": 41
+      },
+      "model": "fishinggui:item/sieve_red_sand_1"
+    },
+    {
+      "predicate": {
+        "fishinggui:load": 42
+      },
+      "model": "fishinggui:item/sieve_red_sand_2"
+    },
+    {
+      "predicate": {
+        "fishinggui:load": 43
+      },
+      "model": "fishinggui:item/sieve_red_sand_3"
+    }
+  ]
+}

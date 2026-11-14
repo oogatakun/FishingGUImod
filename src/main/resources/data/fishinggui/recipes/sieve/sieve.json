@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": ["___", "_s_", "___"],
+  "key": { "_": { "tag": "minecraft:wooden_slabs" }, "s": { "item": "minecraft:string" } },
+  "result": { "item": "fishinggui:sieve" }
+}

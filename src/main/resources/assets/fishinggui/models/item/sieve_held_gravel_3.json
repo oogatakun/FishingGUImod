@@ -1,0 +1,290 @@
+{
+  "parent": "fishinggui:item/sieve_held",
+  "textures": {
+    "material": "minecraft:block/gravel"
+  },
+  "elements": [
+    {
+      "name": "rim_north",
+      "from": [
+        1,
+        0,
+        1
+      ],
+      "to": [
+        15,
+        3,
+        2.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame"
+        },
+        "south": {
+          "texture": "#frame"
+        },
+        "east": {
+          "texture": "#frame"
+        },
+        "west": {
+          "texture": "#frame"
+        },
+        "up": {
+          "texture": "#frame"
+        },
+        "down": {
+          "texture": "#frame"
+        }
+      }
+    },
+    {
+      "name": "rim_south",
+      "from": [
+        1,
+        0,
+        13.5
+      ],
+      "to": [
+        15,
+        3,
+        15
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame"
+        },
+        "south": {
+          "texture": "#frame"
+        },
+        "east": {
+          "texture": "#frame"
+        },
+        "west": {
+          "texture": "#frame"
+        },
+        "up": {
+          "texture": "#frame"
+        },
+        "down": {
+          "texture": "#frame"
+        }
+      }
+    },
+    {
+      "name": "rim_west",
+      "from": [
+        1,
+        0,
+        2.5
+      ],
+      "to": [
+        2.5,
+        3,
+        13.5
+      ],
+      "faces": {
+        "east": {
+          "texture": "#frame"
+        },
+        "west": {
+          "texture": "#frame"
+        },
+        "up": {
+          "texture": "#frame"
+        },
+        "down": {
+          "texture": "#frame"
+        }
+      }
+    },
+    {
+      "name": "rim_east",
+      "from": [
+        13.5,
+        0,
+        2.5
+      ],
+      "to": [
+        15,
+        3,
+        13.5
+      ],
+      "faces": {
+        "east": {
+          "texture": "#frame"
+        },
+        "west": {
+          "texture": "#frame"
+        },
+        "up": {
+          "texture": "#frame"
+        },
+        "down": {
+          "texture": "#frame"
+        }
+      }
+    },
+    {
+      "name": "mesh",
+      "from": [
+        2.5,
+        0.75,
+        2.5
+      ],
+      "to": [
+        13.5,
+        0.75,
+        13.5
+      ],
+      "faces": {
+        "up": {
+          "uv": [
+            2.5,
+            2.5,
+            13.5,
+            13.5
+          ],
+          "texture": "#mesh"
+        },
+        "down": {
+          "uv": [
+            2.5,
+            2.5,
+            13.5,
+            13.5
+          ],
+          "texture": "#mesh"
+        }
+      }
+    },
+    {
+      "name": "grip_west",
+      "from": [
+        -1,
+        1,
+        6.5
+      ],
+      "to": [
+        1,
+        2,
+        9.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame"
+        },
+        "south": {
+          "texture": "#frame"
+        },
+        "west": {
+          "texture": "#frame"
+        },
+        "up": {
+          "texture": "#frame"
+        },
+        "down": {
+          "texture": "#frame"
+        }
+      }
+    },
+    {
+      "name": "grip_east",
+      "from": [
+        15,
+        1,
+        6.5
+      ],
+      "to": [
+        17,
+        2,
+        9.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame"
+        },
+        "south": {
+          "texture": "#frame"
+        },
+        "east": {
+          "texture": "#frame"
+        },
+        "up": {
+          "texture": "#frame"
+        },
+        "down": {
+          "texture": "#frame"
+        }
+      }
+    },
+    {
+      "name": "material",
+      "from": [
+        2.5,
+        0.8,
+        2.5
+      ],
+      "to": [
+        13.5,
+        2.6,
+        13.5
+      ],
+      "faces": {
+        "up": {
+          "uv": [
+            2.5,
+            2.5,
+            13.5,
+            13.5
+          ],
+          "texture": "#material"
+        },
+        "down": {
+          "uv": [
+            2.5,
+            2.5,
+            13.5,
+            13.5
+          ],
+          "texture": "#material"
+        },
+        "north": {
+          "uv": [
+            2.5,
+            13.4,
+            13.5,
+            15.2
+          ],
+          "texture": "#material"
+        },
+        "south": {
+          "uv": [
+            2.5,
+            13.4,
+            13.5,
+            15.2
+          ],
+          "texture": "#material"
+        },
+        "east": {
+          "uv": [
+            2.5,
+            13.4,
+            13.5,
+            15.2
+          ],
+          "texture": "#material"
+        },
+        "west": {
+          "uv": [
+            2.5,
+            13.4,
+            13.5,
+            15.2
+          ],
+          "texture": "#material"
+        }
+      }
+    }
+  ]
+}

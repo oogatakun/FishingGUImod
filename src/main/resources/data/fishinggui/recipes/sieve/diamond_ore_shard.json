@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["###", "###", "###"],
+  "key": { "#": { "item": "fishinggui:diamond_ore_bit" } },
+  "result": { "item": "fishinggui:diamond_ore_shard" }
+}

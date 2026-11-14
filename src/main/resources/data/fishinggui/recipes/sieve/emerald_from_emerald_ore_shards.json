@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["###", "###", "###"],
+  "key": { "#": { "item": "fishinggui:emerald_ore_shard" } },
+  "result": { "item": "minecraft:emerald" }
+}

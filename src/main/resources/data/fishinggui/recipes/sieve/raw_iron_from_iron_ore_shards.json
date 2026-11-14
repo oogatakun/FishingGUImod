@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["###", "###", "###"],
+  "key": { "#": { "item": "fishinggui:iron_ore_shard" } },
+  "result": { "item": "minecraft:raw_iron" }
+}

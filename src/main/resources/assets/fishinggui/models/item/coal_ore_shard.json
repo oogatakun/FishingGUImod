@@ -1,0 +1,4 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": { "layer0": "fishinggui:item/coal_ore_shard" }
+}

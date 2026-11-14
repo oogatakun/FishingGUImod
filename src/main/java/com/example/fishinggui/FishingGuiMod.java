@@ -17,6 +17,7 @@ public class FishingGuiMod {
         com.example.fishinggui.entity.ModEntities.register(modBus);
         com.example.fishinggui.block.ModBlocks.register(modBus);
         com.example.fishinggui.block.ModMenus.register(modBus);
+        com.example.fishinggui.sieve.SieveItems.register(modBus);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
